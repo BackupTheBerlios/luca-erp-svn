@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+Copyright 2003 Fundacion Via Libre
+
+This file is part of PAPO.
+
+PAPO is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+PAPO is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with PAPO; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+
+<!DOCTYPE detail SYSTEM "ruff.dtd">
+<detail name="cierre_caja">
+  <page_header>
+    <box column="0">Planilla de Caja Diaria</box>
+    <box column="100" align="right" width="32"><field name="fecha"/></box>
+    <box line="2" column="0" width="132" raw="true">ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÑÍÍÍÍÍÍÍÍÍÍÍÍ</box>
+  </page_header>
+  <detail name="ingresos">
+    <page_header>
+      <box column="0" width="82" align="center">Ingresos</box>
+      <box column="83" raw="true">³</box>
+      <box column="84" width="11" align="center">cash</box>
+      <box column="95" raw="true">³</box>
+      <box column="96" width="11" align="center">cheque</box>
+      <box column="107" raw="true">³</box>
+      <box column="108" width="11" align="center">otros</box>
+      <box column="119" raw="true">³</box>
+      <box column="120" width="11" align="center">TOTAL</box>
+      <box line="2" column="0" width="132" raw="true">ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄ</box>
+    </page_header>
+    <detail_entry name="item">
+      <box column="1" width="82" align="left" wrap="true"><field name="concepto"/></box>
+      <box column="83" vfill="true" raw="true">³</box>
+      <box column="84" width="11" align="right"><field name="cash"/></box>
+      <box column="95" vfill="true" raw="true">³</box>
+      <box column="96" width="11" align="right"><field name="cheque"/></box>
+      <box column="107" vfill="true" raw="true">³</box>
+      <box column="108" width="11" align="right"><field name="otros"/></box>
+      <box column="119" vfill="true" raw="true">³</box>
+      <box column="120" width="11" align="right"><field name="total"/></box>
+    </detail_entry>
+    <footer>
+      <box column="0" width="132" raw="true">ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄ</box>
+      <box line="2" column="1" width="82" align="left" wrap="true">TOTAL</box>
+      <box line="2" column="83" raw="true">³</box>
+      <box line="2" column="84" width="11" align="right"><field name="cash"/></box>
+      <box line="2" column="95" raw="true">³</box>
+      <box line="2" column="96" width="11" align="right"><field name="cheque"/></box>
+      <box line="2" column="107" raw="true">³</box>
+      <box line="2" column="108" width="11" align="right"><field name="otros"/></box>
+      <box line="2" column="119" raw="true">³</box>
+      <box line="2" column="120" width="11" align="right"><field name="total"/></box>
+    </footer>
+  </detail>
+  <detail_entry name="inter">
+    <box column="0" raw="true">ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍ</box>
+  </detail_entry>
+  <detail name="egresos">
+    <page_header>
+      <box column="0" width="82" align="center">Egresos</box>
+      <box column="83" raw="true">³</box>
+      <box column="84" width="11" align="center">cash</box>
+      <box column="95" raw="true">³</box>
+      <box column="96" width="11" align="center">cheque</box>
+      <box column="107" raw="true">³</box>
+      <box column="108" width="11" align="center">otros</box>
+      <box column="119" raw="true">³</box>
+      <box column="120" width="11" align="center">TOTAL</box>
+      <box line="2" column="0" width="132" raw="true">ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄ</box>
+    </page_header>
+    <detail_entry name="item">
+      <box column="1" width="82" align="left"><field name="concepto"/></box>
+      <box column="83" raw="true">³</box>
+      <box column="84" width="11" align="right"><field name="cash"/></box>
+      <box column="95" raw="true">³</box>
+      <box column="96" width="11" align="right"><field name="cheque"/></box>
+      <box column="107" raw="true">³</box>
+      <box column="108" width="11" align="right"><field name="otros"/></box>
+      <box column="119" raw="true">³</box>
+      <box column="120" width="11" align="right"><field name="total"/></box>
+    </detail_entry>
+    <footer>
+      <box column="0" width="132" raw="true">ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄ</box>
+      <box line="2" column="1" width="82" align="left" wrap="true">TOTAL</box>
+      <box line="2" column="83" raw="true">³</box>
+      <box line="2" column="84" width="11" align="right"><field name="cash"/></box>
+      <box line="2" column="95" raw="true">³</box>
+      <box line="2" column="96" width="11" align="right"><field name="cheque"/></box>
+      <box line="2" column="107" raw="true">³</box>
+      <box line="2" column="108" width="11" align="right"><field name="otros"/></box>
+      <box line="2" column="119" raw="true">³</box>
+      <box line="2" column="120" width="11" align="right"><field name="total"/></box>
+    </footer>
+  </detail>
+  <footer>
+    <box column="0" raw="true">ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍØÍÍÍÍÍÍÍÍÍÍÍÍ</box>
+      <box line="2" column="1" width="82" align="left" wrap="true">SALDO</box>
+      <box line="2" column="83" raw="true">³</box>
+      <box line="2" column="84" width="11" align="right"><field name="cash"/></box>
+      <box line="2" column="95" raw="true">³</box>
+      <box line="2" column="96" width="11" align="right"><field name="cheque"/></box>
+      <box line="2" column="107" raw="true">³</box>
+      <box line="2" column="108" width="11" align="right"><field name="otros"/></box>
+      <box line="2" column="119" raw="true">³</box>
+      <box line="2" column="120" width="11" align="right"><field name="total"/></box>
+    <box line="3" column="0" width="132" raw="true">ÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÏÍÍÍÍÍÍÍÍÍÍÍÍ</box>
+  </footer>
+</detail>

@@ -1,0 +1,339 @@
+# -*- python -*- coding: latin1 -*-
+#
+# Copyright 2003,2004 Fundación Vía Libre
+#
+# This file is part of ruff.
+#
+# ruff is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# ruff is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PAPO; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+from UserList import UserList
+from xml.dom.ext.reader import PyExpat
+from xml.dom import Node
+from xml import xpath
+import codecs
+
+import pathetic
+import compute
+import caps
+
+from errors import *
+
+def init_dentry_from_xml(dentry, dom):
+    for box in xpath.Evaluate('box', dom):
+        p=[]
+        for i in box.childNodes:
+            if i.nodeType == Node.TEXT_NODE:
+                p.append(i.data)
+            elif i.nodeName == 'field':
+                name = i.getAttribute('name')
+                default = i.getAttribute('default')
+                p.append(pathetic.Field(dentry, name, default))
+            elif i.nodeName == 'compute':
+                expr = i.getAttribute('expr')
+                watch = i.getAttribute('watch')
+                if watch:
+                    watch = [j.strip() for j in watch.split(',')]
+                else:
+                    watch = []
+                p.append(compute.Compute(dentry, expr, watch))
+        kw={}
+        for i in ('line', 'column', 'width', 'height'):
+            kw[i] = int(box.getAttribute(i) or 0)
+        for i in ('vfill', 'raw', 'wrap'):
+            kw[i] = box.getAttribute(i) == 'true'
+        kw['align'] = {"right": 1, "center": 0}.setdefault(box.getAttribute('align'), -1)
+        kw['style'] = box.getAttribute('style') or dentry.style
+        dentry.add_box(*p, **kw)
+
+def init_detail_from_xml(detail, dom):
+    for den in xpath.Evaluate('detail_entry', dom):
+        d = detail.add_dentry(den.getAttribute('name'))
+        d.style = den.getAttribute('style') or detail.style
+        init_dentry_from_xml(d, den)
+    for det in xpath.Evaluate('detail', dom):
+        d = detail.add_detail(det.getAttribute('name'))
+        d.style = det.getAttribute('style') or detail.style
+        init_detail_from_xml(d, det)
+    for i in ('header', 'footer'):
+        for j in ('', 'page_', 'partial_'):
+            n=j+i
+            d = xpath.Evaluate(n, dom)
+            if d:
+                d=d[0]
+                try:
+                    h = int(d.getAttribute('height'))
+                except ValueError:
+                    raise InvalidExtremaError, \
+                          "%s/%s should have an explicit, numeric, height attribute" \
+                          % (detail.fqdn, n)
+                x=pathetic.Shelf(detail, n, h)
+                x.style = d.getAttribute('style') or detail.style
+                setattr(detail, n, x)
+                init_dentry_from_xml(x, d)
+            else:
+                setattr(detail, n, None)
+
+class Page:
+    def __init__(self, height, max_height, prev):
+        if height:
+            self.expand = 1
+        else:
+            self.expand = 0
+        self.target_height = max_height
+        if prev is None:
+            self.details = []
+            self.data = []
+        else:
+            self.details = prev.details[:]
+            # el encabezado de una página es cada uno de los page_headers de
+            # los detalles abiertos desde el de más afuera hasta más adentro,
+            # seguido de todos los partial_header en el mismo orden
+            self.data = filter(None, [i.page_header for i in self.details]
+                               + [i.partial_header or i.header for i in self.details])
+        self.prev = prev
+
+
+    def post(self):
+        if self.details:
+            # el pie de una página es el partial_footer de cada uno de
+            # los detalles abiertos, seguido de los page_footer de
+            # cada uno de los detalles abiertos, de adentro hacia
+            # afuera.
+            post = filter(None,
+                          [i.page_footer for i in self.details]
+                          + [i.partial_footer for i in self.details])
+            post.reverse()
+        else:
+            # no hay detalles abiertos: quiere decir que estoy
+            # cerrando todo. No olvidarme del page_footer del reporte,
+            # que va *siempre*
+            post = filter(None, [self.template.page_footer])
+        return post
+
+
+    def extend(self, other):
+        self.data.extend(other)
+
+    def append(self, other):
+        self.data.append(other)
+
+    def data_length(self):
+        l=0
+        for i in self.data:
+            if isinstance(i, pathetic.Pathetic):
+                l+=i.height
+            else:
+                l+=1
+        return l
+
+    def __len__(self):
+        if not self.details:
+            return 0
+        h1 = self.data_length()
+        h2 = reduce(lambda a, b: a+b.height, self.post(), 0)
+        if self.details[-1].footer:
+            h2 = max(h2, self.details[-1].footer.height)
+        return h1+h2
+        return h1
+
+    def replace(self, old, new):
+        # linear search -- sucks, pero qué se le va a hacer
+        i = None
+        page = self
+        while page:
+            try:
+                i = page.data.index(old)
+                page.data = page.data[:i] + new + page.data[i+1:]
+                page = page.prev
+            except ValueError, msg:
+                page = page.prev
+
+    def add_detail(self, detail):
+        self.details.append(detail)
+        if detail.header:
+            self.append(detail.header)
+
+
+    def close_detail(self):
+        d = self.details.pop()
+        for i in ('header', 'footer'):
+            for j in ('', 'page_', 'partial_'):
+                n=j+i
+                x = getattr(d, n, None)
+                if x:
+                    self.replace(x, x.render())
+        if d.footer:
+            self.extend(d.footer.render())
+
+    def render(self):
+        post = self.post()
+        r=[]
+        # TODO: agregar el init de page , que debiera poner todo en un estado invariante
+        # porque algunas impresoras de baja calidad (aka baratas al mango) se olvidan despues de paginas pobladas.
+        # (o al menos eso dicen las leyendas urbanas)
+        for i in self.data:
+            if isinstance(i, pathetic.Pathetic):
+                r.extend(i.render())
+            else:
+                r.append(i)
+        maxrlen = self.target_height - len(post)
+        if self.target_height and len(r) < maxrlen and self.expand:
+            i=None
+            if self.details:
+                i = self.details[0].dict.get(self.details[-1].fqdn + '_empty/')
+            else:
+                i = self.template.dict.get('/_empty/')
+            if i:
+                i = i.render()
+            else:
+                i = [' '*len(r[-1])]
+            r.extend(i*(maxrlen - len(r) - 1))
+        for i in post:
+            if isinstance(i, pathetic.Pathetic):
+                r.extend(i.render())
+            else:
+                r.append(i)
+        # HACK: esto debiera venir del 'deinit' de Page
+        r.append('\f')
+        return r
+
+
+class Report:
+    def __init__(self, file):
+        (dom,) = xpath.Evaluate('/report', PyExpat.Reader().fromUri(file))
+        max_height = int(dom.getAttribute('max_height') or 0)
+        height = int(dom.getAttribute('height') or 0)
+        max_num_pages = int(dom.getAttribute('max_num_pages') or 0)
+        encoder = codecs.lookup(dom.getAttribute('output_encoder') or 'cp850')[0]
+        template = pathetic.Template(max_num_pages=max_num_pages,
+                                     max_height=max_height,
+                                     height=height,
+                                     encoder=encoder)
+        template.style = dom.getAttribute('style') or '12cpi'
+        # template.caps = caps.Caps('../ruff/caps/'+(dom.getAttribute('printer') or 'escp'))
+        template.caps = caps.Caps(prefix+'/caps/'+(dom.getAttribute('printer') or 'hppcl3'))
+        init_detail_from_xml(template, dom)
+        self.template = template
+        self.init_stack()
+        self.init_pages()
+        self.path = []
+        self.add_detail('')
+        self.set_extrema()
+
+    def set_extrema(self):
+        for i in ('header', 'footer'):
+            for j in ('', 'page_', 'partial_'):
+                n=j+i
+                if self.details:
+                    x = getattr(self.details[-1], n)
+                else:
+                    x = None
+                setattr(self, n, x)
+
+    def init_stack(self):
+        self.details = []
+
+    def init_pages(self):
+        self.pages = []
+        self.add_page()
+
+    def add_page(self):
+        prev = None
+        if self.pages:
+            prev = self.pages[-1]
+        page = Page(self.template.height, self.template.max_height, prev)
+        page.template = self.template
+        self.pages.append(page)
+
+    def guess_fqdn(self, name):
+        if self.path:
+            return '/'.join(self.path) + '/' + name + '/'
+        else:
+            return '/'
+
+    def add_dentry(self, name, **kw):
+        d = self.template.dict[self.guess_fqdn(name)]
+        out = d.render(**kw)
+        if self.template.max_height and \
+               len(self.pages[-1]) + len(out) > self.template.max_height:
+            if self.template.max_num_pages and \
+                   len(self.pages) >= self.template.max_num_pages:
+                raise ReportOverflowError, "no more space in report"
+            else:
+                self.add_page()
+        self.pages[-1].extend(out)
+
+    def add_detail(self, name):
+        detail = self.template.dict[self.guess_fqdn(name)]
+        self.path.append(name)
+        self.details.append(detail)
+        self.pages[-1].add_detail(detail)
+        self.set_extrema()
+
+    def close_detail(self):
+        self.pages[-1].close_detail()
+        self.details.pop()
+        self.path.pop()
+        self.set_extrema()
+
+
+    def render(self):
+        # el render ocurre al completar. Entonces lo que hay que hacer es
+        # cerrar todos los detalles que queden abiertos (menos el último, para
+        # que salga después el page_footer)
+
+        while self.details:
+            self.close_detail()
+        render = []
+        pageno = 1
+        compute.set_numpages(len(self.pages))
+        for i in self.pages:
+            compute.set_pageno(pageno)
+            pageno += 1
+            render.extend(i.render())
+        return render
+
+    def __str__(self):
+        r = map(str, self.render())
+        s = "\n".join(["\n".join(r)])
+        caps = self.template.caps
+        style = self.template.style
+        # el último form feed rompe cosas
+        # HACK: el caps.start ('init') debiera venir del 'init' de report
+        # preguntar a mdione o jlenton a que init nos referimos
+        return caps.start ('report')+caps.start(style) +s[:-1]+ caps.end(style)+caps.end ('report')
+
+if __name__=='__main__':
+    import time
+    r=Report('test.xml')
+    #r.add_detail('bar')
+    #r.header(fecha=time.ctime())
+    r.add_dentry('item', moneda='Morlacks with cochinillas arábigas', contado=100, ctacte=850, otros=50, total=1000)
+    r.add_dentry('item', moneda='MORLACKS WITH COCHINILLAS ARÁBIGAS', contado=10, ctacte=85, otros=5, total=100)
+    r.add_dentry('item', moneda='Morlacks with cochinillas arábigas', contado=100, ctacte=850, otros=50, total=1000)
+    r.add_dentry('item', moneda='Morlacks with cochinillas arábigas', contado=100, ctacte=850, otros=50, total=1000)
+    r.add_detail('foo')
+    r.add_dentry('test')
+    r.add_dentry('test')
+    r.add_dentry('test')
+    r.close_detail()
+    r.add_detail('foo')
+    r.add_dentry('test')
+    r.add_dentry('test')
+    r.add_dentry('test')
+    r.close_detail()
+    r.add_dentry('item', moneda='Morlacks with cochinillas arábigas', contado=100, ctacte=850, otros=50, total=1000)
+    print r
+

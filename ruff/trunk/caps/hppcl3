@@ -1,0 +1,53 @@
+# http://itsa.ucsf.edu/~rpb/hppcl.html
+[report]
+description = init the printer to know status
+start = ESC %-12345X @PJL SPC ENTER SPC LANGUAJE SPC = SPC PCL CR LF ESC E ESC & k 2 G ESC ( 1 2 U
+end = ESC E
+
+[5cpi]
+description = double-width 10cpi (5cpi)
+# this should not be width, but (at least) cpi
+width = 5
+start = ESC ( s 5 H
+end = ESC ( s 10 H
+
+[6cpi]
+description = double-width 12cpi (6cpi)
+width = 6
+start = ESC ( s 6 H
+end = ESC ( s 10 H
+
+[8.57cpi]
+description = double-width condensed 10cpi (8.57cpi)
+width = 8.57
+start = ESC ( s 8.57 H
+end = ESC ( s 10 H
+
+[10cpi]
+description = normal 10cpi
+width = 10
+start = ESC ( s 10 H
+
+[12cpi]
+description = normal 12cpi
+width = 12
+start = ESC ( s 12 H
+end = ESC ( s 10 H
+
+[17.14cpi]
+description = condensed 10cpi (17.14cpi)
+width = 17.14
+start = ESC ( s 17.14 H
+end = ESC ( s 10 H
+
+[20cpi]
+description = condensed 12cpi (20 cpi)
+width = 20
+start = ESC ( s 20 H
+end = ESC ( s 10 H
+
+[bold]
+description= negrita
+start= ESC ) s 3 B
+end= ESC ) s 3 B
+

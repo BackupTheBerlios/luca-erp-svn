@@ -1,0 +1,49 @@
+[report]
+description = init the printer to know status
+start = ESC ( t ETX NUL NUL ETX NUL ESC t NUL
+
+[5cpi]
+description = double-width 10cpi (5cpi)
+width = 5
+start = SO
+end = DC4
+
+[6cpi]
+description = double-width 12cpi (6cpi)
+width = 6
+start = ESC M SO
+end = DC4 ESC P
+
+[8.57cpi]
+description = double-width condensed 10cpi (8.57cpi)
+width = 8.57
+start = ESC P SI SO
+end = DC4 DC2
+
+[10cpi]
+description = normal 10cpi
+width = 10
+start = ESC P
+
+[12cpi]
+description = normal 12cpi
+width = 12
+start = ESC M
+end = ESC P
+
+[17.14cpi]
+description = condensed 10cpi (17.14cpi)
+width = 17.14
+start = ESC P SI
+end = DC2
+
+[20cpi]
+description = condensed 12cpi (20 cpi)
+width = 20
+start = ESC M SI
+end = DC2 ESC P
+
+[bold]
+description = negrita
+start = ESC E
+end = ESC F

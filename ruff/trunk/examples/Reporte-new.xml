@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!--
+# Copyright 2003,2004 Fundación Vía Libre
+#
+# This file is part of ruff.
+#
+# ruff is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# ruff is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PAPO; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+
+
+<!DOCTYPE report SYSTEM "../../ruff/ruff.dtd">
+<report name="cierre_caja" height="60">
+  <header height="3">
+    <box column="0">Planilla de Caja Diaria</box>
+    <box column="48" align="right" width="32"><field name="fecha" default="[ sin fecha ]"/></box>
+  </header>
+  <detail name="ingresos">
+    <header height="2">
+      <box column="0" width="32" align="center">Ingresos</box>
+      <box column="33" width="11" align="center">Contado</box>
+      <box column="45" width="11" align="center">Cheque</box>
+      <box column="57" width="11" align="center">Otros</box>
+      <box column="69" width="11" align="center">TOTAL</box>
+    </header>
+    <detail_entry name="item">
+      <box column="1" width="32" align="left" wrap="true"><field name="concepto"/></box>
+      <box column="33" width="11" align="right"><field name="cash"/></box>
+      <box column="45" width="11" align="right"><field name="cheque"/></box>
+      <box column="57" width="11" align="right"><field name="otros"/></box>
+      <box column="69" width="11" align="right"><field name="total"/></box>
+    </detail_entry>
+  </detail>
+  <detail name="egresos">
+    <header height="3">
+      <box line="1" column="0" width="32" align="center">Egresos</box>
+      <box line="1" column="33" width="11" align="center">Contado</box>
+      <box line="1" column="45" width="11" align="center">Cta. Cte.</box>
+      <box line="1" column="57" width="11" align="center">Otros</box>
+      <box line="1" column="69" width="11" align="center">TOTAL</box>
+    </header>
+    <detail_entry name="item">
+      <box column="1" width="32" align="left" wrap="true"><field name="concepto"/></box>
+      <box column="33" width="11" align="right"><field name="cash"/></box>
+      <box column="45" width="11" align="right"><field name="cheque"/></box>
+      <box column="57" width="11" align="right"><field name="otros"/></box>
+      <box column="69" width="11" align="right"><field name="total"/></box>
+    </detail_entry>
+  </detail>
+  <detail name="diferencia">
+    <header height="3">
+      <box line="1" column="0" width="32" align="center">DIFERENCIA</box>
+      <box line="1" column="33" width="11" align="center">Contado</box>
+      <box line="1" column="45" width="11" align="center">Cta. Cte.</box>
+      <box line="1" column="57" width="11" align="center">Otros</box>
+      <box line="1" column="69" width="11" align="center">TOTAL</box>
+    </header>
+    <detail_entry name="item">
+      <box column="1" width="32" align="left" wrap="true"><field name="moneda"/></box>
+      <box column="33" width="11" align="right"><field name="contado"/></box>
+      <box column="45" width="11" align="right"><field name="ctacte"/></box>
+      <box column="57" width="11" align="right"><field name="otros"/></box>
+      <box column="69" width="11" align="right"><field name="total"/></box>
+    </detail_entry>
+  </detail>
+  <footer height="1">
+  </footer>
+  <page_footer height="1">
+    <box column="10" vfill="true" raw="true">-----</box>
+  </page_footer>
+</report>

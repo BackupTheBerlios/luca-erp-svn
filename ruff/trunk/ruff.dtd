@@ -1,0 +1,109 @@
+<!--                    papo report dtd                            -->
+<!--
+Copyright 2003 Fundacion Via Libre
+
+This file is part of PAPO.
+
+PAPO is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+PAPO is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with PAPO; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+
+
+<!ENTITY % headers "header|page_header|partial_header">
+<!ENTITY % footers "footer|page_footer|partial_footer">
+<!ENTITY % style   "style CDATA '12cpi'">
+
+
+<!ELEMENT  report            (%headers;|%footers;|detail|detail_entry)+ 
+                                                                     >
+<!ATTLIST  report
+             name       NMTOKEN                            #REQUIRED
+             max_height CDATA                              #IMPLIED
+             max_num_pages
+                        CDATA                              "1"
+             output_encoding
+                        CDATA                              "cp850"
+             printer    CDATA                              "escp"
+             %style;
+             height     CDATA                              #IMPLIED  >
+
+<!ELEMENT  detail            (%headers;|%footers;|detail|detail_entry)+ 
+                                                                     >
+<!ATTLIST  detail
+             name       NMTOKEN                            #REQUIRED
+             %style;
+             height     CDATA                              #IMPLIED  >
+
+
+<!--                    what goes at the start of the detail       -->
+<!ELEMENT  header            (box)+                                  >
+<!ATTLIST  header
+             %style;
+             height     CDATA                              #IMPLIED  >
+<!--                    what goes at the end of the detail         -->
+<!ELEMENT  footer           (box)+                                  >
+<!ATTLIST  footer
+             %style;
+             height     CDATA                              #IMPLIED  >
+<!--                    what goes at the top of each page          -->
+<!ELEMENT  page_header       (box)+                                  >
+<!ATTLIST  page_header
+             %style;
+             height     CDATA                              #IMPLIED  >
+<!--                    what goes at the bottom of each page       -->
+<!ELEMENT  page_footer      (box)+                                  >
+<!ATTLIST  page_footer
+             %style;
+             height     CDATA                              #IMPLIED  >
+<!--                    what goes at the top of the page when the
+                        detail is continued from another page      -->
+<!ELEMENT  partial_header    (box)+                                  >
+<!ATTLIST  partial_header
+             %style;
+             height     CDATA                              #IMPLIED  >
+<!--                    what goes at the bottom of the page when
+                        the detail is continued on another page    -->
+<!ELEMENT  partial_footer   (box)+                                  >
+<!ATTLIST  partial_footer
+             %style;
+             height     CDATA                              #IMPLIED  >
+
+<!ELEMENT  box               (#PCDATA | field | compute)*            >
+<!ATTLIST  box
+             %style;
+             line       CDATA                              "0"
+             column     CDATA                              #REQUIRED
+             width      CDATA                              #IMPLIED
+             height     CDATA                              #IMPLIED
+             align      (right|left|center)                "left"
+             vfill      (true|false)                       "false"
+             raw        (true|false)                       "false"
+             wrap       (true|false)                       "false"   >
+
+<!ELEMENT  detail_entry      (box)+                                  >
+<!ATTLIST  detail_entry
+             %style;
+             height     CDATA                              #IMPLIED  
+             name       NMTOKEN                            #REQUIRED >
+
+<!ELEMENT  field             EMPTY                                   >
+<!ATTLIST  field
+             name       NMTOKEN                            #REQUIRED
+             default    CDATA                              #IMPLIED  >
+
+<!ELEMENT  compute      EMPTY                                        >
+<!ATTLIST  compute
+             watch      CDATA                              #IMPLIED
+             expr       CDATA                              #REQUIRED >
+

@@ -1,0 +1,9 @@
+This is ruff, a simple report generator for Python.
+
+There are examples of its use in the `examples' directory.
+
+To install, just edit the Makefile, adjust the PREFIX at will and `make
+install'.
+
+There's not much documentation right now. Any doubts, please email to
+papo-hackers@nongnu.org
