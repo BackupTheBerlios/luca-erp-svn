@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?><!-- -*- nxml -*- -->
+<!--
+Copyright 2005 Fundacion Via Libre
+
+This file is part of PAPO.
+
+PAPO is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+PAPO is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with PAPO; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+<!DOCTYPE database SYSTEM "../xot.dtd">
+<database>
+  <tables>
+    <table name="product">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="code" type="varchar(20)"/>
+        <field name="name" type="varchar(80)" null="false"/>
+      </fields>
+
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+
+    <table name="stock">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="product" references="product" null="false"/>
+        <field name="level" type="int" null="false"/>
+      </fields>
+
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+
+    <table name="receipt">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="date" type="date" null="false"/>
+        <field name="concept" type="varchar(80)" null="false"/>
+        <field name="amount" type="numeric(12,2)" null="false"/>
+        <field name="person" references="person" null="false"/>
+      </fields>
+
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="person">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="name" type="varchar(60)"  null="false"/>
+        <field name="surname" type="varchar(20)"  null="false"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+  </tables>
+</database>
