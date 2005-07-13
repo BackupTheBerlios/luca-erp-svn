@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <class name="product">
-    <import what="model.Luca.Product.Product"/>
+    <import what="Luca.Product.Product"/>
 
     <finder attribute="name"/>
     <finder attribute="code"/>
