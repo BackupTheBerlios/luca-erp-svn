@@ -39,7 +39,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
     <table name="stock">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
-        <field name="product" references="product" null="false"/>
+        <field name="product" references="product" null="false" inverse="stock"/>
         <field name="level" type="int" null="false"/>
       </fields>
 

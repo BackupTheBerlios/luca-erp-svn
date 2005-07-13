@@ -1,7 +1,7 @@
-# XOT=model/stock.xot
+XOT=luca.xot
 XINS=xins/product.xin
 
-TARGETS=product.xml
+TARGETS=product.xml person.xml
 
 PYTHON ?= python
 COLORIZER= cat

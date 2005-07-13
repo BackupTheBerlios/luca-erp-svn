@@ -5,8 +5,6 @@ from Luca.Person import Person
 from Luca.Receipt import Receipt
 from model import Transaction
 
-
-
 class ReceiptWindow(cimarron.skin.WindowController):
     def __init__(self, **kw):
         super(ReceiptWindow, self).__init__(**kw)
@@ -33,3 +31,9 @@ class ReceiptWindow(cimarron.skin.WindowController):
         super(ReceiptWindow, self).refresh()
         for entry in ("person", "amount", "concept", "date"):
             getattr(self, entry).newTarget(self.value)
+
+if __name__=='__main__':
+    a = cimarron.skin.Application()
+    w = ReceiptWindow(parent=a)
+    w.show()
+    a.run()
