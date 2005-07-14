@@ -21,9 +21,59 @@ class autoproperty(type):
             
 class Model(CimarronModel):
     __metaclass__ = autoproperty
-    def search (cls, trans, **kw):
-        return trans.search (cls.__name__, **kw)
-    search = classmethod(search)
+
+    def __init__(self, store=None):
+        self.store = store
+
+    def values(cls, trans, qualifier):
+        return trans.search(cls, qualifier)
+    values = classmethod(values)
+
+    def record(self):
+        self.store.add(self)
+
+    def delete(self):
+        raise UndeletableClassError, \
+              "You can't delete %r instances" % self.__class__.__name__
+
+class DeletableModel(Model):
+    def delete(self):
+        self.store.delete(self)
+
+from zope import interface
+class pseudoIModel(interface.Interface):
+    def getattr(attr):
+        pass
+    def setattr(attr, val):
+        pass
+    def values(qual):
+        pass
+    def valuesFor(attr, qual):
+        pass
+
+class ITransaction(interface.Interface):
+    def commit():
+        """
+        Saves the transaction to its parent transaction if there is
+        one; otherwise, to permanent storage.
+        """
+    def rollback():
+        """
+        Discards changes performed in the transaction.
+        """
+    def track(anObject):
+        """
+        Adds anObject to the list of objects the transaction is
+        tracking.
+        """
+    def forget(anObject):
+        """
+        Stop tracking anObject.
+        """
+    def search(aClass, qualifier):
+        """
+        Return a generator for a search.
+        """
 
 class Transaction(object):
     def __init__(self):
