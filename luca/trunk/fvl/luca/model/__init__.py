@@ -1,6 +1,8 @@
+import os
+
 from Modeling import ModelSet, Model, dynamic
 
-model = Model.loadModel('luca.py')
+model = Model.searchModel('luca', os.path.dirname(__file__))
 ModelSet.defaultModelSet().addModel(model)
 
 class LucaMeta(dynamic.CustomObjectMeta):

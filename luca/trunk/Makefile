@@ -1,6 +1,8 @@
 XOT=luca.xot
 
-TARGETS=product.xml person.xml luca.sql luca.py
+PYMODEL=fvl/luca/model/pymodel_luca.py
+SQL=luca.sql
+TARGETS=product.xml person.xml $(SQL) $(PYMODEL)
 
 PYTHON ?= python
 COLORIZER ?= tools/ppython
@@ -32,13 +34,13 @@ all: $(TARGETS)
 %.xml: xins/%.xin $(XOT)
 	$(EXOTIC) -n -eCimarronXMLui -Oxin:$< $(XOT) > $@
 
-test: luca.py
+test: $(PYMODEL)
 	PYTHONPATH=.:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS) 2>&1 | $(COLORIZER)
 
-%.py: %.xot
+$(PYMODEL): $(XOT)
 	$(EXOTIC) $(EXOTIC_PYTHON_OPTS) $< > $@
 
-%.sql: %.py
+$(SQL): $(PYMODEL)
 	mdl_generate_DB_schema.py -c -A $< > $@
 
 clean:
