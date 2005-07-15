@@ -1,8 +1,7 @@
 from fvl import cimarron
 cimarron.config()
 
-from Luca.Product import Product
-from Luca.Stock import Stock
+from fvl.luca.model import Product, Stock
 from model import Transaction
 
 class StockAdjustmentWindow(cimarron.skin.WindowController):

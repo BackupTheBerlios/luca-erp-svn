@@ -1,8 +1,7 @@
 from fvl import cimarron
 cimarron.config()
 
-from Luca.Person import Person
-from Luca.Receipt import Receipt
+from fvl.luca.model import Person, Receipt
 from model import Transaction
 
 class ReceiptWindow(cimarron.skin.WindowController):

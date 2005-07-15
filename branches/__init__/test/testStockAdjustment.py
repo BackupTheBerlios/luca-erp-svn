@@ -1,8 +1,7 @@
 import unittest
 
 from stockAdjustment import StockAdjustmentWindow
-from Luca.Product import Product
-from Luca.Stock import Stock
+from fvl.luca.model import Product, Stock
 
 class TestStockAdjustment(unittest.TestCase):
     def setUp(self):

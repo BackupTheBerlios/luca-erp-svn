@@ -2,7 +2,7 @@ import unittest
 
 from model import Transaction
 from Modeling.EditingContext import EditingContext
-from Luca.Product import Product
+from fvl.luca.model import Product
 
 class TestTransaction(unittest.TestCase):
     def setUp(self):
