@@ -3,7 +3,6 @@ XOT=luca.xot
 TARGETS=product.xml person.xml luca.sql luca.py
 
 PYTHON ?= python
-COLORIZER= cat
 COLORIZER ?= tools/ppython
 EPYDOC ?= epydoc
 EPYDOC_OPTS ?=
@@ -33,7 +32,7 @@ all: $(TARGETS)
 %.xml: xins/%.xin $(XOT)
 	$(EXOTIC) -n -eCimarronXMLui -Oxin:$< $(XOT) > $@
 
-test:
+test: luca.py
 	PYTHONPATH=.:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS) 2>&1 | $(COLORIZER)
 
 %.py: %.xot

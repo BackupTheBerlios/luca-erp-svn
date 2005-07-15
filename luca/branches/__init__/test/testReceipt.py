@@ -1,8 +1,7 @@
 import unittest
 
 from receipt import ReceiptWindow
-from Luca.Receipt import Receipt
-from Luca.Person import Person
+from fvl.luca.model import Receipt, Person
 
 class TestReceipt(unittest.TestCase):
     def setUp(self, **kwargs):
