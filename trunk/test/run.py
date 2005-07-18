@@ -43,6 +43,9 @@ if test_options.verbose:
 if test_options.quiet:
     argv.append('-q')
 
+if test_options.module:
+    moduleNames = test_options.module
+
 import run
 run.test_options = test_options
 
