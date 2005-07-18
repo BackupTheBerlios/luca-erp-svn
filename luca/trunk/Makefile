@@ -31,7 +31,7 @@ EXOTIC ?= exotic
 EXOTIC_OPTS ?= --no-pickle
 
 # set these variables
-LUCA_DATABASE ?= luca
+LUCA_DATABASE ?= Luca
 LUCA_HOST ?= localhost
 LUCA_USER ?= papo
 LUCA_ADAPTOR ?= Postgresql
