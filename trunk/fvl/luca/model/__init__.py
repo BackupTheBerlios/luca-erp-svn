@@ -25,6 +25,8 @@ import logging
 
 from Modeling import ModelSet, Model, dynamic
 
+from fvl.cimarron.model import Model as CimarronModel
+
 logger = logging.getLogger('fvl.luca.model')
 
 model_name = os.path.join(os.path.dirname(__file__), 'pymodel_luca.py')
@@ -52,10 +54,9 @@ __metaclass__ = LucaMeta
 # (below).
 # be sure to ad the classes *below* this line
 
-
-
 # just be sure to add the classes *above* this line
 namespace = globals()
 for className in model.entitiesNames():
     if className not in namespace:
-        namespace[className] = LucaMeta(className, (), {})
+        # add superclasses here --------------------vvvvv
+        namespace[className] = LucaMeta(className, (CimarronModel, ), {})
