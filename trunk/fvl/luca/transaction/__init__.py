@@ -25,18 +25,11 @@ import logging
 from zope import interface
 from Modeling.EditingContext import EditingContext
 
+from fvl.cimarron.interfaces import IStore
+
 logger = logging.getLogger('fvl.luca')
 
-class ITransaction(interface.Interface):
-    def commit():
-        """
-        Saves the transaction to its parent transaction if there is
-        one; otherwise, to permanent storage.
-        """
-    def rollback():
-        """
-        Discards changes performed in the transaction.
-        """
+class ITransaction(IStore):
     def track(anObject):
         """
         Adds anObject to the list of objects the transaction is
@@ -55,6 +48,8 @@ class Transaction(object):
     """
     Modeling-specific! API should settle into something agnostic.
     """
+    interface.implements(ITransaction)
+
     def __init__(self):
         self.reset()
 
@@ -77,12 +72,12 @@ class Transaction(object):
         self.tracked.extend(result)
         return result
 
-    def rollback(self):
+    def discard(self):
         for i in self.tracked:
             self.forget(i)
         self.reset()
     
-    def commit(self):
+    def save(self):
         self.editingContext.saveChanges()
 
 

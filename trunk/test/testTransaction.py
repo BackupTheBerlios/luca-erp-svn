@@ -88,7 +88,7 @@ class TestWithDatabase(TestTransaction):
 class TestInsertOne(TestWithDatabase):
     def testWorked(self):
         """
-        Even before commit, the current transaction should be able to
+        Even before save, the current transaction should be able to
         find an object it's tracking.
         """
         self.assertEqual(len(self.tr.search(aProduct)), 1)
@@ -96,37 +96,37 @@ class TestInsertOne(TestWithDatabase):
     def testOtherTransaction(self):
         """
         However, the other transactions should *not* see the objects
-        created but not yet commited.
+        created but not yet saveed.
         """
         self.assertEqual(len(self.other_tr.search(aProduct)), 0)
 
-    def testRollback(self):
+    def testDiscard(self):
         """
-        After a rollback, things should go back to normal.
+        After a discard, things should go back to normal.
         """
-        self.tr.rollback()
+        self.tr.discard()
         self.assertEqual(len(self.tr.search(aProduct)), 0)
 
-    def testCommit(self):
+    def testSave(self):
         """
-        After a commit, the transaction should still be able to find
+        After a save, the transaction should still be able to find
         the objects :)
         """
-        self.tr.commit()
+        self.tr.save()
         self.assertEqual(len(self.tr.search(aProduct)), 1)
 
-    def testCommitOtherTransaction(self):
+    def testSaveOtherTransaction(self):
         """
-        After a commit, the other transactions should be able to find
+        After a save, the other transactions should be able to find
         the objects inserted.
         """
-        self.tr.commit()
+        self.tr.save()
         self.assertEqual(len(self.other_tr.search(aProduct)), 1)
 
 class TestEditOne(TestWithDatabase):
     def setUp(self):
         super(TestEditOne, self).setUp()
-        self.tr.commit()
+        self.tr.save()
         self.tr.reset()
 
     def testFindit(self):
@@ -147,7 +147,7 @@ class TestEditOne(TestWithDatabase):
         p ,= self.tr.search(aProduct)
         self.assertEqual(p.name, 'two')
 
-    def testInvisibleFromOtherTransactionsBeforeCommit(self):
+    def testInvisibleFromOtherTransactionsBeforeSave(self):
         """
         Load the product from the database, edit it: if you look for
         it again with a different transaction, you should *not* see
@@ -158,33 +158,33 @@ class TestEditOne(TestWithDatabase):
         p ,= self.other_tr.search(aProduct)
         self.assertEqual(p.name, 'one')
 
-    def testInvisibleFromOwnTransactionAfterRollback(self):
+    def testInvisibleFromOwnTransactionAfterDiscard(self):
         """
-        Load the product from the database, edit it, rollback: if you
+        Load the product from the database, edit it, discard: if you
         look for it again with the same transaction, you should *not*
         see the edit
         """
         p ,= self.tr.search(aProduct)
         p.name = 'two'
-        self.tr.rollback()
+        self.tr.discard()
         p ,= self.tr.search(aProduct)
         self.assertEqual(p.name, 'one')
 
-    def testVisibleFromOtherTransactionsAfterCommit(self):
+    def testVisibleFromOtherTransactionsAfterSave(self):
         """
-        Load the product from the database, edit it, commit: if you
+        Load the product from the database, edit it, save: if you
         look for it again with a different transaction, you should see
         the edit
         """
         p ,= self.tr.search(aProduct)
         p.name = 'two'
-        self.tr.commit()
+        self.tr.save()
         p ,= self.other_tr.search(aProduct)
         self.assertEqual(p.name, 'two')
 
     def testOverwriting(self):
         """
-        Load the product from the database, edit it, commit: if you
+        Load the product from the database, edit it, save: if you
         look for it again with a different transaction, you should see
         the edit
         """
@@ -192,8 +192,8 @@ class TestEditOne(TestWithDatabase):
         p1.name = 'two'
         p2 ,= self.other_tr.search(aProduct);
         p2.name = 'three'
-        self.tr.commit();
-        self.other_tr.commit()
+        self.tr.save();
+        self.other_tr.save()
 
         t = Transaction()
         p ,= t.search(aProduct)
