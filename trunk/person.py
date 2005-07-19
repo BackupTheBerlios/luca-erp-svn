@@ -1,8 +1,7 @@
-from fvl import cimarron
-cimarron.config ()
+from fvl.cimarron.skin import CRUDController, Application
 
-s= cimarron.skin.CRUDController.fromXmlFile ('person.xml')
-a= cimarron.skin.Application ()
-s.parent= a
-s.show ()
-a.run ()
+s = CRUDController.fromXmlFile('person.xml')
+a = Application ()
+s.parent = a
+s.show()
+a.run()

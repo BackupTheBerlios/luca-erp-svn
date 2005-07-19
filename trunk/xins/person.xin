@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <class name="person">
-    <import what="Luca.Person.Person"/>
+    <import what="fvl.luca.model.Person"/>
 
     <finder attribute="name"/>
     <finder attribute="surname"/>
