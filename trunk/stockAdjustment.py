@@ -21,9 +21,8 @@
 __revision__ = int('$Rev: 200 $'[5:-1])
 
 from fvl import cimarron
-cimarron.config()
 from fvl.luca.model import Product, Stock
-from model import Transaction
+from fvl.luca.transaction import Transaction
 
 class StockAdjustmentWindow(cimarron.skin.WindowController):
     def __init__(self, **kw):

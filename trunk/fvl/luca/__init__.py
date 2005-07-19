@@ -21,6 +21,4 @@
 __revision__ = int('$Rev: 200 $'[5:-1])
 
 import logging
-
 logger = logging.getLogger('fvl.luca')
-

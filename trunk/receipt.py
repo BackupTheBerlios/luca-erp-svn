@@ -21,10 +21,8 @@
 __revision__ = int('$Rev: 200 $'[5:-1])
 
 from fvl import cimarron
-cimarron.config()
-
 from fvl.luca.model import Person, Receipt
-from model import Transaction
+from fvl.luca.transaction import Transaction
 
 class ReceiptWindow(cimarron.skin.WindowController):
     def __init__(self, **kw):

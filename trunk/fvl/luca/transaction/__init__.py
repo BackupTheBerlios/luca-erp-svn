@@ -20,8 +20,12 @@
 
 __revision__ = int('$Rev: 200 $'[5:-1])
 
+import logging
+
 from zope import interface
 from Modeling.EditingContext import EditingContext
+
+logger = logging.getLogger('fvl.luca')
 
 class ITransaction(interface.Interface):
     def commit():
@@ -48,32 +52,67 @@ class ITransaction(interface.Interface):
         """
 
 class Transaction(object):
+    """
+    Modeling-specific! API should settle into something agnostic.
+    """
     def __init__(self):
-        self.tracked= []
-        self.ec = EditingContext()
-        
-#     def append(self,obj):
-#         try:
-#             self.ec.insert(obj)
-#         except ValueError:
-#             pass
+        self.reset()
 
+    def reset(self):
+        self.editingContext = EditingContext()
+        self.tracked = []
 
-    def track(self, obj):
-        self.tracked.append (obj)
+    def track(self, anObject):
+        if anObject.editingContext() is None:
+            self.editingContext.insertObject(anObject)
+            self.tracked.append(anObject)
+        if anObject.editingContext() is not self.editingContext:
+            raise ValueError, 'object already is being tracked'
+
+    def forget(self, anObject):
+        self.editingContext.forgetObject(anObject)
+
+    def search(self, aClass, **kwargs):
+        result = self.editingContext.fetch(aClass.__name__)
+        self.tracked.extend(result)
+        return result
+
+    def rollback(self):
+        for i in self.tracked:
+            self.forget(i)
+        self.reset()
     
     def commit(self):
-        self.ec.saveChanges()
+        self.editingContext.saveChanges()
 
-    def rollBack(self):
-        """
-        Discards all the changes made to the model.
-        The objects associated to this Transaction will be in an
-        undefined state.
-        """
-        self.ec = EditingContext()
 
-    def search(self, aClass, **kw):
-        qual = " and ".join([ '%s ilike "%s*"' % (attr, value and value or '')
-                              for attr, value in kw.items() ])
-        return self.ec.fetch(aClass.__name__, qualifier=qual)
+# class Transaction(object):
+#     def __init__(self):
+#         self.tracked= []
+#         self.ec = EditingContext()
+        
+# #     def append(self,obj):
+# #         try:
+# #             self.ec.insert(obj)
+# #         except ValueError:
+# #             pass
+
+
+#     def track(self, obj):
+#         self.tracked.append (obj)
+    
+#     def commit(self):
+#         self.ec.saveChanges()
+
+#     def rollBack(self):
+#         """
+#         Discards all the changes made to the model.
+#         The objects associated to this Transaction will be in an
+#         undefined state.
+#         """
+#         self.ec = EditingContext()
+
+#     def search(self, aClass, **kw):
+#         qual = " and ".join([ '%s ilike "%s*"' % (attr, value and value or '')
+#                               for attr, value in kw.items() ])
+#         return self.ec.fetch(aClass.__name__, qualifier=qual)
