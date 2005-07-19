@@ -33,7 +33,7 @@ EXOTIC_OPTS ?= --no-pickle
 # set these variables
 LUCA_DATABASE ?= Luca
 LUCA_HOST ?= localhost
-LUCA_USER ?= papo
+LUCA_USER ?= $$USER
 LUCA_ADAPTOR ?= Postgresql
 LUCA_MODEL ?= Luca
 LUCA_PACKAGE ?= fvl.luca
@@ -47,13 +47,23 @@ EXOTIC_PYTHON_OPTS := $(EXOTIC_PYTHON_OPTS),modelName:$(LUCA_MODEL)
 EXOTIC_PYTHON_OPTS := $(EXOTIC_PYTHON_OPTS),packageName:$(LUCA_PACKAGE)
 EXOTIC_PYTHON_OPTS := $(EXOTIC_PYTHON_OPTS),moduleName:$(LUCA_MODULE)
 
+TEST_PYMODEL = test/pymodel_test.py
+TEST_DB = deleteme.db
+CACHE_TEST_DB = leaveme.db
+
 all: $(TARGETS)
 
 %.xml: xins/%.xin $(XOT)
 	$(EXOTIC) -n -eCimarronXMLui -Oxin:$< $(XOT) > $@
 
-test: $(PYMODEL)
+test: $(PYMODEL) $(CACHE_TEST_DB)
 	PYTHONPATH=.:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS) 2>&1 | $(COLORIZER)
+
+$(CACHE_TEST_DB): $(TEST_DB)
+	mv $< $@
+
+$(TEST_DB): $(TEST_PYMODEL)
+	mdl_generate_DB_schema.py -C --admin-dsn :$@:: $<
 
 $(PYMODEL): $(XOT)
 	$(EXOTIC) $(EXOTIC_PYTHON_OPTS) $< > $@
@@ -62,11 +72,14 @@ $(SQL): $(PYMODEL)
 	mdl_generate_DB_schema.py -c -A $< > $@
 
 clean:
-	$(RM) $(TARGETS)
+	$(RM) $(TARGETS) $(TEST_DB)
 
 distclean: clean
 	find '(' -name '*.py[co]' -o -name '*~' ')' -print0 | xargs -0 -r $(RM)
+	$(RM) $(CACHE_TEST_DB)
 
 .PHONY: test model all clean
 
 .DELETE_ON_ERROR:
+
+.INTERMEDIATE: $(TEST_DB) $(CACHE_TEST_DB)
