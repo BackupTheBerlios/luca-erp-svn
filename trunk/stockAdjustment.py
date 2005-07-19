@@ -34,11 +34,13 @@ class StockAdjustmentWindow(cimarron.skin.WindowController):
 
         columnas = (cimarron.skin.Column(name="Code", attribute="product.code", readOnly= True),
                     cimarron.skin.Column(name="Name", attribute="product.name", readOnly= True))
+
         self.searcher = cimarron.skin.Search(parent=v, columns=columnas,
-                                             transaction=self.trans, searcher=Stock,
+                                             cls=Stock, searcher=self.trans,
                                              onAction=self.listValues)
+
         columnas = (cimarron.skin.Column(name="Code", attribute="product.code", readOnly= True),
-                    cimarron.skin.Column(name="Name", attribute="product.name", readOnly= True),
+                    cimarron.skin.Column(name="Name", attribute="product.name", readOnly= False),
                     cimarron.skin.Column(name="Level", attribute="level"))
         self.stockEditor = cimarron.skin.Grid(parent=v, columns=columnas)
         actionContainer = cimarron.skin.HBox(parent=v)
@@ -49,11 +51,12 @@ class StockAdjustmentWindow(cimarron.skin.WindowController):
         self.stockEditor.commitValue(sender.value)
         self.stockEditor.refresh()
 
-    def save(self):
-        pass
+    def save(self, ignore):
+        self.trans.save()
 
-    def discard(self):
-        pass
+    def discard(self, ignore):
+        self.trans.discard()
+        self.stockEditor.refresh()
 
 if __name__=='__main__':
     a = cimarron.skin.Application()
