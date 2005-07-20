@@ -28,9 +28,9 @@ class StockAdjustmentWindow(cimarron.skin.WindowController):
     def __init__(self, **kw):
         super(StockAdjustmentWindow, self).__init__(**kw)
         self.win.title = "Stock Adjustment"
-        self.trans= Transaction ()
+        self.trans = Transaction()
         
-        v= cimarron.skin.VBox (parent=self.win)
+        v = cimarron.skin.VBox(parent=self.win)
 
         columnas = (cimarron.skin.Column(name="Code", attribute="product.code", readOnly= True),
                     cimarron.skin.Column(name="Name", attribute="product.name", readOnly= True))
@@ -51,12 +51,13 @@ class StockAdjustmentWindow(cimarron.skin.WindowController):
         self.stockEditor.commitValue(sender.value)
         self.stockEditor.refresh()
 
-    def save(self, ignore):
+    def save(self, *ignore):
         self.trans.save()
 
-    def discard(self, ignore):
+    def discard(self, *ignore):
         self.trans.discard()
         self.stockEditor.refresh()
+
 
 if __name__=='__main__':
     a = cimarron.skin.Application()
