@@ -56,6 +56,7 @@ class StockAdjustmentWindow(cimarron.skin.WindowController):
 
     def discard(self, *ignore):
         self.trans.discard()
+        self.stockEditor.commitValue(None)
         self.stockEditor.refresh()
 
 

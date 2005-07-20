@@ -34,22 +34,39 @@ class ReceiptWindow(cimarron.skin.WindowController):
         v = cimarron.skin.VBox(parent=self.win)
         h1 = cimarron.skin.HBox(parent=v)
         h2 = cimarron.skin.HBox(parent=v)
+        v1 = cimarron.skin.VBox(parent=v)
+        actionContainer = cimarron.skin.HBox(parent=v)
 
         columns = (cimarron.skin.Column(name="Name", attribute="name"),
-                   cimarron.skin.Column(name="surname", attribute="surname"))
-        self.person = cimarron.skin.SearchEntry(parent=h1, searcher=Person,
-                                                transaction=self.trans, columns=columns,
+                   cimarron.skin.Column(name="Surname", attribute="surname"))
+        self.person = cimarron.skin.SearchEntry(parent=h1, cls=Person,
+                                                searcher=self.trans, columns=columns,
                                                 attribute="person")
-        self.amount = cimarron.skin.Entry(parent=h1,  attribute="amount")
-        self.concept = cimarron.skin.Entry(parent=h2, attribute="concept")
+        cimarron.skin.Label(parent=h2, text="Date:")
         self.date = cimarron.skin.Entry(parent=h2, attribute="date")
-        
+        cimarron.skin.Label(parent=h2, text="Amount:")
+        self.amount = cimarron.skin.Entry(parent=h2,  attribute="amount")
+        cimarron.skin.Label(parent=v1, text="Concept:")
+        self.concept = cimarron.skin.Entry(parent=v1, attribute="concept")
+        save = cimarron.skin.Button(parent=actionContainer, label="Save", onAction=self.save)
+        discard = cimarron.skin.Button(parent=actionContainer, label="Discard", onAction=self.discard)
+
+
         self.refresh()
+
     
     def refresh(self):
         super(ReceiptWindow, self).refresh()
         for entry in ("person", "amount", "concept", "date"):
             getattr(self, entry).newTarget(self.value)
+
+    def save(self, *ignore):
+        self.trans.save()
+
+    def discard(self, *ignore):
+        self.trans.discard()
+        self.refresh()
+
 
 if __name__=='__main__':
     a = cimarron.skin.Application()
