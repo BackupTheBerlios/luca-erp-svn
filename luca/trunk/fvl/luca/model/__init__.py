@@ -24,6 +24,7 @@ import os
 import logging
 
 from Modeling import ModelSet, Model, dynamic
+from Modeling.CustomObject import CustomObject
 
 from fvl.cimarron.model import Model as CimarronModel
 
@@ -38,10 +39,47 @@ except ImportError:
 del model_name
 ModelSet.defaultModelSet().addModel(model)
 
-class LucaMeta(dynamic.CustomObjectMeta):
+# HACK!!
+# we mess around with the internals of Modeling.dynamic here.
+orig_setters_code = dynamic.setters_code
+def setters_code(prop):
+    rv = orig_setters_code(prop)
+    if 'type' in prop.__class__.__dict__:
+        # if it has a type, rv is a list of a single 2-uple
+        (fname, code), = rv
+        code = code[:-3] + prop.type() + '(obj)'
+        rv = [(fname, code)]
+    return rv
+dynamic.setters_code = setters_code
+
+orig_getter_code = dynamic.getter_code
+def getter_code(prop):
+    rv = orig_getter_code(prop)
+    fname, code = rv
+    if 'type' in prop.__class__.__dict__:
+        pos = code.find('return') + len('return') + 1
+        code = '%sunicode(%s)' % (code[:pos], code[pos:])
+    return fname, code
+dynamic.getter_code = getter_code
+# end HACK
+
+class LucaMeta(type):
     def __new__(cls, className, bases, namespace):
-        namespace['mdl_define_properties'] = 1
+        entity = model.entityNamed(className)
+        if entity is None:
+            raise RuntimeError, 'BUG!'
+        dynamic.define_init(entity, className, namespace)
+        dynamic.define_getters(entity, className, namespace)
+        dynamic.define_setters(entity, className, namespace)
+        dynamic.define_properties(entity, className, namespace)
         return super(LucaMeta, cls).__new__(cls, className, bases, namespace)
+
+class LucaModel(CimarronModel):
+    def __setattr__(self, attr, val):
+        return super(LucaModel, self).__setattr__(attr, val)
+    def entityName(cls):
+        return cls.__name__
+    entityName = classmethod(entityName)
 
 __metaclass__ = LucaMeta
 
@@ -58,5 +96,6 @@ __metaclass__ = LucaMeta
 namespace = globals()
 for className in model.entitiesNames():
     if className not in namespace:
+        namespace[className] = LucaMeta(className,
         # add superclasses here --------------------vvvvv
-        namespace[className] = LucaMeta(className, (CimarronModel, ), {})
+                                        (LucaModel, CustomObject), {})
