@@ -65,10 +65,14 @@ class Transaction(object):
             raise ValueError, 'object already is being tracked'
 
     def forget(self, anObject):
-        self.editingContext.forgetObject(anObject)
+        print 'forgetting', anObject.snapshot_raw()
+        if anObject.editingContext():
+            self.editingContext.forgetObject(anObject)
 
     def search(self, aClass, **kwargs):
-        result = self.editingContext.fetch(aClass.__name__)
+        qual = " and ".join([ '%s ilike "%s*"' % (attr, value or '')
+                              for attr, value in kwargs.items() ])
+        result = self.editingContext.fetch(aClass.__name__, qual)
         self.tracked.extend(result)
         return result
 
