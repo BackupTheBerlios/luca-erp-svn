@@ -50,8 +50,6 @@ class StockAdjustmentWindow(WindowController):
 
     def commitValue(self, value):
         self.stockEditor.commitValue(value)
-        print 'fix grid, get rid of refresh here'
-        self.stockEditor.refresh()
 
     def listValues(self, sender):
         self.commitValue(sender.value)
