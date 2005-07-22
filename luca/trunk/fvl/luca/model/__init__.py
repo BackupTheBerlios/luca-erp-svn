@@ -47,10 +47,16 @@ def setters_code(prop):
     if 'type' in prop.__class__.__dict__:
         # if it has a type, rv is a list of a single 2-uple
         (fname, code), = rv
-        code = code[:-3] + prop.type() + '(obj)'
+        aType = prop.type()
+        if aType == 'DateTime':
+            aType = 'DateTimeFrom'
+        code = code[:-3] + aType + '(obj)'
         rv = [(fname, code)]
     return rv
 dynamic.setters_code = setters_code
+from mx.DateTime import DateTimeFrom
+dynamic.DateTimeFrom = DateTimeFrom
+del DateTimeFrom
 
 orig_getter_code = dynamic.getter_code
 def getter_code(prop):
