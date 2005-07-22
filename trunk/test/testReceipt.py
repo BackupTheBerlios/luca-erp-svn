@@ -17,6 +17,9 @@ class TestReceipt(unittest.TestCase):
                              ("date", "12/03/2005")):
             getattr(self.widget, entry).commitValue(value)
             if entry == "date":
+                """
+                Ugly fix so the Date in entry can be compared with the one commited
+                """
                 self.assertEqual(self.widget.value.getattr(entry), str(DateTimeFrom(str(value))))
             else:
                 self.assertEqual(self.widget.value.getattr(entry), value)

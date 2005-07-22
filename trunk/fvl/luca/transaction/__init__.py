@@ -65,7 +65,6 @@ class Transaction(object):
             raise ValueError, 'object already is being tracked'
 
     def forget(self, anObject):
-        print 'forgetting', anObject.snapshot_raw()
         if anObject.editingContext():
             self.editingContext.forgetObject(anObject)
 
