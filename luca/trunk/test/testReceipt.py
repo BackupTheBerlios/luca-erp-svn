@@ -2,6 +2,7 @@ import unittest
 
 from receipt import ReceiptWindow
 from fvl.luca.model import Receipt, Person
+from mx.DateTime import DateTimeFrom
 
 class TestReceipt(unittest.TestCase):
     def setUp(self, **kwargs):
@@ -15,5 +16,7 @@ class TestReceipt(unittest.TestCase):
                              ("amount", '123.98'), ("concept", "whatever"),
                              ("date", "12/03/2005")):
             getattr(self.widget, entry).commitValue(value)
-
-            self.assertEqual(self.widget.value.getattr(entry), value)
+            if entry == "date":
+                self.assertEqual(self.widget.value.getattr(entry), str(DateTimeFrom(str(value))))
+            else:
+                self.assertEqual(self.widget.value.getattr(entry), value)

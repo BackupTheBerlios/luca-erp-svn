@@ -23,13 +23,19 @@ __revision__ = int('$Rev: 200 $'[5:-1])
 from fvl import cimarron
 from fvl.luca.model import Person, Receipt
 from fvl.luca.transaction import Transaction
+#from mx.DateTime import DateTime
 
 class ReceiptWindow(cimarron.skin.WindowController):
     def __init__(self, **kw):
         super(ReceiptWindow, self).__init__(**kw)
         self.win.title = "Receipt Generation"
         self.trans = Transaction()
-        self.commitValue(Receipt())
+        #self.commitValue(Receipt())
+        theReceipt = Receipt()
+        self.target = theReceipt
+        #self.target = Receipt()
+        #self.trans.track(self.value)
+        self.trans.track(theReceipt)
 
         v = cimarron.skin.VBox(parent=self.win)
         h1 = cimarron.skin.HBox(parent=v)
@@ -44,27 +50,29 @@ class ReceiptWindow(cimarron.skin.WindowController):
                                                 attribute="person")
         cimarron.skin.Label(parent=h2, text="Date:")
         self.date = cimarron.skin.Entry(parent=h2, attribute="date")
+        
         cimarron.skin.Label(parent=h2, text="Amount:")
         self.amount = cimarron.skin.Entry(parent=h2,  attribute="amount")
+        
         cimarron.skin.Label(parent=v1, text="Concept:")
         self.concept = cimarron.skin.Entry(parent=v1, attribute="concept")
+        
         save = cimarron.skin.Button(parent=actionContainer, label="Save", onAction=self.save)
         discard = cimarron.skin.Button(parent=actionContainer, label="Discard", onAction=self.discard)
-
-
         self.refresh()
 
     
     def refresh(self):
         super(ReceiptWindow, self).refresh()
-        for entry in ("person", "amount", "concept", "date"):
-            getattr(self, entry).newTarget(self.value)
+        for entry in self.person, self.amount,self.concept,self.date:
+            entry.newTarget(self.value)
 
     def save(self, *ignore):
         self.trans.save()
 
     def discard(self, *ignore):
         self.trans.discard()
+        self.target = None
         self.refresh()
 
 
