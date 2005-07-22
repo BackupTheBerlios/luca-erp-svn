@@ -34,7 +34,8 @@ model_name = os.path.join(os.path.dirname(__file__), 'pymodel_luca.py')
 try:
     model = Model.loadModel(model_name)
 except ImportError:
-    logger.critical("I couldn't load the pymodel from file %r. Please read INSTALL.txt" % model_name)
+    logger.critical("I couldn't load the pymodel from file %r."
+                    " Please read INSTALL.txt" % model_name)
     raise
 del model_name
 ModelSet.defaultModelSet().addModel(model)
@@ -81,8 +82,6 @@ class LucaMeta(type):
         return super(LucaMeta, cls).__new__(cls, className, bases, namespace)
 
 class LucaModel(CimarronModel):
-    def __setattr__(self, attr, val):
-        return super(LucaModel, self).__setattr__(attr, val)
     def entityName(cls):
         return cls.__name__
     entityName = classmethod(entityName)
