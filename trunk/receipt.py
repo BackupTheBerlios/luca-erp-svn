@@ -24,18 +24,15 @@ from fvl import cimarron
 from fvl.luca.model import Person, Receipt
 from fvl.luca.transaction import Transaction
 #from mx.DateTime import DateTime
+from mx.DateTime import today
 
 class ReceiptWindow(cimarron.skin.WindowController):
     def __init__(self, **kw):
         super(ReceiptWindow, self).__init__(**kw)
         self.win.title = "Receipt Generation"
         self.trans = Transaction()
-        #self.commitValue(Receipt())
-        theReceipt = Receipt()
-        self.target = theReceipt
-        #self.target = Receipt()
-        #self.trans.track(self.value)
-        self.trans.track(theReceipt)
+        self.target=Receipt(date=today())
+        self.trans.track(self.target)
 
         v = cimarron.skin.VBox(parent=self.win)
         h1 = cimarron.skin.HBox(parent=v)
@@ -72,8 +69,8 @@ class ReceiptWindow(cimarron.skin.WindowController):
 
     def discard(self, *ignore):
         self.trans.discard()
-        self.target = None
-        self.refresh()
+        self.newTarget(Receipt(date=today()))
+        self.trans.track(self.target)
 
 
 if __name__=='__main__':
