@@ -29,12 +29,12 @@ from mx.DateTime import today
 class ReceiptWindow(cimarron.skin.WindowController):
     def __init__(self, **kw):
         super(ReceiptWindow, self).__init__(**kw)
-        self.win.title = "Receipt Generation"
+        self.window.title = "Receipt Generation"
         self.trans = Transaction()
         self.target=Receipt(date=today())
         self.trans.track(self.target)
 
-        v = cimarron.skin.VBox(parent=self.win)
+        v = cimarron.skin.VBox(parent=self.window)
         h1 = cimarron.skin.HBox(parent=v)
         h2 = cimarron.skin.HBox(parent=v)
         v1 = cimarron.skin.VBox(parent=v)
@@ -71,7 +71,6 @@ class ReceiptWindow(cimarron.skin.WindowController):
         self.trans.discard()
         self.newTarget(Receipt(date=today()))
         self.trans.track(self.target)
-
 
 if __name__=='__main__':
     a = cimarron.skin.Application()

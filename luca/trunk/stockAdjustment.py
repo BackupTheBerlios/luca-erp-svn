@@ -28,10 +28,10 @@ from fvl.luca.transaction import Transaction
 class StockAdjustmentWindow(WindowController):
     def __init__(self, **kw):
         super(StockAdjustmentWindow, self).__init__(**kw)
-        self.win.title = "Stock Adjustment"
+        self.window.title = "Stock Adjustment"
         self.trans = Transaction()
         
-        v= VBox (parent=self.win)
+        v= VBox (parent=self.window)
 
         columns = (Column(name="Code", attribute="product.code", readOnly=True),
                    Column(name="Name", attribute="product.name", readOnly=True))
