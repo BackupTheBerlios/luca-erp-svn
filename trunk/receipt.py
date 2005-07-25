@@ -34,11 +34,11 @@ class ReceiptWindow(cimarron.skin.WindowController):
         self.target=Receipt(date=today())
         self.trans.track(self.target)
 
-        v = cimarron.skin.VBox(parent=self.window)
-        h1 = cimarron.skin.HBox(parent=v)
-        h2 = cimarron.skin.HBox(parent=v)
+        v = cimarron.skin.VBox(parent=self.window, expand=True, fill=True)
+        h1 = cimarron.skin.HBox(parent=v, expand=False, fill=True)
+        h2 = cimarron.skin.HBox(parent=v, expand=False, fill=False)
         v1 = cimarron.skin.VBox(parent=v)
-        actionContainer = cimarron.skin.HBox(parent=v)
+        actionContainer = cimarron.skin.HBox(parent=v, expand=False, fill=False)
 
         columns = (cimarron.skin.Column(name="Name", attribute="name"),
                    cimarron.skin.Column(name="Surname", attribute="surname"))
