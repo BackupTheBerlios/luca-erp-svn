@@ -71,7 +71,12 @@ class Transaction(object):
     def search(self, aClass, **kwargs):
         qual = " and ".join([ '%s ilike "%s*"' % (attr, value or '')
                               for attr, value in kwargs.items() ])
-        result = self.editingContext.fetch(aClass.__name__, qual)
+        try:
+            name = aClass.__name__
+        except AttributeError:
+            # pray it's a string
+            name = aClass
+        result = self.editingContext.fetch(name, qual)
         self.tracked.extend(result)
         return result
 
@@ -82,35 +87,3 @@ class Transaction(object):
     
     def save(self):
         self.editingContext.saveChanges()
-
-
-# class Transaction(object):
-#     def __init__(self):
-#         self.tracked= []
-#         self.ec = EditingContext()
-        
-# #     def append(self,obj):
-# #         try:
-# #             self.ec.insert(obj)
-# #         except ValueError:
-# #             pass
-
-
-#     def track(self, obj):
-#         self.tracked.append (obj)
-    
-#     def commit(self):
-#         self.ec.saveChanges()
-
-#     def rollBack(self):
-#         """
-#         Discards all the changes made to the model.
-#         The objects associated to this Transaction will be in an
-#         undefined state.
-#         """
-#         self.ec = EditingContext()
-
-#     def search(self, aClass, **kw):
-#         qual = " and ".join([ '%s ilike "%s*"' % (attr, value and value or '')
-#                               for attr, value in kw.items() ])
-#         return self.ec.fetch(aClass.__name__, qualifier=qual)
