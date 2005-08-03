@@ -23,7 +23,6 @@ __revision__ = int('$Rev: 200 $'[5:-1])
 from fvl import cimarron
 from fvl.luca.model import Person, Receipt
 from fvl.luca.transaction import Transaction
-#from mx.DateTime import DateTime
 from mx.DateTime import today
 
 class ReceiptWindow(cimarron.skin.WindowController):
@@ -38,7 +37,7 @@ class ReceiptWindow(cimarron.skin.WindowController):
         h1 = cimarron.skin.HBox(parent=v, expand=False, fill=True)
         h2 = cimarron.skin.HBox(parent=v, expand=False, fill=False)
         v1 = cimarron.skin.VBox(parent=v)
-        actionContainer = cimarron.skin.HBox(parent=v, expand=False, fill=False)
+        actionContainer = cimarron.skin.HBox(parent=v, expand=False, fill=True)
 
         columns = (cimarron.skin.Column(name="Name", attribute="name"),
                    cimarron.skin.Column(name="Surname", attribute="surname"))
@@ -51,12 +50,13 @@ class ReceiptWindow(cimarron.skin.WindowController):
         cimarron.skin.Label(parent=h2, text="Amount:")
         self.amount = cimarron.skin.Entry(parent=h2,  attribute="amount")
         
-        cimarron.skin.Label(parent=v1, text="Concept:")
-        self.concept = cimarron.skin.Entry(parent=v1, attribute="concept")
+        cimarron.skin.Label(parent=v1, text="Concept:", expand=False, fill=False)
+        self.concept = cimarron.skin.MultiLine(parent=v1, attribute="concept")
         
         save = cimarron.skin.Button(parent=actionContainer, label="Save", onAction=self.save)
         discard = cimarron.skin.Button(parent=actionContainer, label="Discard", onAction=self.discard)
         self.refresh()
+        
 
     
     def refresh(self):
