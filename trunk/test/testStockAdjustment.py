@@ -52,6 +52,6 @@ class TestStockAdjustment(unittest.TestCase):
     def testSave(self):
         self.widget.searcher.entries[0].value='XXX'
         ans = self.widget.searcher.search ()
+        #self.widget.stockEditor.value[0].name= 'Vinnie'
 
-        # self.widget.stockEditor.value[0].name= 'Vinnie'
         self.widget.save()

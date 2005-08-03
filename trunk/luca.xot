@@ -80,5 +80,42 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
         </index>
       </indexes>
     </table>
+
+
+    <table name="currency">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="internationalCode" type="varchar(3)"  null="false"/>
+        <field name="symbol" type="varchar(5)"  null="false"/>
+        <field name="name" type="varchar(20)"  null="false"/>  
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+
+    <table name="exchangeRate">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="date" type="date" null="false"/>
+        <field name="eRate" type="numeric(4,2)" null="false"/>
+        <!-- the rate can be used to make the calculation on both ways but the first,second value convention is used 
+         to know in wich conversion the rate is positive -->
+        <field name="fromCurrency" references="currency" null="false" inverse="minorCurrency"/>
+        <field name="toCurrency" references="currency" null="false" inverse="mayorCurrency"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+
   </tables>
 </database>

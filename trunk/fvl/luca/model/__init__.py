@@ -97,6 +97,50 @@ __metaclass__ = LucaMeta
 # (below).
 # be sure to ad the classes *below* this line
 
+class Money(LucaModel):
+    def __init__(self, amount=0.0, currency=None):
+        self.amount = amount
+        if not currency:
+            self.currency = Currency()
+        else:
+            self.currency = currency
+
+
+
+    def __add__(self, other):
+        if self.currency != other.currency:
+            raise TypeError #some error for the moment
+        resultCurrency = self.currency
+        aResult = Money(amount=self.amount + other.amount, currency=resultCurrency)
+        return aResult
+
+    def __sub__(self, other):
+        if self.currency != other.currency:
+            raise TypeError #some error for the moment
+        resultCurrency = self.currency
+        aResult = Money(amount=self.amount - other.amount, currency=resultCurrency)
+        return aResult
+
+    def __div__(self, divisor):
+        """
+        Division of money will return a list of each value, this may not make much sense
+        when all the values are the same, but when the result is not exact whe need to
+        make one of the shares bigger (in accounting it's not allowed to round)
+        """
+        import decimal
+        Context = decimal.Context
+        partialResult = Context(prec=3, rounding='ROUND_DOWN').create_decimal(self.amount/divisor)
+        aResult = []
+        if partialResult * divisor == self.amount:
+            for i in range(divisor):
+                aResult.append(Money(amount=partialResult, currency=self.currency))
+        else:
+            biggerPortion = Money(amount=partialResult + self.amount - partialResult * divisor, currency=self.currency)
+            aResult.append(biggerPortion)
+            for i in range(divisor-1):
+                aResult.append(Money(amount=partialResult, currency=self.currency))
+        return aResult
+    
 # just be sure to add the classes *above* this line
 namespace = globals()
 for className in model.entitiesNames():

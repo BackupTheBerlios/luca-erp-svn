@@ -24,7 +24,7 @@ from optparse import OptionParser
 import libxml2
 libxml2.debugMemory(1)
 
-moduleNames= ['testTransaction', 'testStockAdjustment', 'testReceipt']
+moduleNames= ['testTransaction', 'testStockAdjustment', 'testReceipt', 'testCurrency']
 
 parser = OptionParser()
 parser.add_option('-v', '--verbose', help="be verbose",
