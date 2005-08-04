@@ -149,7 +149,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
         <field name="id" type="int" auto_increment="true" null="false"/>
         <field name="date" type="date" null="false"/>
         <field name="eRate" type="numeric(4,2)" null="false"/>
-        <!-- the rate can be used to make the calculation on both ways but the first,second value convention is used 
+        <!-- the rate can be used to make the calculation on both ways but the from,to value convention is used 
          to know in wich conversion the rate is positive -->
         <field name="fromCurrency" references="currency" null="false" inverse="minorCurrency"/>
         <field name="toCurrency" references="currency" null="false" inverse="mayorCurrency"/>
@@ -161,5 +161,110 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
         </index>
       </indexes>
     </table>
+
+    <table name="client">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <!-- still no definitive attributes for a client -->
+        <field name="credit" type="varchar(60)"  null="false"/>
+        <field name="subject" references="person" null="false" inverse="asClient"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="provider">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="subject" references="person" null="false" inverse="asProvider"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="invoice">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="number" type="varchar(20)"  null="false"/>
+        <field name="type" type="varchar(1)"  null="false"/>
+        <field name="client" references="client" null="false" inverse="invoices"/>
+        <field name="detail" type="varchar(100)"  null="false"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+    
+
+    <table name="invoice">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="number" type="varchar(20)"  null="false"/>
+        <field name="type" type="varchar(1)"  null="false"/>
+        <field name="detail" type="varchar(100)"  null="false"/>
+        <field name="client" references="client" null="false" inverse="invoices"/>
+        <field name="pointOfSale" references="pointOfSale" null="false" inverse="invoices"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="thirdsInvoice">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="number" type="varchar(20)"  null="false"/>
+        <field name="type" type="varchar(1)"  null="false"/>
+        <field name="issuer" references="provider" null="false" inverse="invoiced"/>
+        <field name="pointOfSale" references="pointOfSale" null="false" inverse="thurdsInvoices"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="pointOfSale">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="name" type="varchar(20)"  null="false"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="movement">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+<!-- le toy poniendo cosas pero para que no te aburras-->
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
   </tables>
 </database>
