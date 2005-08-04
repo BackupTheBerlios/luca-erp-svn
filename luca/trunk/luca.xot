@@ -114,7 +114,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
     <table name="document_number">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
-        <field name="printer" references="printer" null="false" inverse="document_numbers"/>
+        <field name="printer" references="printer" null="false" 
+               inverse="document_numbers"/>
         <field name="document_type" references="document_type" null="false"/>
         <!-- yes, it could be a number, 
              but it could contain other symbols too-->
@@ -144,15 +145,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
     </table>
 
 
-    <table name="exchangeRate">
+    <table name="exchange_rate">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
         <field name="date" type="date" null="false"/>
-        <field name="eRate" type="numeric(4,2)" null="false"/>
-        <!-- the rate can be used to make the calculation on both ways but the from,to value convention is used 
-         to know in wich conversion the rate is positive -->
-        <field name="fromCurrency" references="currency" null="false" inverse="minorCurrency"/>
-        <field name="toCurrency" references="currency" null="false" inverse="mayorCurrency"/>
+        <field name="rate" type="numeric(4,2)" null="false"/>
+        <!-- the rate can be used to make the calculation on both ways but the 
+             from,to value convention is used to know in wich conversion the 
+             rate is positive -->
+        <field name="from_currency" references="currency" null="false" 
+               inverse="minor_currency"/>
+        <field name="to_currency" references="currency" null="false" 
+               inverse="mayor_currency"/>
       </fields>
       
       <indexes>
@@ -167,7 +171,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
         <field name="id" type="int" auto_increment="true" null="false"/>
         <!-- still no definitive attributes for a client -->
         <field name="credit" type="varchar(60)"  null="false"/>
-        <field name="subject" references="person" null="false" inverse="asClient"/>
+        <field name="subject" references="person" null="false" 
+               inverse="asClient"/>
       </fields>
       
       <indexes>
@@ -180,7 +185,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
     <table name="provider">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
-        <field name="subject" references="person" null="false" inverse="asProvider"/>
+        <field name="subject" references="person" null="false" 
+               inverse="as_provider"/>
       </fields>
       
       <indexes>
@@ -195,7 +201,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
         <field name="id" type="int" auto_increment="true" null="false"/>
         <field name="number" type="varchar(20)"  null="false"/>
         <field name="type" type="varchar(1)"  null="false"/>
-        <field name="client" references="client" null="false" inverse="invoices"/>
+        <field name="client" references="client" null="false" 
+               inverse="invoices"/>
         <field name="detail" type="varchar(100)"  null="false"/>
       </fields>
       
@@ -213,8 +220,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
         <field name="number" type="varchar(20)"  null="false"/>
         <field name="type" type="varchar(1)"  null="false"/>
         <field name="detail" type="varchar(100)"  null="false"/>
-        <field name="client" references="client" null="false" inverse="invoices"/>
-        <field name="pointOfSale" references="pointOfSale" null="false" inverse="invoices"/>
+        <field name="client" references="client" null="false" 
+               inverse="invoices"/>
+        <field name="point_of_sale" references="point_of_sale" null="false"
+               inverse="invoices"/>
       </fields>
       
       <indexes>
@@ -224,13 +233,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
       </indexes>
     </table>
 
-    <table name="thirdsInvoice">
+    <table name="alien_invoice">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
         <field name="number" type="varchar(20)"  null="false"/>
         <field name="type" type="varchar(1)"  null="false"/>
-        <field name="issuer" references="provider" null="false" inverse="invoiced"/>
-        <field name="pointOfSale" references="pointOfSale" null="false" inverse="thurdsInvoices"/>
+        <field name="issuer" references="provider" null="false" 
+               inverse="invoices"/>
+        <field name="point_of_sale" references="point_of_sale" null="false" 
+               inverse="alien_invoices"/>
       </fields>
       
       <indexes>
@@ -240,7 +251,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
       </indexes>
     </table>
 
-    <table name="pointOfSale">
+    <table name="point_of_sale">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
         <field name="name" type="varchar(20)"  null="false"/>
@@ -256,7 +267,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
     <table name="movement">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
-<!-- le toy poniendo cosas pero para que no te aburras-->
+        <!-- le toy poniendo cosas pero para que no te aburras-->
       </fields>
       
       <indexes>
