@@ -39,7 +39,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
     <table name="stock">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
-        <field name="product" references="product" null="false" inverse="stock"/>
+        <field name="product" references="product" null="false" 
+               inverse="stock"/>
         <field name="level" type="int" null="false"/>
       </fields>
 
@@ -81,6 +82,51 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
       </indexes>
     </table>
 
+    <table name="document_type">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="code" type="varchar(10)"/>
+        <field name="name" type="varchar(20)" null="false"/>
+        <!-- field name="" -->
+      </fields>
+
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="printer">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="name" type="varchar(20)" null="false"/>
+        <!-- field name="driver" type="varchar(10)" null="false"-->
+      </fields>
+
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="document_number">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="printer" references="printer" null="false" inverse="document_numbers"/>
+        <field name="document_type" references="document_type" null="false"/>
+        <!-- yes, it could be a number, 
+             but it could contain other symbols too-->
+        <field name="number" type="varchar(20)" null="false"/>
+      </fields>
+
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
 
     <table name="currency">
       <fields>
@@ -115,7 +161,5 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
         </index>
       </indexes>
     </table>
-
-
   </tables>
 </database>

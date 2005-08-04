@@ -20,15 +20,21 @@
 
 __revision__ = int('$Rev: 200 $'[5:-1])
 
+# this implementation of Model is tightly tied to Modeling
+# http://modeling.sf.net/
+
 import os
 import logging
 
 from Modeling import ModelSet, Model, dynamic
 from Modeling.CustomObject import CustomObject
+from Modeling.utils import capitalizeFirstLetter
 
 from fvl.cimarron.model import Model as CimarronModel
+from fvl.luca.transaction import Transaction
 
 logger = logging.getLogger('fvl.luca.model')
+logger.setLevel(logging.DEBUG)
 
 model_name = os.path.join(os.path.dirname(__file__), 'pymodel_luca.py')
 try:
@@ -39,6 +45,35 @@ except ImportError:
     raise
 del model_name
 ModelSet.defaultModelSet().addModel(model)
+
+
+class ModelingList(object):
+    def __init__(self, value=None, relatesTo=None,
+                 append=None, remove=None, inverse=None):
+        # print 'one of these', append, remove, inverse
+        self.value = value
+        self.appendMethod = append
+        self.removeMethod = remove
+        self.relatesTo = relatesTo
+        self.inverse = inverse
+
+    def append(self, other):
+        getattr(self.relatesTo, self.appendMethod)(other)
+        setattr(other, self.inverse, self.relatesTo)
+        # self.value.append(other)
+    def remove(self, other):
+        getattr(self.relatesTo, self.removeMethod)(other)
+        setattr(other, self.inverse, None)
+        # self.value.remove(other)
+
+    def __len__(self):
+        return len(self.value)
+
+    def __getitem__(self, index):
+        return self.value[index]
+    def __setitem__(self, index, item):
+        self.value[index] = item
+
 
 # HACK!!
 # we mess around with the internals of Modeling.dynamic here.
@@ -58,13 +93,26 @@ dynamic.setters_code = setters_code
 from mx.DateTime import DateTimeFrom
 dynamic.DateTimeFrom = DateTimeFrom
 del DateTimeFrom
+dynamic.ModelingList = ModelingList
 
 orig_getter_code = dynamic.getter_code
 def getter_code(prop):
     rv = orig_getter_code(prop)
     fname, code = rv
+    if hasattr(prop,'isToMany') and prop.isToMany():
+        # we wrap it up in a ModelingList
+        pos = code.find('return ') + len('return ')
+        propName = capitalizeFirstLetter(prop.name())
+        addFname = "addTo"+propName
+        remFname = "removeFrom"+propName
+        inv = prop.inverseRelationship()
+        inverseName = inv._name
+        
+        code = "%sModelingList(%s, self, '%s', '%s', '%s')" % \
+               (code[:pos], code[pos:], addFname, remFname, inverseName)
+        logger.debug(code)
     if 'type' in prop.__class__.__dict__:
-        pos = code.find('return') + len('return') + 1
+        pos = code.find('return ') + len('return ')
         code = '%sunicode(%s)' % (code[:pos], code[pos:])
     return fname, code
 dynamic.getter_code = getter_code
@@ -72,13 +120,16 @@ dynamic.getter_code = getter_code
 
 class LucaMeta(type):
     def __new__(cls, className, bases, namespace):
+        # print className, bases
         entity = model.entityNamed(className)
         if entity is None:
             raise RuntimeError, 'BUG!'
+        # print className, namespace
         dynamic.define_init(entity, className, namespace)
         dynamic.define_getters(entity, className, namespace)
         dynamic.define_setters(entity, className, namespace)
         dynamic.define_properties(entity, className, namespace)
+        # print className, namespace
         return super(LucaMeta, cls).__new__(cls, className, bases, namespace)
 
 class LucaModel(CimarronModel):
@@ -86,12 +137,36 @@ class LucaModel(CimarronModel):
         return cls.__name__
     entityName = classmethod(entityName)
 
-__metaclass__ = LucaMeta
+    def values(cls, transaction, **kwargs):
+        return transaction.search(cls, **kwargs)
+    values = classmethod(values)
+    def valuesFor(cls, transaction, attribute):
+        # hmm, how to?
+        return []
+    valuesFor = classmethod(valuesFor)
+# __metaclass__ = LucaMeta
 
 # now the idea is that, for every class in the model you create a
 # class, and add methods to it if necessary. E.g,
-#   class Person:
+#   class Person(LucaModel, CustomObject):
+#       __metaclass__ = LucaMeta
 #       pass
+
+class Printer(LucaModel, CustomObject):
+    __metaclass__ = LucaMeta
+    def __init__ (self, transaction=None, **kwargs):
+        super(Printer, self).__init__(**kwargs)
+        # tr = Transaction()
+        documentTypes = transaction.search(DocumentType)
+        for dt in documentTypes:
+            dn = DocumentNumber(documentType=dt, number='00001')
+            # tr.track(dn)
+            self.documentNumbers.append(dn)
+        # tr.commit()
+        
+# logger.debug(dir(DocumentType), DocumentType.mro())
+# logger.debug(dir(Printer))
+
 # since this would be tedious and error-prone, just define the classes
 # you actually need below, and we'll automatically generate the rest
 # (below).

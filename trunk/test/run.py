@@ -24,7 +24,8 @@ from optparse import OptionParser
 import libxml2
 libxml2.debugMemory(1)
 
-moduleNames= ['testTransaction', 'testStockAdjustment', 'testReceipt', 'testCurrency']
+moduleNames= ['testTransaction', 'testStockAdjustment', 'testReceipt', 
+              'testCurrency', 'testPrinter']
 
 parser = OptionParser()
 parser.add_option('-v', '--verbose', help="be verbose",
@@ -33,7 +34,8 @@ parser.add_option('-q', '--quiet', help="be quiet",
                   action="store_true", default=False)
 parser.add_option('-s', '--sync', help="make X calls synchronous",
                   action="store_true", default=False)
-parser.add_option('-M', '--module', help="test this module (may be specified multiple times)", action="append")
+parser.add_option('-M', '--module', action="append",
+                  help="test this module (may be specified multiple times)")
 
 test_options, args = parser.parse_args()
 
