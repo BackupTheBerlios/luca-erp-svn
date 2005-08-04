@@ -20,7 +20,7 @@ XOT=luca.xot
 
 PYMODEL=fvl/luca/model/pymodel_luca.py
 SQL=luca.sql
-TARGETS=product.xml person.xml $(SQL) $(PYMODEL)
+TARGETS=product.xml person.xml document_type.xml $(SQL) $(PYMODEL)
 
 PYTHON ?= python
 COLORIZER ?= tools/ppython
