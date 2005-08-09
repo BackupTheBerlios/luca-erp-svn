@@ -152,25 +152,31 @@ class LucaModel(CimarronModel):
 #       __metaclass__ = LucaMeta
 #       pass
 
-class Printer(LucaModel, CustomObject):
-    __metaclass__ = LucaMeta
-    def __init__ (self, transaction=None, **kwargs):
-        super(Printer, self).__init__(**kwargs)
-        # tr = Transaction()
-        documentTypes = transaction.search(DocumentType)
-        for dt in documentTypes:
-            dn = DocumentNumber(documentType=dt, number='00001')
-            # tr.track(dn)
-            self.documentNumbers.append(dn)
-        # tr.commit()
-        
-# logger.debug(dir(DocumentType), DocumentType.mro())
-# logger.debug(dir(Printer))
-
 # since this would be tedious and error-prone, just define the classes
 # you actually need below, and we'll automatically generate the rest
 # (below).
 # be sure to ad the classes *below* this line
+
+# aye, sir!
+class Printer(LucaModel, CustomObject):
+    __metaclass__ = LucaMeta
+    def __init__ (self, transaction=None, **kwargs):
+        super(Printer, self).__init__(**kwargs)
+        documentTypes = transaction.search(DocumentType)
+        for dt in documentTypes:
+            dn = DocumentNumber(documentType=dt, number='00001')
+            self.documentNumbers.append(dn)
+
+from mx.DateTime import now
+class PointOfSale(LucaModel, CustomObject):
+    __metaclass__ = LucaMeta
+    def __init__(self, **kwargs):
+        super(PointOfSale, self).__init__(**kwargs)
+
+    def open(self, amount, transaction=None):
+        # trnsaction = 
+        doc = DrawerOpen(pointOfSale=self, amount=amount, dateTime=now())
+        transaction.track(doc)
 
 class Money(LucaModel):
     def __init__(self, amount=0.0, currency=None):
@@ -179,8 +185,6 @@ class Money(LucaModel):
             self.currency = Currency()
         else:
             self.currency = currency
-
-
 
     def __add__(self, other):
         if self.currency != other.currency:
