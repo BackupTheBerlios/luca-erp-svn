@@ -215,7 +215,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
         </index>
       </indexes>
     </table>
-
     <table name="alien_invoice">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
@@ -263,15 +262,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
     </table>
 
 
-    <table name="petty_cash_startup">
+    <table name="drawer_open">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
-        <field name="date_time" type="date"  null="false"/>
-        <!-- I guess in the future we will have a user table but 
-                                                        for the moment -->
-        <field name="user" type="varchar(30)"  null="false"/>
-        <field name="point_of_sale" references="point_of_sale" null="false" 
-               inverse="petty_cash_cicle_starts"/>
+        <field name="date_time" type="date" null="false"/>
+        <!-- I guess in the future we will have a user table, but for the 
+             moment... -->
+        <!-- field name="user" type="varchar(30)" null="false"/ -->
+        <field name="point_of_sale" references="point_of_sale" null="false"/>
+               <!--inverse="petty_cash_cicle_starts"/-->
+        <field name="amount" type="numeric(12,4)" null="false"/>
       </fields>
       
       <indexes>

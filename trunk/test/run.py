@@ -24,8 +24,15 @@ from optparse import OptionParser
 import libxml2
 libxml2.debugMemory(1)
 
-moduleNames= ['testTransaction', 'testStockAdjustment', 'testReceipt', 
-              'testCurrency', 'testPrinter']
+# one per line so its more svn friendly
+# (less conflicts)
+moduleNames= ['testTransaction',
+              'testStockAdjustment',
+              'testReceipt', 
+              'testCurrency',
+              'testPrinter',
+              'testPointOfSale',
+              ]
 
 parser = OptionParser()
 parser.add_option('-v', '--verbose', help="be verbose",
