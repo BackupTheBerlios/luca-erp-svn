@@ -132,7 +132,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
     <table name="currency">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
-        <field name="internationalCode" type="varchar(3)"  null="false"/>
+        <field name="international_code" type="varchar(3)"  null="false"/>
         <field name="symbol" type="varchar(5)"  null="false"/>
         <field name="name" type="varchar(20)"  null="false"/>  
       </fields>
@@ -152,7 +152,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
         <field name="rate" type="numeric(4,2)" null="false"/>
         <!-- the rate can be used to make the calculation on both ways but the 
              from,to value convention is used to know in wich conversion the 
-             rate is positive -->
+             rate mayor than 0 -->
         <field name="from_currency" references="currency" null="false" 
                inverse="minor_currency"/>
         <field name="to_currency" references="currency" null="false" 
@@ -195,23 +195,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
         </index>
       </indexes>
     </table>
-
-    <table name="invoice">
-      <fields>
-        <field name="id" type="int" auto_increment="true" null="false"/>
-        <field name="number" type="varchar(20)"  null="false"/>
-        <field name="type" type="varchar(1)"  null="false"/>
-        <field name="client" references="client" null="false" 
-               inverse="invoices"/>
-        <field name="detail" type="varchar(100)"  null="false"/>
-      </fields>
-      
-      <indexes>
-        <index type="primary_key">
-          <index_field name="id"/>
-        </index>
-      </indexes>
-    </table>
     
 
     <table name="invoice">
@@ -223,7 +206,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
         <field name="client" references="client" null="false" 
                inverse="invoices"/>
         <field name="point_of_sale" references="point_of_sale" null="false"
-               inverse="invoices"/>
+               inverse="invoices"/> 
       </fields>
       
       <indexes>
@@ -267,7 +250,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
     <table name="movement">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
-        <!-- le toy poniendo cosas pero para que no te aburras-->
+        <field name="category" type="varchar(20)"  null="false"/>
+        <field name="rubicon" type="varchar(20)"  null="false"/>
+        <field name="amount" type="numeric(12,4)"  null="false"/>
       </fields>
       
       <indexes>
@@ -276,6 +261,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
         </index>
       </indexes>
     </table>
+
+
+    <table name="petty_cash_startup">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="date_time" type="date"  null="false"/>
+        <!-- I guess in the future we will have a user table but 
+                                                        for the moment -->
+        <field name="user" type="varchar(30)"  null="false"/>
+        <field name="point_of_sale" references="point_of_sale" null="false" 
+               inverse="petty_cash_cicle_starts"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
 
   </tables>
 </database>
