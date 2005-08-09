@@ -20,7 +20,10 @@ XOT=luca.xot
 
 PYMODEL=fvl/luca/model/pymodel_luca.py
 SQL=luca.sql
-TARGETS=product.xml person.xml document_type.xml $(SQL) $(PYMODEL)
+TARGETS=product.xml \
+	person.xml \
+	document_type.xml \
+	$(SQL) $(PYMODEL)
 
 PYTHON ?= python
 COLORIZER ?= tools/ppython
@@ -47,22 +50,41 @@ EXOTIC_PYTHON_OPTS := $(EXOTIC_PYTHON_OPTS),modelName:$(LUCA_MODEL)
 EXOTIC_PYTHON_OPTS := $(EXOTIC_PYTHON_OPTS),packageName:$(LUCA_PACKAGE)
 EXOTIC_PYTHON_OPTS := $(EXOTIC_PYTHON_OPTS),moduleName:$(LUCA_MODULE)
 
-TEST_PYMODEL = test/pymodel_test.py
-TEST_DB = deleteme.db
-CACHE_TEST_DB = leaveme.db
+# transaction test database
+TR_TEST_PYMODEL = test/tr_pymodel_test.py
+TR_TEST_DB = deleteme.db
+TR_CACHE_TEST_DB = leaveme.db
+
+# luca tests database
+LUCA_TEST_PYMODEL = test/luca_pymodel_test.py
+LUCA_TEST_DB = test.db
+LUCA_CACHE_TEST_DB = cache.db
+LUCA_INI=test/luca_test.ini
 
 all: $(TARGETS)
 
 %.xml: xins/%.xin $(XOT)
 	$(EXOTIC) -n -eCimarronXMLui -Oxin:$< $(XOT) > $@
 
-test: $(PYMODEL) $(CACHE_TEST_DB)
-	PYTHONPATH=.:$$PYTHONPATH $(PYTHON) test/run.py $(TESTOPTS) 2>&1 | $(COLORIZER)
+test: $(PYMODEL) $(TR_CACHE_TEST_DB) $(LUCA_CACHE_TEST_DB)
+	PYTHONPATH=.:$$PYTHONPATH MDL_DB_CONNECTIONS_CFG=$(LUCA_INI) \
+		$(PYTHON) test/run.py $(TESTOPTS) 2>&1 | $(COLORIZER)
 
-$(CACHE_TEST_DB): $(TEST_DB)
+$(LUCA_TEST_PYMODEL): $(XOT)
+	MDL_DB_CONNECTIONS_CFG=test/test.ini \
+		$(EXOTIC) -eMod -Odatabase:test.db,adaptorName:SQLite $< > $@
+
+$(LUCA_CACHE_TEST_DB): $(LUCA_TEST_DB)
 	mv $< $@
 
-$(TEST_DB): $(TEST_PYMODEL)
+$(LUCA_TEST_DB): $(LUCA_TEST_PYMODEL)
+	MDL_DB_CONNECTIONS_CFG=$(LUCA_INI) \
+		mdl_generate_DB_schema.py -C --admin-dsn :$@:: $<
+
+$(TR_CACHE_TEST_DB): $(TR_TEST_DB)
+	mv $< $@
+
+$(TR_TEST_DB): $(TR_TEST_PYMODEL)
 	mdl_generate_DB_schema.py -C --admin-dsn :$@:: $<
 
 $(PYMODEL): $(XOT)
@@ -76,10 +98,10 @@ clean:
 
 distclean: clean
 	find '(' -name '*.py[co]' -o -name '*~' ')' -print0 | xargs -0 -r $(RM)
-	$(RM) $(CACHE_TEST_DB)
+	$(RM) $(TR_CACHE_TEST_DB)
 
 .PHONY: test model all clean
 
 .DELETE_ON_ERROR:
 
-.INTERMEDIATE: $(TEST_DB) $(CACHE_TEST_DB)
+.INTERMEDIATE: $(TR_TEST_DB) $(TR_CACHE_TEST_DB) $(LUCA_TEST_DB) $(LUCA_CACHE_TEST_DB)
