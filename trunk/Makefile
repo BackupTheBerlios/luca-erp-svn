@@ -59,7 +59,7 @@ TR_CACHE_TEST_DB = leaveme.db
 LUCA_TEST_PYMODEL = test/luca_pymodel_test.py
 LUCA_TEST_DB = test.db
 LUCA_CACHE_TEST_DB = cache.db
-LUCA_INI=test/luca_test.ini
+LUCA_TEST_INI=test/luca_test.ini
 
 all: $(TARGETS)
 
@@ -67,7 +67,7 @@ all: $(TARGETS)
 	$(EXOTIC) -n -eCimarronXMLui -Oxin:$< $(XOT) > $@
 
 test: $(PYMODEL) $(TR_CACHE_TEST_DB) $(LUCA_CACHE_TEST_DB)
-	PYTHONPATH=.:$$PYTHONPATH MDL_DB_CONNECTIONS_CFG=$(LUCA_INI) \
+	PYTHONPATH=.:$$PYTHONPATH MDL_DB_CONNECTIONS_CFG=$(LUCA_TEST_INI) \
 		$(PYTHON) test/run.py $(TESTOPTS) 2>&1 | $(COLORIZER)
 
 $(LUCA_TEST_PYMODEL): $(XOT)
@@ -78,7 +78,7 @@ $(LUCA_CACHE_TEST_DB): $(LUCA_TEST_DB)
 	mv $< $@
 
 $(LUCA_TEST_DB): $(LUCA_TEST_PYMODEL)
-	MDL_DB_CONNECTIONS_CFG=$(LUCA_INI) \
+	MDL_DB_CONNECTIONS_CFG=$(LUCA_TEST_INI) \
 		mdl_generate_DB_schema.py -C --admin-dsn :$@:: $<
 
 $(TR_CACHE_TEST_DB): $(TR_TEST_DB)
