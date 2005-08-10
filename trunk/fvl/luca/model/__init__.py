@@ -36,7 +36,9 @@ from fvl.luca.transaction import Transaction
 logger = logging.getLogger('fvl.luca.model')
 # logger.setLevel(logging.DEBUG)
 
-model_name = os.path.join(os.path.dirname(__file__), 'pymodel_luca.py')
+model_name = os.getenv('LUCA_PYMODEL',
+                       os.path.join(os.path.dirname(__file__),
+                                    'pymodel_luca.py' ))
 try:
     model = Model.loadModel(model_name)
 except ImportError:
