@@ -66,13 +66,13 @@ all: $(TARGETS)
 %.xml: xins/%.xin $(XOT)
 	$(EXOTIC) -n -eCimarronXMLui -Oxin:$< $(XOT) > $@
 
-test: $(PYMODEL) $(TR_CACHE_TEST_DB) $(LUCA_CACHE_TEST_DB)
+test: $(LUCA_TEST_PYMODEL) $(TR_CACHE_TEST_DB) $(LUCA_CACHE_TEST_DB)
 	PYTHONPATH=.:$$PYTHONPATH MDL_DB_CONNECTIONS_CFG=$(LUCA_TEST_INI) \
+		LUCA_PYMODEL=$(LUCA_TEST_PYMODEL) \
 		$(PYTHON) test/run.py $(TESTOPTS) 2>&1 | $(COLORIZER)
 
 $(LUCA_TEST_PYMODEL): $(XOT)
-	MDL_DB_CONNECTIONS_CFG=test/test.ini \
-		$(EXOTIC) -eMod -Odatabase:test.db,adaptorName:SQLite $< > $@
+	$(EXOTIC) -eMod -Odatabase:test.db,adaptorName:SQLite $< > $@
 
 $(LUCA_CACHE_TEST_DB): $(LUCA_TEST_DB)
 	mv $< $@
@@ -94,7 +94,7 @@ $(SQL): $(PYMODEL)
 	mdl_generate_DB_schema.py -c -A $< > $@
 
 clean:
-	$(RM) $(TARGETS) $(TEST_DB)
+	$(RM) $(TARGETS) $(TR_TEST_DB) $(TR_CACHE_TEST_DB) $(LUCA_TEST_DB) $(LUCA_CACHE_TEST_DB)
 
 distclean: clean
 	find '(' -name '*.py[co]' -o -name '*~' ')' -print0 | xargs -0 -r $(RM)

@@ -28,7 +28,7 @@ from Modeling import Model, ModelSet, dynamic
 from Modeling.EditingContext import EditingContext
 
 dn = os.path.dirname(__file__)
-model_file = 'test/pymodel_test.py'
+model_file = 'test/tr_pymodel_test.py'
 
 model=Model.loadModel(model_file)
 ModelSet.defaultModelSet().addModel(model)
