@@ -34,7 +34,7 @@ from fvl.cimarron.model import Model as CimarronModel
 from fvl.luca.transaction import Transaction
 
 logger = logging.getLogger('fvl.luca.model')
-logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.DEBUG)
 
 model_name = os.path.join(os.path.dirname(__file__), 'pymodel_luca.py')
 try:
@@ -60,11 +60,9 @@ class ModelingList(object):
     def append(self, other):
         getattr(self.relatesTo, self.appendMethod)(other)
         setattr(other, self.inverse, self.relatesTo)
-        # self.value.append(other)
     def remove(self, other):
         getattr(self.relatesTo, self.removeMethod)(other)
         setattr(other, self.inverse, None)
-        # self.value.remove(other)
 
     def __len__(self):
         return len(self.value)
@@ -99,7 +97,7 @@ orig_getter_code = dynamic.getter_code
 def getter_code(prop):
     rv = orig_getter_code(prop)
     fname, code = rv
-    if hasattr(prop,'isToMany') and prop.isToMany():
+    if hasattr(prop, 'isToMany') and prop.isToMany():
         # we wrap it up in a ModelingList
         pos = code.find('return ') + len('return ')
         propName = capitalizeFirstLetter(prop.name())
@@ -113,7 +111,9 @@ def getter_code(prop):
         logger.debug(code)
     if 'type' in prop.__class__.__dict__:
         pos = code.find('return ') + len('return ')
-        code = '%sunicode(%s)' % (code[:pos], code[pos:])
+        if prop.type in ('string', ):
+            # convert anything reminiscent of string to unicode
+            code = '%sunicode(%s)' % (code[:pos], code[pos:])
     return fname, code
 dynamic.getter_code = getter_code
 # end HACK
@@ -144,7 +144,6 @@ class LucaModel(CimarronModel):
         # hmm, how to?
         return []
     valuesFor = classmethod(valuesFor)
-# __metaclass__ = LucaMeta
 
 # now the idea is that, for every class in the model you create a
 # class, and add methods to it if necessary. E.g,
@@ -174,7 +173,7 @@ class PointOfSale(LucaModel, CustomObject):
         super(PointOfSale, self).__init__(**kwargs)
 
     def open(self, amount, transaction=None):
-        # trnsaction = 
+        # transaction = 
         doc = DrawerOpen(pointOfSale=self, amount=amount, dateTime=now())
         transaction.track(doc)
 
