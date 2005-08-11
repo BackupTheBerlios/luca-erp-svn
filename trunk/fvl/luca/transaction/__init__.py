@@ -57,12 +57,13 @@ class Transaction(object):
         self.editingContext = EditingContext()
         self.tracked = []
 
-    def track(self, anObject):
-        if anObject.editingContext() is None:
-            self.editingContext.insertObject(anObject)
-            self.tracked.append(anObject)
-        if anObject.editingContext() is not self.editingContext:
-            raise ValueError, 'object already is being tracked'
+    def track(self, *objects):
+        for anObject in objects:
+            if anObject.editingContext() is None:
+                self.editingContext.insertObject(anObject)
+                self.tracked.append(anObject)
+            if anObject.editingContext() is not self.editingContext:
+                raise ValueError, 'object already is being tracked'
 
     def forget(self, anObject):
         if anObject.editingContext():
