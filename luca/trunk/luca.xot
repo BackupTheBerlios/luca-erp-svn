@@ -246,12 +246,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
       </indexes>
     </table>
 
-    <table name="movement">
+    <table name="movement_category">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
-        <field name="category" type="varchar(20)"  null="false"/>
-        <field name="rubicon" type="varchar(20)"  null="false"/>
-        <field name="amount" type="numeric(12,4)"  null="false"/>
+        <field name="name" type="varchar(20)" null="false"/>
       </fields>
       
       <indexes>
@@ -261,6 +259,36 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
       </indexes>
     </table>
 
+    <table name="movement_account">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="name" type="varchar(20)" null="false"/>
+        <field name="parent" references="movement_account"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="movement">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="point_of_sale" references="point_of_sale" null="false"/>
+        <field name="category" references="movement_category" null="false"/>
+        <field name="account" references="movement_account" null="false"/>
+        <field name="amount" type="numeric(12,4)" null="false"/>
+        <field name="date_time" type="date" null="false"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
 
     <table name="drawer_open">
       <fields>
@@ -280,7 +308,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
         </index>
       </indexes>
     </table>
-
 
   </tables>
 </database>

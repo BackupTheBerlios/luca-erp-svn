@@ -174,10 +174,14 @@ class PointOfSale(LucaModel, CustomObject):
     def __init__(self, **kwargs):
         super(PointOfSale, self).__init__(**kwargs)
 
-    def open(self, amount, transaction=None):
-        # transaction = 
+    def open(self, amount, transaction):
         doc = DrawerOpen(pointOfSale=self, amount=amount, dateTime=now())
         transaction.track(doc)
+
+    def moveIn(self, amount, category, account, transaction):
+        movement = Movement(pointOfSale=self, amount=amount, category=category,
+                            account=account, dateTime=now())
+        transaction.track(movement)
 
 class Money(LucaModel):
     def __init__(self, amount=0.0, currency=None):
@@ -191,34 +195,42 @@ class Money(LucaModel):
         if self.currency != other.currency:
             raise TypeError #some error for the moment
         resultCurrency = self.currency
-        aResult = Money(amount=self.amount + other.amount, currency=resultCurrency)
+        aResult = Money(amount=self.amount + other.amount,
+                        currency=resultCurrency)
         return aResult
 
     def __sub__(self, other):
         if self.currency != other.currency:
             raise TypeError #some error for the moment
         resultCurrency = self.currency
-        aResult = Money(amount=self.amount - other.amount, currency=resultCurrency)
+        aResult = Money(amount=self.amount - other.amount,
+                        currency=resultCurrency)
         return aResult
 
     def __div__(self, divisor):
         """
-        Division of money will return a list of each value, this may not make much sense
-        when all the values are the same, but when the result is not exact whe need to
-        make one of the shares bigger (in accounting it's not allowed to round)
+        Division of money will return a list of each value, this may
+        not make much sense when all the values are the same, but when
+        the result is not exact whe need to make one of the shares
+        bigger (in accounting it's not allowed to round)
         """
         import decimal
         Context = decimal.Context
-        partialResult = Context(prec=3, rounding='ROUND_DOWN').create_decimal(self.amount/divisor)
+        partialResult = Context(prec=3,
+                                rounding='ROUND_DOWN').create_decimal(self.amount/divisor)
         aResult = []
         if partialResult * divisor == self.amount:
             for i in range(divisor):
-                aResult.append(Money(amount=partialResult, currency=self.currency))
+                aResult.append(Money(amount=partialResult,
+                                     currency=self.currency))
         else:
-            biggerPortion = Money(amount=partialResult + self.amount - partialResult * divisor, currency=self.currency)
+            biggerPortion = Money(amount=partialResult + self.amount - \
+                                  partialResult * divisor,
+                                  currency=self.currency)
             aResult.append(biggerPortion)
             for i in range(divisor-1):
-                aResult.append(Money(amount=partialResult, currency=self.currency))
+                aResult.append(Money(amount=partialResult,
+                                     currency=self.currency))
         return aResult
     
 # just be sure to add the classes *above* this line
