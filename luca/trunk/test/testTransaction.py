@@ -60,6 +60,17 @@ class TestsThatRequireNoDatabase(TestTransaction):
         self.tr.track(p)
         self.assertEqual(len(self.tr.tracked), 1)
 
+    def testMultipleTrack(self):
+        """
+        Try to create several objects, specifying the transaction against
+        which you're working.
+        """
+        p=[]
+        for i in xrange(10):
+            p.append(aProduct())
+        self.tr.track(*p)
+        self.assertEqual(len(self.tr.tracked), 10)
+
     def testDoubleTrackFails(self):
         """
         If you try tracking an object in two different transactions,
