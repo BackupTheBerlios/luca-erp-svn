@@ -211,4 +211,7 @@ class TestEditOne(TestWithDatabase):
         self.assertEqual(p.name, p2.name)
 
 if __name__ == '__main__':
+    import gtk
+    while gtk.events_pending():
+        gtk.main_iteration()
     unittest.main()

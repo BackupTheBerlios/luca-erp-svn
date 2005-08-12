@@ -63,6 +63,9 @@ for i in moduleNames:
 
 if __name__ == '__main__':
     print >> sys.stderr, "All tests loaded Ok."
+    import gtk
+    while gtk.events_pending():
+        gtk.main_iteration()
     unittest.main(argv=argv)
 
     #libxml2.cleanupParser()

@@ -26,8 +26,9 @@ from zope import interface
 from Modeling.EditingContext import EditingContext
 
 from fvl.cimarron.interfaces import IStore
+from fvl.luca.transaction.qualifier import Qualifier, nullQualifier
 
-logger = logging.getLogger('fvl.luca')
+logger = logging.getLogger('fvl.luca.transaction')
 
 class ITransaction(IStore):
     def track(anObject):
@@ -69,15 +70,13 @@ class Transaction(object):
         if anObject.editingContext():
             self.editingContext.forgetObject(anObject)
 
-    def search(self, aClass, **kwargs):
-        qual = " and ".join([ '%s ilike "%s*"' % (attr, value or '')
-                              for attr, value in kwargs.items() ])
+    def search(self, aClass, qual=nullQualifier):
         try:
             name = aClass.__name__
         except AttributeError:
             # pray it's a string
             name = aClass
-        result = self.editingContext.fetch(name, qual)
+        result = self.editingContext.fetch(name, qual.value)
         self.tracked.extend(result)
         return result
 
