@@ -18,7 +18,7 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
-__revision__ = int('$Rev: 200 $'[5:-1])
+__revision__ = int('$Rev$'[5:-1])
 
 from fvl.cimarron.skin import Column, HBox, VBox, Button, Checkbox, Grid, \
      Search, WindowController, Application
