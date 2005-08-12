@@ -25,7 +25,7 @@ Libre.
 All we actually do here right now is set up a logger.
 """
 
-__revision__ = int('$Rev: 200 $'[5:-1])
+__revision__ = int('$Rev$'[5:-1])
 
 import logging
 
