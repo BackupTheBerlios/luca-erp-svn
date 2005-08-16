@@ -178,6 +178,10 @@ class PointOfSale(LucaModel, CustomObject):
         doc = DrawerOpen(pointOfSale=self, amount=amount, dateTime=now())
         transaction.track(doc)
 
+    def close(self, amount, transaction):
+        doc = DrawerClose(pointOfSale=self, amount=amount, dateTime=now())
+        transaction.track(doc)
+        
     def moveIn(self, amount, category, account, transaction):
         movement = Movement(pointOfSale=self, amount=amount, category=category,
                             account=account, dateTime=now())
