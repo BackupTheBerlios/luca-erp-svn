@@ -35,44 +35,47 @@ class TestQualifier(unittest.TestCase):
     def testBinop(self):
         q = Qualifier()
         self.assertEqual(q.foo.binop(3, 'w00t').value,
-                         '(foo) w00t (3)')
+                         'foo w00t 3')
     def testEqual(self):
         q = Qualifier()
         for p in q.foo.equal(3), q.foo == 3:
             self.assertEqual(p.value,
-                             '(foo) == (3)')
+                             'foo == 3')
     def testLike(self):
         q = Qualifier()
         self.assertEqual((q.foo.like('meh*')).value,
-                         '(foo) ILIKE ("meh*")')
+                         'foo ilike "meh*"')
         self.assertEqual((q.foo ^ 'meh*').value,
-                         '(foo) ILIKE ("meh*")')
+                         'foo ilike "meh*"')
     def testAnd(self):
         p = Qualifier('A')
         q = Qualifier('B')
         self.assertEqual((p.and_(q)).value,
-                         '(A) AND (B)')
+                         'A and B')
         self.assertEqual((p&q).value,
-                         '(A) AND (B)')
+                         'A and B')
     def testOr(self):
         p = Qualifier('A')
         q = Qualifier('B')
         self.assertEqual((p.or_(q)).value,
-                         '(A) OR (B)')
+                         'A or B')
         self.assertEqual((p|q).value,
-                         '(A) OR (B)')
+                         'A or B')
     def testString(self):
         q = Qualifier()
         self.assertEqual((q.foo <= '3').value,
-                         '(foo) <= ("3")')
+                         'foo <= "3"')
     def testMxDateTime(self):
         q = Qualifier()
         self.assertEqual((q.foo <= mx.DateTime.Date(2005,1,31)).value,
-                         '(foo) <= ("2005-01-31 00:00:00.00")')
+                         'foo <= "2005-01-31 00:00:00.00"')
     def testQualifierQualified(self):
         q = Qualifier().foo > 3
         self.assertRaises(AttributeError, lambda: q.foo)
-        
+    def testComposite(self):
+        p = Qualifier().bar < 5
+        q = Qualifier().foo > 3
+        self.assertEqual((p&q).value, '(bar < 5) and (foo > 3)')
             
 
 if __name__ == '__main__':
