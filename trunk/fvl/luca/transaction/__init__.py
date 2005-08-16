@@ -29,6 +29,7 @@ from fvl.cimarron.interfaces import IStore
 from fvl.luca.transaction.qualifier import Qualifier, nullQualifier
 
 logger = logging.getLogger('fvl.luca.transaction')
+# logger.setLevel(logging.DEBUG)
 
 class ITransaction(IStore):
     def track(anObject):
@@ -76,6 +77,7 @@ class Transaction(object):
         except AttributeError:
             # pray it's a string
             name = aClass
+        logger.debug (name+": "+qual.value)
         result = self.editingContext.fetch(name, qual.value)
         self.tracked.extend(result)
         return result
