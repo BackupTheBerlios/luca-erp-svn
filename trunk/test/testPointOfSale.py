@@ -31,6 +31,32 @@ class TestPointOfSale(testWithDatabase):
         doc = docs[0]
         self.assertEqual(doc.amount, amount)
 
+
+        
+    def testOpen(self):
+        # this reflects the actual programmer's situation
+        # please donate here: http://paypal.com/donate?account=7862389&amount=130000&currency=nuevopesouruguayo
+        amount = 130.0
+        self.pos.open(amount, transaction=self.trans)
+        # self.trans.track(self.pos)
+        # self.trans.save()
+
+        docs = self.trans.search('DrawerOpen', **{'pointOfSale.name': self.pettyCashName})
+        self.assertEqual(len(docs), 1)
+        doc = docs[0]
+        self.assertEqual(doc.amount, amount)
+
+    def testClose(self):
+        amount = 200.0
+        self.pos.close(amount, transaction=self.trans)
+
+
+        docs = self.trans.search('DrawerClose', **{'pointOfSale.name': self.pettyCashName})
+        self.assertEqual(len(docs), 1)
+        doc = docs[0]
+        self.assertEqual(doc.amount, amount)
+
+
     def testMoveInSubAcct(self):
         """
         We can register an incoming money amount for some subaccount
@@ -50,3 +76,4 @@ class TestPointOfSale(testWithDatabase):
         self.assertEqual(len(docs), 1)
         doc = docs[0]
         self.assertEqual(doc.amount, amount)
+
