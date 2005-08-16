@@ -174,17 +174,30 @@ class PointOfSale(LucaModel, CustomObject):
     def __init__(self, **kwargs):
         super(PointOfSale, self).__init__(**kwargs)
 
-    def open(self, amount, transaction):
-        doc = DrawerOpen(pointOfSale=self, amount=amount, dateTime=now())
+    def open(self, amount, transaction, dateTime=None):
+        if dateTime is None:
+            dateTime = now()
+        doc = DrawerOpen(pointOfSale=self, amount=amount, dateTime=dateTime)
         transaction.track(doc)
 
-    def close(self, amount, transaction):
-        doc = DrawerClose(pointOfSale=self, amount=amount, dateTime=now())
+    def close(self, amount, transaction, dateTime=None):
+        if dateTime is None:
+            dateTime = now()
+        doc = DrawerClose(pointOfSale=self, amount=amount, dateTime=dateTime)
         transaction.track(doc)
         
-    def moveIn(self, amount, category, account, transaction):
+    def moveIn(self, amount, category, account, transaction, dateTime=None):
+        if dateTime is None:
+            dateTime = now()
         movement = Movement(pointOfSale=self, amount=amount, category=category,
-                            account=account, dateTime=now())
+                            account=account, dateTime=dateTime)
+        transaction.track(movement)
+
+    def moveOut(self, amount, category, account, transaction, dateTime=None):
+        if dateTime is None:
+            dateTime = now()
+        movement = Movement(pointOfSale=self, amount=amount, category=category,
+                            account=account, dateTime=dateTime)
         transaction.track(movement)
 
 class Money(LucaModel):
@@ -197,7 +210,7 @@ class Money(LucaModel):
 
     def __add__(self, other):
         if self.currency != other.currency:
-            raise TypeError #some error for the moment
+            raise TypeError # some error for the moment
         resultCurrency = self.currency
         aResult = Money(amount=self.amount + other.amount,
                         currency=resultCurrency)
