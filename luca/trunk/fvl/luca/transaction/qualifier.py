@@ -31,13 +31,13 @@ class Qualified(object):
     def __repr__(self):
         return str(self.value)
     def and_(self, other):
-        return self.binop(other, 'AND')
+        return self.binop(other, 'and')
     __and__ = and_
     def or_(self, other):
-        return self.binop(other, 'OR')
+        return self.binop(other, 'or')
     __or__ = or_
     def like(self, other):
-        return self.binop(other, "ILIKE")
+        return self.binop(other, "ilike")
     __xor__ = like
     def less(self, other):
         return self.binop(other, '<')
@@ -78,6 +78,8 @@ class Qualified(object):
     quote = classmethod(quote)
 
 class Qualifier(Qualified):
+    def binop(self, other, op):
+        return Qualified("%r %s %s" % (self, op, self.quote(other)))
     def __getattr__(self, attr):
         if self.value:
             attr = "%s.%s" % (self.value, attr)
