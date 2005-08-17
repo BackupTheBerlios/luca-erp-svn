@@ -92,7 +92,7 @@ class TestsThatRequireNoDatabase(TestTransaction):
 
 class TestWithDatabase(TestTransaction):
     def setUp(self):
-        os.system('cp -f leaveme.db ' + database_file)
+        os.system('cp -f tr_cache.db ' + database_file)
         super(TestWithDatabase, self).setUp()
         self.tr.track(aProduct(name='one'))
 
