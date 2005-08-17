@@ -7,7 +7,7 @@ Entity.defaults['properties']= [
 ]
 
 _connDict= {
-    'database': 'deleteme.db',
+    'database': 'tr_test.db',
 }
 
 model= Model ('Tester', adaptorName='SQLite', connDict=_connDict)

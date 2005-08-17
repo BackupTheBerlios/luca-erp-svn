@@ -26,7 +26,7 @@ TARGETS=product.xml \
 	$(SQL) $(PYMODEL)
 
 PYTHON ?= python
-COLORIZER ?= tools/ppython
+COLORIZER ?= 2>&1 | tools/ppython
 EPYDOC ?= epydoc
 EPYDOC_OPTS ?=
 TESTOPTS ?=
@@ -52,13 +52,13 @@ EXOTIC_PYTHON_OPTS := $(EXOTIC_PYTHON_OPTS),moduleName:$(LUCA_MODULE)
 
 # transaction test database
 TR_TEST_PYMODEL = test/tr_pymodel_test.py
-TR_TEST_DB = deleteme.db
-TR_CACHE_TEST_DB = leaveme.db
+TR_TEST_DB = tr_test.db
+TR_CACHE_TEST_DB = tr_cache.db
 
 # luca tests database
 LUCA_TEST_PYMODEL = test/luca_pymodel_test.py
-LUCA_TEST_DB = test.db
-LUCA_CACHE_TEST_DB = cache.db
+LUCA_TEST_DB = luca_test.db
+LUCA_CACHE_TEST_DB = luca_cache.db
 LUCA_TEST_INI=test/luca_test.ini
 
 all: $(TARGETS)
@@ -69,22 +69,17 @@ all: $(TARGETS)
 test: $(LUCA_TEST_PYMODEL) $(TR_CACHE_TEST_DB) $(LUCA_CACHE_TEST_DB)
 	PYTHONPATH=.:$$PYTHONPATH MDL_DB_CONNECTIONS_CFG=$(LUCA_TEST_INI) \
 		LUCA_PYMODEL=$(LUCA_TEST_PYMODEL) \
-		$(PYTHON) test/run.py $(TESTOPTS) 2>&1 | $(COLORIZER)
+		$(PYTHON) test/run.py $(TESTOPTS) $(COLORIZER)
+	$(RM) *_test.db
 
 $(LUCA_TEST_PYMODEL): $(XOT)
 	$(EXOTIC) -eMod -Odatabase:test.db,adaptorName:SQLite $< > $@
 
-$(LUCA_CACHE_TEST_DB): $(LUCA_TEST_DB)
+%_cache.db: %_test.db
 	mv $< $@
 
-$(LUCA_TEST_DB): $(LUCA_TEST_PYMODEL)
-	MDL_DB_CONNECTIONS_CFG=$(LUCA_TEST_INI) \
-		mdl_generate_DB_schema.py -C --admin-dsn :$@:: $<
-
-$(TR_CACHE_TEST_DB): $(TR_TEST_DB)
-	mv $< $@
-
-$(TR_TEST_DB): $(TR_TEST_PYMODEL)
+%_test.db: test/%_pymodel_test.py
+	$(RM) $@
 	mdl_generate_DB_schema.py -C --admin-dsn :$@:: $<
 
 $(PYMODEL): $(XOT)
@@ -104,4 +99,4 @@ distclean: clean
 
 .DELETE_ON_ERROR:
 
-.INTERMEDIATE: $(TR_TEST_DB) $(TR_CACHE_TEST_DB) $(LUCA_TEST_DB) $(LUCA_CACHE_TEST_DB)
+.INTERMEDIATE: $(TR_TEST_DB) $(LUCA_TEST_DB)
