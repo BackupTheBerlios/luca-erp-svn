@@ -73,7 +73,7 @@ test: $(LUCA_TEST_PYMODEL) $(TR_CACHE_TEST_DB) $(LUCA_CACHE_TEST_DB)
 	$(RM) *_test.db
 
 $(LUCA_TEST_PYMODEL): $(XOT)
-	$(EXOTIC) -eMod -Odatabase:test.db,adaptorName:SQLite $< > $@
+	$(EXOTIC) -eMod -Odatabase:$(LUCA_TEST_DB),adaptorName:SQLite $< > $@
 
 %_cache.db: %_test.db
 	mv $< $@
@@ -89,7 +89,9 @@ $(SQL): $(PYMODEL)
 	mdl_generate_DB_schema.py -c -A $< > $@
 
 clean:
-	$(RM) $(TARGETS) $(TR_TEST_DB) $(TR_CACHE_TEST_DB) $(LUCA_TEST_DB) $(LUCA_CACHE_TEST_DB)
+	$(RM) $(TARGETS) \
+	$(TR_TEST_DB) $(TR_CACHE_TEST_DB) \
+	$(LUCA_TEST_DB) $(LUCA_CACHE_TEST_DB) $(LUCA_TEST_PYMODEL)
 
 distclean: clean
 	find '(' -name '*.py[co]' -o -name '*~' ')' -print0 | xargs -0 -r $(RM)
