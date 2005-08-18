@@ -92,7 +92,7 @@ class TestsThatRequireNoDatabase(TestTransaction):
 
 class TestWithDatabase(TestTransaction):
     def setUp(self):
-        os.system('cp -f tr_cache.db %s; sync' % database_file)
+        os.system('cp -f tr_cache.db %s' % database_file)
         super(TestWithDatabase, self).setUp()
         self.tr.track(aProduct(name='one'))
 
