@@ -24,9 +24,19 @@ import logging
 
 from Modeling.CustomObject import CustomObject
 
+#from fvl.luca.model import Currency
+
 from fvl.luca.model.base import LucaModel
 
 logger = logging.getLogger('fvl.luca.model.money')
+
+
+##BUG or so
+##Ugly workaround To get Currency importing it gives a error
+##for the moment currency is not really used as due
+class Currency(LucaModel):
+    def __init__(self):
+        pass
 
 class Money(LucaModel):
     def __init__(self, amount=0.0, currency=None):
