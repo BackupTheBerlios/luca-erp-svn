@@ -24,17 +24,17 @@ import logging
 
 from Modeling.CustomObject import CustomObject
 
-from fvl.luca.transaction import Transaction
-from fvl.luca.model.base import LucaModel, LucaMeta, model
-from fvl.luca.model.printer import Printer
-from fvl.luca.model.point_of_sale import PointOfSale
-from fvl.luca.model.money import Money
+from fvl.luca.model.base import LucaModel, LucaMeta
 
-logger = logging.getLogger('fvl.luca.model')
+logger = logging.getLogger('fvl.luca.model.Printer')
 
-namespace = globals()
-for className in model.entitiesNames():
-    if className not in namespace:
-        namespace[className] = LucaMeta(className,
-        # add superclasses here --------------------vvvvv
-                                        (LucaModel, CustomObject), {})
+class Printer(LucaModel, CustomObject):
+    __metaclass__ = LucaMeta
+    def __init__ (self, transaction=None, **kwargs):
+        super(Printer, self).__init__(**kwargs)
+        from fvl.luca.model import DocumentType
+        documentTypes = transaction.search(DocumentType)
+        for dt in documentTypes:
+            dn = DocumentNumber(documentType=dt, number='00001')
+            self.documentNumbers.append(dn)
+
