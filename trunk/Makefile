@@ -59,21 +59,22 @@ TR_CACHE_TEST_DB = tr_cache.db
 LUCA_TEST_PYMODEL = test/luca_pymodel_test.py
 LUCA_TEST_DB = luca_test.db
 LUCA_CACHE_TEST_DB = luca_cache.db
-LUCA_TEST_INI=test/luca_test.ini
+
+EXOTIC_PYTHON_TEST_OPTS := $(EXOTIC_OPTS) -eMod -Odatabase:$(LUCA_TEST_DB),adaptorName:SQLite,modelName:$(LUCA_MODEL),packageName:$(LUCA_PACKAGE),moduleName:$(LUCA_MODULE)
 
 all: $(TARGETS)
+	echo $(EXOTIC_PYTHON_TEST_OPTS)
 
 %.xml: xins/%.xin $(XOT)
 	$(EXOTIC) -n -eCimarronXMLui -Oxin:$< $(XOT) > $@
 
 test: $(LUCA_TEST_PYMODEL) $(TR_CACHE_TEST_DB) $(LUCA_CACHE_TEST_DB)
-	PYTHONPATH=.:$$PYTHONPATH MDL_DB_CONNECTIONS_CFG=$(LUCA_TEST_INI) \
-		LUCA_PYMODEL=$(LUCA_TEST_PYMODEL) \
+	PYTHONPATH=.:$$PYTHONPATH LUCA_PYMODEL=$(LUCA_TEST_PYMODEL) \
 		$(PYTHON) test/run.py $(TESTOPTS) $(COLORIZER)
 	$(RM) *_test.db
 
 $(LUCA_TEST_PYMODEL): $(XOT)
-	$(EXOTIC) -eMod -Odatabase:$(LUCA_TEST_DB),adaptorName:SQLite $< > $@
+	$(EXOTIC) $(EXOTIC_PYTHON_TEST_OPTS) $< > $@
 
 %_cache.db: %_test.db
 	mv $< $@

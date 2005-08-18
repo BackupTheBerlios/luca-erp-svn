@@ -30,7 +30,7 @@ class ReceiptWindow(cimarron.skin.WindowController):
         super(ReceiptWindow, self).__init__(**kw)
         self.window.title = "Receipt Generation"
         self.trans = Transaction()
-        self.target=Receipt(date=today())
+        self.target=Receipt(actualDate=today())
         self.trans.track(self.target)
 
         v = cimarron.skin.VBox(parent=self.window, expand=True, fill=True)
@@ -45,7 +45,7 @@ class ReceiptWindow(cimarron.skin.WindowController):
                                                 searcher=self.trans, columns=columns,
                                                 attribute="person")
         cimarron.skin.Label(parent=h2, text="Date:")
-        self.date = cimarron.skin.Entry(parent=h2, attribute="date")
+        self.actualDate = cimarron.skin.Entry(parent=h2, attribute="actualDate")
         
         cimarron.skin.Label(parent=h2, text="Amount:")
         self.amount = cimarron.skin.Entry(parent=h2,  attribute="amount")
@@ -61,7 +61,7 @@ class ReceiptWindow(cimarron.skin.WindowController):
     
     def refresh(self):
         super(ReceiptWindow, self).refresh()
-        for entry in self.person, self.amount,self.concept,self.date:
+        for entry in self.person, self.amount,self.concept,self.actualDate:
             entry.newTarget(self.value)
 
     def save(self, *ignore):
@@ -69,7 +69,7 @@ class ReceiptWindow(cimarron.skin.WindowController):
 
     def discard(self, *ignore):
         self.trans.discard()
-        self.newTarget(Receipt(date=today()))
+        self.newTarget(Receipt(actualDate=today()))
         self.trans.track(self.target)
 
 if __name__=='__main__':
