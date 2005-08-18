@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with PAPO; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 -->
-<!DOCTYPE database SYSTEM "../xot.dtd">
+<!DOCTYPE database SYSTEM "xot.dtd">
 <database>
   <tables>
     <table name="product">
@@ -52,21 +52,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
     </table>
 
 
-    <table name="receipt">
-      <fields>
-        <field name="id" type="int" auto_increment="true" null="false"/>
-        <field name="date" type="date" null="false"/>
-        <field name="concept" type="varchar(80)" null="false"/>
-        <field name="amount" type="numeric(12,2)" null="false"/>
-        <field name="person" references="person" null="false"/>
-      </fields>
-
-      <indexes>
-        <index type="primary_key">
-          <index_field name="id"/>
-        </index>
-      </indexes>
-    </table>
 
     <table name="person">
       <fields>
@@ -197,40 +182,59 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
     </table>
     
 
-    <table name="invoice">
+    <table name="document">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="actual_date" type="date" null="false"/>
+        <field name="entry" references="accounting_entry" inverse="document"/>
+        <field name="amount" type="numeric(12,4)" null="false"/>
         <field name="number" type="varchar(20)"  null="false"/>
         <field name="type" type="varchar(1)"  null="false"/>
-        <field name="detail" type="varchar(100)"  null="false"/>
-        <field name="client" references="client" null="false" 
-               inverse="invoices"/>
-        <field name="point_of_sale" references="point_of_sale" null="false"
-               inverse="invoices"/> 
+        <field name="detail" type="varchar(1000)"  null="false"/>
       </fields>
-      
       <indexes>
         <index type="primary_key">
           <index_field name="id"/>
         </index>
       </indexes>
     </table>
-    <table name="alien_invoice">
+
+    <table name="point_of_sale_opening" inherits="document">
       <fields>
-        <field name="id" type="int" auto_increment="true" null="false"/>
-        <field name="number" type="varchar(20)"  null="false"/>
-        <field name="type" type="varchar(1)"  null="false"/>
+        <!-- I guess in the future we will have a user table, but for the 
+             moment... -->
+        <!-- field name="user" type="varchar(30)" null="false"/ -->
+        <field name="point_of_sale" references="point_of_sale" null="false"
+               inverse="point_of_sale_openings" />
+      </fields>
+    </table>
+    <table name="point_of_sale_closure" inherits="document">
+      <fields>
+        <field name="date_time" type="date" null="false"/>
+        <!-- I guess in the future we will have a user table, but for the 
+             moment... -->
+        <!-- field name="user" type="varchar(30)" null="false"/ -->
+        <field name="point_of_sale" references="point_of_sale" null="false"
+               inverse="point_of_sale_closures" />
+      </fields>
+    </table>
+    <table name="receipt" inherits="document">
+      <fields>
+        <field name="concept" type="varchar(80)" null="false"/>
+        <field name="person" references="person" null="false"/>
+      </fields>
+    </table>
+    <table name="invoice" inherits="document">
+      <fields>
+        <field name="client" references="client" null="false" 
+               inverse="invoices"/>
+      </fields>
+    </table>
+    <table name="alien_invoice" inherits="document">
+      <fields>
         <field name="issuer" references="provider" null="false" 
                inverse="invoices"/>
-        <field name="point_of_sale" references="point_of_sale" null="false" 
-               inverse="alien_invoices"/>
       </fields>
-      
-      <indexes>
-        <index type="primary_key">
-          <index_field name="id"/>
-        </index>
-      </indexes>
     </table>
 
     <table name="point_of_sale">
@@ -264,6 +268,22 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
         <field name="id" type="int" auto_increment="true" null="false"/>
         <field name="name" type="varchar(20)" null="false"/>
         <field name="parent" references="movement_account"/>
+        <field name="code" type="varchar(20)" null="false"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="accounting_entry">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="point_of_sale" references="point_of_sale" null="false"
+               inverse="accounting_entries"/>
+        <field name="record_date" type="date" null="false"/> 
       </fields>
       
       <indexes>
@@ -276,63 +296,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
     <table name="movement">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
-        <field name="point_of_sale" references="point_of_sale" null="false"/>
-        <field name="category" references="movement_category" null="false"/>
-        <field name="account" references="movement_account" null="false"/>
+        <field name="account" references="movement_account" null="false"
+               inverse="movements"/>
+        <!-- Operation must be debit or credit 0=debit   1=credit -->
+        <field name="operation" type="int" null="false"/>
         <field name="amount" type="numeric(12,4)" null="false"/>
-        <field name="date_time" type="date" null="false"/>
-      </fields>
-      
-      <indexes>
-        <index type="primary_key">
-          <index_field name="id"/>
-        </index>
-      </indexes>
-    </table>
-
-    <table name="drawer_open">
-      <fields>
-        <field name="id" type="int" auto_increment="true" null="false"/>
-        <field name="date_time" type="date" null="false"/>
-        <!-- I guess in the future we will have a user table, but for the 
-             moment... -->
-        <!-- field name="user" type="varchar(30)" null="false"/ -->
-        <field name="point_of_sale" references="point_of_sale" null="false"/>
-               <!--inverse="petty_cash_cicle_starts"/-->
-        <field name="amount" type="numeric(12,4)" null="false"/>
-      </fields>
-      
-      <indexes>
-        <index type="primary_key">
-          <index_field name="id"/>
-        </index>
-      </indexes>
-    </table>
-
-
-    <table name="drawer_close">
-      <fields>
-        <field name="id" type="int" auto_increment="true" null="false"/>
-        <field name="date_time" type="date" null="false"/>
-        <!-- I guess in the future we will have a user table, but for the 
-             moment... -->
-        <!-- field name="user" type="varchar(30)" null="false"/ -->
-        <field name="point_of_sale" references="point_of_sale" null="false"/>
-               <!--inverse="petty_cash_cicle_starts"/-->
-        <field name="amount" type="numeric(12,4)" null="false"/>
-      </fields>
-      
-      <indexes>
-        <index type="primary_key">
-          <index_field name="id"/>
-        </index>
-      </indexes>
-    </table>
-
-    <table name="documents">
-      <fields>
-        <field name="id" type="int" auto_increment="true" null="false"/>
-        <field name="document" type="varchar(20)"  null="false"/>
+        <field name="entry" references="accounting_entry" null="false" 
+               inverse="movements"/>
       </fields>
       
       <indexes>
