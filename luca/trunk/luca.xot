@@ -267,7 +267,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
         <field name="name" type="varchar(20)" null="false"/>
-        <field name="parent" references="movement_account"/>
+        <!-- until i remember why is this here, it's not
+         <field name="parent" references="movement_account"/> -->
         <field name="code" type="varchar(20)" null="false"/>
       </fields>
       
@@ -278,12 +279,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
       </indexes>
     </table>
 
+
     <table name="accounting_entry">
+
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="number" type="int"  null="false"/>
         <field name="point_of_sale" references="point_of_sale" null="false"
                inverse="accounting_entries"/>
         <field name="record_date" type="date" null="false"/> 
+
       </fields>
       
       <indexes>
