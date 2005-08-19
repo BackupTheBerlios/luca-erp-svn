@@ -25,6 +25,7 @@ __revision__ = int('$Rev$'[5:-1])
 
 import os
 import logging
+import weakref
 
 from Modeling import ModelSet, Model, dynamic
 from Modeling.utils import capitalizeFirstLetter
@@ -144,3 +145,4 @@ class LucaModel(CimarronModel):
         return []
     valuesFor = classmethod(valuesFor)
 
+    transaction = lambda *a:None

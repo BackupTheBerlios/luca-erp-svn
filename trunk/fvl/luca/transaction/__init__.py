@@ -21,6 +21,7 @@
 __revision__ = int('$Rev$'[5:-1])
 
 import logging
+import weakref
 
 from zope import interface
 from Modeling.EditingContext import EditingContext
@@ -66,6 +67,8 @@ class Transaction(object):
                 self.tracked.append(anObject)
             if anObject.editingContext() is not self.editingContext:
                 raise ValueError, 'object already is being tracked'
+            if anObject.transaction() is None:
+                anObject.transaction = weakref.ref(self)
 
     def forget(self, anObject):
         if anObject.editingContext():
@@ -79,7 +82,8 @@ class Transaction(object):
             name = aClass
         logger.debug (name+": "+qual.value)
         result = self.editingContext.fetch(name, qual.value)
-        self.tracked.extend(result)
+        for i in result:
+            self.track(i)
         return result
 
     def discard(self):

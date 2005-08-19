@@ -29,6 +29,7 @@ from fvl.luca.model.base import LucaModel, LucaMeta, model
 from fvl.luca.model.printer import Printer
 from fvl.luca.model.point_of_sale import PointOfSale
 from fvl.luca.model.money import Money
+from fvl.luca.model.accounting_entry import AccountingEntry
 
 logger = logging.getLogger('fvl.luca.model')
 

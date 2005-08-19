@@ -22,15 +22,11 @@ __revision__ = int('$Rev: -1$'[5:-1])
 
 import logging
 
+from mx.DateTime import now
 from Modeling.CustomObject import CustomObject
 
-from fvl.luca.model import Currency , Movement, MovementAccount
-
-from fvl.luca.model.base import LucaModel
-
+from fvl.luca.model.base import LucaModel, LucaMeta
 from fvl.luca.transaction import Transaction, Qualifier
-
-from mx.DateTime import now
 
 logger = logging.getLogger('fvl.luca.model.accountingEntry')
 
@@ -39,26 +35,36 @@ class AccountingEntry(LucaModel, CustomObject):
     Could be also  Entry but we don't want to generate confusion with
     skin.entry
     """
+    __metaclass__ = LucaMeta
     def __init__(self, number=0, recordTime=None, pos=None):
         self.number = number
         self.recordTime = recordTime or now()
         self.pointOfSale = pos
 
-    def debit(self, amount=0.0, account=None, trans=None):
-        trans.track(Movement(entry=self,operation=0,account=account,amount=amount.amount))
+    def debit(self, amount, account):
+        from fvl.luca.model import Movement
+        self.transaction().track(Movement(entry=self,
+                                          operation=0,
+                                          account=account,
+                                          amount=amount.amount))
 
-    def credit(self, amount=0.0, account=None, trans=None):
-        trans.track(Movement(entry=self,operation=1,account=account,amount=amount.amount))
+    def credit(self, amount, account):
+        from fvl.luca.model import Movement
+        self.transaction().track(Movement(entry=self,
+                                          operation=1,
+                                          account=account,
+                                          amount=amount.amount))
 
-    def balance(self, trans=None):
+    def balance(self):
         """
         balance returns th diference between debit and credit of accounting entrys
         """
         qual = Qualifier()
         debTotal = 0
         credTotal = 0
-        debs = trans.search('Movement', qual.operation.equal(0))
-        creds = trans.search('Movement', qual.operation.equal(1))
+        trans = self.transaction()
+        debs = trans.search('Movement', (qual.operation == 0) & (qual.id == self.id))
+        creds = trans.search('Movement', (qual.operation == 1) & (qual.id == self.id))
         
         for a in debs:
             debTotal += a.amount
