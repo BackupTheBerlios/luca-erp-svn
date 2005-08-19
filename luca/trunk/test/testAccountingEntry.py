@@ -37,7 +37,7 @@ class TestAccountingEntry(testWithDatabase):
         ##customer
         self.customer = CustomerAccount(name="Juan Customer")
         
-        self.acEntry = AccountingEntry( number=1, pos=PointOfSale())
+        self.acEntry = AccountingEntry( number=1, pos=PointOfSale(), customerAccount=self.customer)
         self.trans.track(self.acEntry)
         ##from
         self.debit = MovementAccount(name="Sales")
