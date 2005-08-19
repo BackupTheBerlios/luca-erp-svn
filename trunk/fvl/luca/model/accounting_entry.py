@@ -58,22 +58,21 @@ class AccountingEntry(LucaModel, CustomObject):
                                           account=account,
                                           amount=amount))
 
+    def _halfTotal(self, whichHalf):
+        qual = Qualifier()
+        total = 0
+        trans = self.transaction()
+        movs = trans.search('Movement',
+                            (qual.operation == whichHalf) & (qual.id == self.id))
+        return sum([i.amount for i in movs])
+
+    def debitSum(self):
+        return self._halfTotal(0)
+    def creditSum(self):
+        return self._halfTotal(1)
+
     def balance(self):
         """
         balance returns th diference between debit and credit of accounting entrys
         """
-        qual = Qualifier()
-        debTotal = 0
-        credTotal = 0
-        trans = self.transaction()
-        debs = trans.search('Movement', (qual.operation == 0) & (qual.id == self.id))
-        creds = trans.search('Movement', (qual.operation == 1) & (qual.id == self.id))
-        
-        for a in debs:
-            debTotal += a.amount
-            
-        for b in creds:
-            credTotal += b.amount
-        difference = debTotal - credTotal
-
-        return difference
+        return self.debitSum() - self.creditSum()

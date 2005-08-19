@@ -22,11 +22,12 @@ __revision__ = int('$Rev$'[5:-1])
 
 import logging
 
-from mx.DateTime import now
+from mx.DateTime import now, today
 from Modeling.CustomObject import CustomObject
 
 from fvl.luca.model.base import LucaModel, LucaMeta
 from fvl.luca.model.money import Money
+from fvl.luca.transaction.qualifier import Qualifier
 
 logger = logging.getLogger('fvl.luca.model.point_of_sale')
 
@@ -44,10 +45,49 @@ class PointOfSale(LucaModel, CustomObject):
         doc = documentClass(number=number, type=type, detail=detail,
                             amount=amount, actualDate=actualDate)
         self.transaction().track(doc)
-        doc.register(otherParty=otherParty,
+        doc.register(ourParty=self,
+                     otherParty=otherParty,
                      debitAccount=debitAccount,
                      creditAccount=creditAccount,
                      customerAccount=customerAccount)
+
+    def total(self, date=None):
+        if date is None:
+            date = today()
+        q = Qualifier()
+        this_pos = q.pointOfSale.id == self.id
+        q_date = q.entry.recordDate
+        tr = self.transaction()
+        openings = tr.search('PointOfSaleOpening', this_pos & (q_date <= date))
+        closures = tr.search('PointOfSaleClosure', this_pos & (q_date >= date))
+
+        if not openings:
+            # nothing done
+            return 0.0
+
+        openings = [(i.entry.recordDate, i) for i in openings]
+        openings.sort()
+        opening = openings[-1][1]
+
+        q_movs = q.entry.pointOfSale.id == self.id
+
+        if closures:
+            closures = [(i.entry.recordDate, i) for i in closures]
+            closures.sort()
+            closure = closures[0][1]
+            q_movs = q_movs & (q.entry.recordDate < closure.entry.recordDate)
+        q_movs = q_movs & (q.entry.recordDate > opening.entry.recordDate) & \
+                 (q.account.code == '1.1.01.01')
+
+        debit = sum(tr.search('Movement', q_movs & (q.operation == 0)))
+        credit = sum(tr.search('Movement', q_movs & (q.operation == 1)))
+
+        print '*'*40
+        print q_movs.value
+        print debit, credit
+        print '*'*40
+        return -1
+        
 
 class PettyCash(object):
     def __init__(self, transaction):
@@ -57,6 +97,6 @@ class PettyCash(object):
                          amount, actualDate, otherParty, movementAccount,
                          customerAccount=None):
         debitAccount, creditAccount = documentClass.accounts(movementAccount)
-        self.pos.register(documentClass, number, type, detail, amount,
-                          actualDate, otherParty, debitAccount, creditAccount,
-                          customerAccount)
+        self.pos.registerDocument(documentClass, number, type, detail, amount,
+                                  actualDate, otherParty, debitAccount, creditAccount,
+                                  customerAccount)
