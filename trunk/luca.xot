@@ -250,7 +250,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
       </indexes>
     </table>
 
-    <table name="movement_category">
+    <table name="customer_account">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
         <field name="name" type="varchar(20)" null="false"/>
@@ -288,7 +288,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
         <field name="point_of_sale" references="point_of_sale" null="false"
                inverse="accounting_entries"/>
         <field name="record_date" type="date" null="false"/> 
-
+        <field name="customer" references="customer_account" null="false" 
+               inverse="entries"/>
       </fields>
       
       <indexes>

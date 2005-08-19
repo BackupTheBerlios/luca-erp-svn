@@ -24,7 +24,7 @@ from mx.DateTime import now
 from time import time
 from random import uniform
 
-from fvl.luca.model import PointOfSale, MovementCategory, \
+from fvl.luca.model import PointOfSale, CustomerAccount, \
      MovementAccount, Provider, Person, Invoice, PointOfSaleOpening
 from fvl.luca.transaction import Transaction, Qualifier
 
@@ -37,7 +37,7 @@ class TestPointOfSale(testWithDatabase):
         self.pos = PointOfSale(name=self.pettyCashName)
         self.provider = Provider(subject=Person(name='Cacho',
                                                 surname='Moo'))
-        self.category = MovementCategory(name='FonCyT')
+        self.category = CustomerAccount(name='FonCyT')
         self.account = MovementAccount(name='Impuestos', code="1")
         self.subAccount = MovementAccount(name='IVA', code="11",
                                           parent=self.account)

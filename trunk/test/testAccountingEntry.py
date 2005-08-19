@@ -22,7 +22,7 @@ __revision__ = int('$Rev$'[5:-1])
 
 
 from testWithDatabase import testWithDatabase
-from fvl.luca.model import MovementAccount, Movement, Currency
+from fvl.luca.model import MovementAccount, Movement, Currency, CustomerAccount
 from fvl.luca.model.accounting_entry import AccountingEntry
 from fvl.luca.model.money import Money
 from fvl.luca.model.point_of_sale  import PointOfSale
@@ -34,18 +34,28 @@ class TestAccountingEntry(testWithDatabase):
     def setUp(self):
         super(TestAccountingEntry, self).setUp()
         self.trans = Transaction()
+        ##customer
+        self.customer = CustomerAccount(name="Juan Customer")
+        
         self.acEntry = AccountingEntry( number=1, pos=PointOfSale())
         self.trans.track(self.acEntry)
         ##from
         self.debit = MovementAccount(name="Sales")
         ##to
         self.credit = MovementAccount(name="Petty Cash")
+        
         self.amount = 175.5
         self.otherAmount = 180
+        
         self.trans.track(self.debit)
         self.trans.track(self.credit)
+        self.trans.track(self.customer)
 
     def testAddEntryDebit(self):
+        """
+        Checks if all the accounting entry has been made with the correct
+        movements
+        """
         self.acEntry.debit(amount=Money(amount=self.amount), account=self.debit)
         qual = Qualifier()
 
