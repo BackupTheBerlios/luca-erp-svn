@@ -18,7 +18,7 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
-__revision__ = int('$Rev: -1$'[5:-1])
+__revision__ = int('$Rev$'[5:-1])
 
 import logging
 
@@ -26,6 +26,7 @@ from mx.DateTime import now
 from Modeling.CustomObject import CustomObject
 
 from fvl.luca.model.base import LucaModel, LucaMeta
+
 from fvl.luca.transaction import Transaction, Qualifier
 
 logger = logging.getLogger('fvl.luca.model.accountingEntry')
@@ -40,6 +41,7 @@ class AccountingEntry(LucaModel, CustomObject):
         self.number = number
         self.recordTime = recordTime or now()
         self.pointOfSale = pos
+
 
     def debit(self, amount, account):
         from fvl.luca.model import Movement
