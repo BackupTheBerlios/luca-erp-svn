@@ -18,25 +18,30 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
-__revision__ = int('$Rev$'[5:-1])
+__revision__ = int('$Rev: -1 $'[5:-1])
 
 import logging
 
+from mx.DateTime import now
 from Modeling.CustomObject import CustomObject
 
-from fvl.luca.transaction import Transaction
-from fvl.luca.model.base import LucaModel, LucaMeta, model
-from fvl.luca.model.printer import Printer
-from fvl.luca.model.point_of_sale import PointOfSale
+from fvl.luca.model.base import LucaModel, LucaMeta
 from fvl.luca.model.money import Money
 from fvl.luca.model.accounting_entry import AccountingEntry
-from fvl.luca.model.document import Document, Invoice
 
-logger = logging.getLogger('fvl.luca.model')
+logger = logging.getLogger('fvl.luca.model.point_of_sale')
 
-namespace = globals()
-for className in model.entitiesNames():
-    if className not in namespace:
-        namespace[className] = LucaMeta(className,
-        # add superclasses here --------------------vvvvv
-                                        (LucaModel, CustomObject), {})
+class Document(LucaModel, CustomObject):
+    __metaclass__ = LucaMeta
+
+class Invoice(Document):
+    __metaclass__ = LucaMeta
+
+    def register(self, debitAccount, creditAccount, customerAccount=None):
+        transaction = self.transaction()
+        assert transaction is not None, "document must be tracked!"
+        entry = AccountingEntry(customerAccount=customerAccount)
+        transaction.track(entry)
+        entry.debit(self.amount, debitAccount)
+        entry.credit(self.amount, creditAccount)
+        
