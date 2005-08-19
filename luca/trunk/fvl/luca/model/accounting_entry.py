@@ -37,10 +37,11 @@ class AccountingEntry(LucaModel, CustomObject):
     skin.entry
     """
     __metaclass__ = LucaMeta
-    def __init__(self, number=0, recordTime=None, pos=None):
+    def __init__(self, number=0, recordTime=None, pos=None, customer=None):
         self.number = number
         self.recordTime = recordTime or now()
         self.pointOfSale = pos
+        self.customer = customer
 
 
     def debit(self, amount, account):
