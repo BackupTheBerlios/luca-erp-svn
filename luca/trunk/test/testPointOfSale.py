@@ -57,7 +57,9 @@ class TestPointOfSale(testWithDatabase):
                                   otherParty=self.client
                                   )
         self.trans.save()
-#        self.assertEqual(self.pos.total(), 100)
+    def testTotal(self):
+        self.testRegisterDocument()
+        self.assertEqual(self.pos.total(), 100)
 
 def TestPettyCash(testWithDatabase):
     def setUp(self):

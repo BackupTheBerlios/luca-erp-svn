@@ -18,7 +18,7 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
-__revision__ = int('$Rev: -1 $'[5:-1])
+__revision__ = int('$Rev$'[5:-1])
 
 import logging
 
@@ -48,13 +48,15 @@ class Invoice(Document):
         return cls.cashAccount(trn), movementAccount
     accounts = classmethod(accounts)
 
-    def register(self, otherParty, debitAccount, creditAccount, customerAccount=None):
+    def register(self, ourParty, otherParty, debitAccount, creditAccount, customerAccount=None):
         transaction = self.transaction()
         assert transaction is not None, "document must be tracked!"
         self.client = otherParty
         self.customerAccount = customerAccount
         entry = AccountingEntry(customerAccount=customerAccount)
+        entry.pointOfSale = ourParty
+        entry.recordDate = now()
         transaction.track(entry)
         entry.debit(self.amount, debitAccount)
         entry.credit(self.amount, creditAccount)
-        
+

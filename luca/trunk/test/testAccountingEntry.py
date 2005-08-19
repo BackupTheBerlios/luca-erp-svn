@@ -101,3 +101,16 @@ class TestAccountingEntry(testWithDatabase):
         balance = self.acEntry.balance()
 
         self.assertTrue(balance > 0)
+
+    def testDebitSum(self):
+        self.acEntry.debit(amount=self.otherAmount, account=self.debit)
+        self.acEntry.debit(amount=self.otherAmount, account=self.debit)
+        self.acEntry.debit(amount=self.otherAmount, account=self.debit)
+
+        self.assertEqual(self.otherAmount * 3, self.acEntry.debitSum())
+    def testCreditSum(self):
+        self.acEntry.credit(amount=self.otherAmount, account=self.credit)
+        self.acEntry.credit(amount=self.otherAmount, account=self.credit)
+        self.acEntry.credit(amount=self.otherAmount, account=self.credit)
+
+        self.assertEqual(self.otherAmount * 3, self.acEntry.creditSum())
