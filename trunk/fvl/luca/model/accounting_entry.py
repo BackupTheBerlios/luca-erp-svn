@@ -49,14 +49,14 @@ class AccountingEntry(LucaModel, CustomObject):
         self.transaction().track(Movement(entry=self,
                                           operation=0,
                                           account=account,
-                                          amount=amount.amount))
+                                          amount=amount))
 
     def credit(self, amount, account):
         from fvl.luca.model import Movement
         self.transaction().track(Movement(entry=self,
                                           operation=1,
                                           account=account,
-                                          amount=amount.amount))
+                                          amount=amount))
 
     def balance(self):
         """

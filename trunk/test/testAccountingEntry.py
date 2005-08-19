@@ -56,7 +56,7 @@ class TestAccountingEntry(testWithDatabase):
         Checks if all the accounting entry has been made with the correct
         movements
         """
-        self.acEntry.debit(amount=Money(amount=self.amount), account=self.debit)
+        self.acEntry.debit(amount=self.amount, account=self.debit)
         qual = Qualifier()
 
         a = self.trans.search("Movement", qual.entry.number.equal(self.acEntry.number))
@@ -67,7 +67,7 @@ class TestAccountingEntry(testWithDatabase):
 
 
     def testAddEntryCredit(self):
-        self.acEntry.credit(amount=Money(amount=self.amount), account=self.credit)
+        self.acEntry.credit(amount=self.amount, account=self.credit)
         qual = Qualifier()
 
         a = self.trans.search("Movement", qual.entry.number.equal(
@@ -78,8 +78,8 @@ class TestAccountingEntry(testWithDatabase):
         self.assertEqual(a[0].account, self.credit)
 
     def testBalanceIsRight(self): 
-        self.acEntry.debit(amount=Money(amount=self.amount), account=self.debit)
-        self.acEntry.credit(amount=Money(amount=self.amount), account=self.credit)
+        self.acEntry.debit(amount=self.amount, account=self.debit)
+        self.acEntry.credit(amount=self.amount, account=self.credit)
 
         balance = self.acEntry.balance()
         
@@ -87,16 +87,16 @@ class TestAccountingEntry(testWithDatabase):
 
 
     def testBalanceIsWrongNegative(self):
-        self.acEntry.debit(amount=Money(amount=self.amount), account=self.debit)
-        self.acEntry.credit(amount=Money(amount=self.otherAmount), account=self.credit)
+        self.acEntry.debit(amount=self.amount, account=self.debit)
+        self.acEntry.credit(amount=self.otherAmount, account=self.credit)
 
         balance = self.acEntry.balance()
 
         self.assertTrue(balance < 0)
 
     def testBalanceIsWrongPositive(self):
-        self.acEntry.debit(amount=Money(amount=self.otherAmount), account=self.debit)
-        self.acEntry.credit(amount=Money(amount=self.amount), account=self.credit)
+        self.acEntry.debit(amount=self.otherAmount, account=self.debit)
+        self.acEntry.credit(amount=self.amount, account=self.credit)
 
         balance = self.acEntry.balance()
 

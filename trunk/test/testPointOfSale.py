@@ -25,7 +25,7 @@ from time import time
 from random import uniform
 
 from fvl.luca.model import PointOfSale, CustomerAccount, \
-     MovementAccount, Provider, Person, Invoice, PointOfSaleOpening
+     MovementAccount, Provider, Person, Invoice, PointOfSaleOpening, Money
 from fvl.luca.transaction import Transaction, Qualifier
 
 from testWithDatabase import testWithDatabase
@@ -48,12 +48,13 @@ class TestPointOfSale(testWithDatabase):
         self.trans.save()
 
     def testRegisterDocument(self):
-        self.pos.registerDocument(documentClass=PointOfSaleOpening,
+        self.pos.registerDocument(documentClass=Invoice,
                                   number='some number',
                                   type='X',
                                   detail='blah blah blah',
                                   amount=100,
-                                  actualDate=now())
+                                  actualDate=now(),
+                                  )
         self.trans.save()
         self.assertEqual(self.pos.total(), 100)
 

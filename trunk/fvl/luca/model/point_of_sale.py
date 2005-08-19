@@ -26,17 +26,25 @@ from mx.DateTime import now
 from Modeling.CustomObject import CustomObject
 
 from fvl.luca.model.base import LucaModel, LucaMeta
+from fvl.luca.model.money import Money
+from fvl.luca.transaction.qualifier import Qualifier
 
 logger = logging.getLogger('fvl.luca.model.point_of_sale')
+
+class InvalidPettyCashEntryError(RuntimeError):
+    pass
 
 class PointOfSale(LucaModel, CustomObject):
     __metaclass__ = LucaMeta
     def registerDocument(self, documentClass, number, type, detail,
-                         amount, actualDate):
-#        ent = Entry(
-        doc = documentClass(actualDate=actualDate,
-                            amount=amount,
-                            type=type,
-                            number=number,
-                            detail=detail)
-        self.transaction.track(doc)
+                         amount, actualDate,
+                         debitAccount=None, creditAccount=None,
+                         customerAccount=None):
+
+
+        doc = documentClass(actualDate=actualDate, amount=amount,
+                            type=type, number=number, detail=detail)
+        self.transaction().track(doc)
+        doc.register(debitAccount=debitAccount,
+                     creditAccount=creditAccount,
+                     customerAccount=customerAccount)

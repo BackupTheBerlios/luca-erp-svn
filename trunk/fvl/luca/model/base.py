@@ -120,16 +120,13 @@ dynamic.getter_code = getter_code
 
 class LucaMeta(type):
     def __new__(cls, className, bases, namespace):
-        # print className, bases
         entity = model.entityNamed(className)
         if entity is None:
-            raise RuntimeError, 'BUG!'
-        # print className, namespace
+            raise RuntimeError, 'model has no entity %r' % (className,)
         dynamic.define_init(entity, className, namespace)
         dynamic.define_getters(entity, className, namespace)
         dynamic.define_setters(entity, className, namespace)
         dynamic.define_properties(entity, className, namespace)
-        # print className, namespace
         return super(LucaMeta, cls).__new__(cls, className, bases, namespace)
 
 class LucaModel(CimarronModel):
