@@ -27,6 +27,8 @@ from fvl.luca.transaction import Transaction
 from Modeling import Model, ModelSet, dynamic
 from Modeling.EditingContext import EditingContext
 
+from testWithDatabase import testWithDatabase
+
 dn = os.path.dirname(__file__)
 model_file = 'test/tr_pymodel_test.py'
 
@@ -37,6 +39,9 @@ dynamic.build_with_metaclass(model, define_properties=1)
 database_file = model._connectionDictionary['database']
 
 from Tester.aProduct import aProduct
+
+# hack up the class to work
+aProduct.transaction = lambda *a: None
 
 class TestTransaction(unittest.TestCase):
     def setUp(self):
@@ -90,13 +95,14 @@ class TestsThatRequireNoDatabase(TestTransaction):
         self.tr.track(p)
         self.assertEqual(len(self.tr.tracked), 1)
 
-class TestWithDatabase(TestTransaction):
+class TestWithTransactionDatabase(testWithDatabase, TestTransaction):
+    _cache_db = 'tr_cache.db'
+    _test_db = database_file
     def setUp(self):
-        os.system('cp -f tr_cache.db %s' % database_file)
-        super(TestWithDatabase, self).setUp()
+        super(TestWithTransactionDatabase, self).setUp()
         self.tr.track(aProduct(name='one'))
 
-class TestInsertOne(TestWithDatabase):
+class TestInsertOne(TestWithTransactionDatabase):
     def testWorked(self):
         """
         Even before save, the current transaction should be able to
@@ -134,7 +140,7 @@ class TestInsertOne(TestWithDatabase):
         self.tr.save()
         self.assertEqual(len(self.other_tr.search(aProduct)), 1)
 
-class TestEditOne(TestWithDatabase):
+class TestEditOne(TestWithTransactionDatabase):
     def setUp(self):
         super(TestEditOne, self).setUp()
         self.tr.save()

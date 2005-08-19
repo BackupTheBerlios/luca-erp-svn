@@ -31,31 +31,12 @@ logger = logging.getLogger('fvl.luca.model.point_of_sale')
 
 class PointOfSale(LucaModel, CustomObject):
     __metaclass__ = LucaMeta
-    def __init__(self, **kwargs):
-        super(PointOfSale, self).__init__(**kwargs)
-
-    def open(self, amount, transaction, dateTime=None):
-        if dateTime is None:
-            dateTime = now()
-        doc = DrawerOpen(pointOfSale=self, amount=amount, dateTime=dateTime)
-        transaction.track(doc)
-
-    def close(self, amount, transaction, dateTime=None):
-        if dateTime is None:
-            dateTime = now()
-        doc = DrawerClose(pointOfSale=self, amount=amount, dateTime=dateTime)
-        transaction.track(doc)
-        
-    def moveIn(self, amount, category, account, transaction, dateTime=None):
-        if dateTime is None:
-            dateTime = now()
-        movement = Movement(pointOfSale=self, amount=amount, category=category,
-                            account=account, dateTime=dateTime)
-        transaction.track(movement)
-
-    def moveOut(self, amount, category, account, transaction, dateTime=None):
-        if dateTime is None:
-            dateTime = now()
-        movement = Movement(pointOfSale=self, amount=amount, category=category,
-                            account=account, dateTime=dateTime)
-        transaction.track(movement)
+    def registerDocument(self, documentClass, number, type, detail,
+                         amount, actualDate):
+#        ent = Entry(
+        doc = documentClass(actualDate=actualDate,
+                            amount=amount,
+                            type=type,
+                            number=number,
+                            detail=detail)
+        self.transaction.track(doc)

@@ -33,6 +33,7 @@ moduleNames= ['testTransaction',
               'testCurrency',
               'testPrinter',
               'testPointOfSale',
+              'testAccountingEntry',
               ]
 
 parser = OptionParser()

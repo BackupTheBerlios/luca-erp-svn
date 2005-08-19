@@ -28,8 +28,7 @@ class TestAccountingEntry(testWithDatabase):
         self.trans.track(self.credit)
 
     def testAddEntryDebit(self):
-        self.acEntry.debit(amount=Money(amount=self.amount),account=self.debit
-                           , trans=self.trans)
+        self.acEntry.debit(amount=Money(amount=self.amount), account=self.debit)
         qual = Qualifier()
 
         a = self.trans.search("Movement", qual.entry.number.equal(self.acEntry.number))
@@ -40,44 +39,37 @@ class TestAccountingEntry(testWithDatabase):
 
 
     def testAddEntryCredit(self):
-        self.acEntry.credit(amount=Money(amount=self.amount),account=self.credit
-                            ,trans=self.trans)
+        self.acEntry.credit(amount=Money(amount=self.amount), account=self.credit)
         qual = Qualifier()
 
         a = self.trans.search("Movement", qual.entry.number.equal(
                               self.acEntry.number))
 
-        self.assertEqual(a[0].entry,self.acEntry)
-        self.assertEqual(a[0].operation,1)
-        self.assertEqual(a[0].account,self.credit)
+        self.assertEqual(a[0].entry, self.acEntry)
+        self.assertEqual(a[0].operation, 1)
+        self.assertEqual(a[0].account, self.credit)
 
     def testBalanceIsRight(self): 
-        self.acEntry.debit(amount=Money(amount=self.amount),account=self.debit
-                           ,trans=self.trans)
-        self.acEntry.credit(amount=Money(amount=self.amount),account=self.credit
-                            ,trans=self.trans)
+        self.acEntry.debit(amount=Money(amount=self.amount), account=self.debit)
+        self.acEntry.credit(amount=Money(amount=self.amount), account=self.credit)
 
-        balance = self.acEntry.balance(self.trans)
+        balance = self.acEntry.balance()
         
         self.assertEqual(balance, 0.0)
 
 
     def testBalanceIsWrongNegative(self):
-        self.acEntry.debit(amount=Money(amount=self.amount),account=self.debit
-                           , trans=self.trans)
-        self.acEntry.credit(amount=Money(amount=self.otherAmount),account=self.credit
-                            , trans=self.trans)
+        self.acEntry.debit(amount=Money(amount=self.amount), account=self.debit)
+        self.acEntry.credit(amount=Money(amount=self.otherAmount), account=self.credit)
 
-        balance = self.acEntry.balance(self.trans)
+        balance = self.acEntry.balance()
 
         self.assertTrue(balance < 0)
 
     def testBalanceIsWrongPositive(self):
-        self.acEntry.debit(amount=Money(amount=self.otherAmount),account=self.debit
-                           , trans=self.trans)
-        self.acEntry.credit(amount=Money(amount=self.amount),account=self.credit
-                            , trans=self.trans)
+        self.acEntry.debit(amount=Money(amount=self.otherAmount), account=self.debit)
+        self.acEntry.credit(amount=Money(amount=self.amount), account=self.credit)
 
-        balance = self.acEntry.balance(self.trans)
+        balance = self.acEntry.balance()
 
         self.assertTrue(balance > 0)
