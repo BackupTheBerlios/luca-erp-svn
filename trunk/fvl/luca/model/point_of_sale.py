@@ -27,7 +27,6 @@ from Modeling.CustomObject import CustomObject
 
 from fvl.luca.model.base import LucaModel, LucaMeta
 from fvl.luca.model.money import Money
-from fvl.luca.transaction.qualifier import Qualifier
 
 logger = logging.getLogger('fvl.luca.model.point_of_sale')
 
@@ -37,14 +36,27 @@ class InvalidPettyCashEntryError(RuntimeError):
 class PointOfSale(LucaModel, CustomObject):
     __metaclass__ = LucaMeta
     def registerDocument(self, documentClass, number, type, detail,
-                         amount, actualDate,
+                         amount, actualDate, otherParty,
                          debitAccount=None, creditAccount=None,
                          customerAccount=None):
 
 
-        doc = documentClass(actualDate=actualDate, amount=amount,
-                            type=type, number=number, detail=detail)
+        doc = documentClass(number=number, type=type, detail=detail,
+                            amount=amount, actualDate=actualDate)
         self.transaction().track(doc)
-        doc.register(debitAccount=debitAccount,
+        doc.register(otherParty=otherParty,
+                     debitAccount=debitAccount,
                      creditAccount=creditAccount,
                      customerAccount=customerAccount)
+
+class PettyCash(object):
+    def __init__(self, transaction):
+        self.pos ,= transaction.search('PointOfSale')
+
+    def registerDocument(self, documentClass, number, type, detail,
+                         amount, actualDate, otherParty, movementAccount,
+                         customerAccount=None):
+        debitAccount, creditAccount = documentClass.accounts(movementAccount)
+        self.pos.register(documentClass, number, type, detail, amount,
+                          actualDate, otherParty, debitAccount, creditAccount,
+                          customerAccount)

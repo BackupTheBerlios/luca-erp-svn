@@ -28,18 +28,31 @@ from Modeling.CustomObject import CustomObject
 from fvl.luca.model.base import LucaModel, LucaMeta
 from fvl.luca.model.money import Money
 from fvl.luca.model.accounting_entry import AccountingEntry
+from fvl.luca.transaction.qualifier import Qualifier
 
 logger = logging.getLogger('fvl.luca.model.point_of_sale')
 
 class Document(LucaModel, CustomObject):
     __metaclass__ = LucaMeta
 
+    def cashAccount(cls, transaction):
+        q = Qualifier()
+        cash ,= transaction.search('MovementAccount', q.code == "1.1.01.01")
+        return cash
+
 class Invoice(Document):
     __metaclass__ = LucaMeta
 
-    def register(self, debitAccount, creditAccount, customerAccount=None):
+    def accounts(cls, movementAccount):
+        trn = movementAccount.transaction()
+        return cls.cashAccount(trn), movementAccount
+    accounts = classmethod(accounts)
+
+    def register(self, otherParty, debitAccount, creditAccount, customerAccount=None):
         transaction = self.transaction()
         assert transaction is not None, "document must be tracked!"
+        self.client = otherParty
+        self.customerAccount = customerAccount
         entry = AccountingEntry(customerAccount=customerAccount)
         transaction.track(entry)
         entry.debit(self.amount, debitAccount)
