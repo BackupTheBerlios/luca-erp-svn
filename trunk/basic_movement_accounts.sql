@@ -1,0 +1,115 @@
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('ACTIVO',NULL,'1',1) ;
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('ACTIVO CORRIENTE',1, '1.1',11);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('DISPONIBILIDADES',11, '1.1.01',101);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('CAJA EN PESOS',101, '1.1.01.01',1000);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('CAJA FUNDACION',101, '1.1.01.02',1001);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('BANCA NAZIONALE DEL LAVORO' ,1101, '1.1.01.03',1002);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('CREDITOS POR VENTA',11,'1.1.02',102);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('DEUDORES COMUNES'    ,102,  '1.1.02.01',1003);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('DEUDORES EN GESTION JUDICIAL'    ,1102,  '1.1.02.02',1004);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('INVERSIONES'   ,11,   '1.1.03',103 );
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('TITULOS Y ACCIONES'  ,103,    '1.1.03.01',1005);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('CREDITOS FISCALES'   ,11,   '1.1.04' ,104);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('IVA'   ,104,   '1.1.04.01',1006);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('GANANCIAS'  ,104,    '1.1.04.02',1007);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('IIBB'   ,104,   '1.1.04.03',1008);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('OTROS CREDITOS' ,11, '1.1.05',105 );
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('ANTICIPOS A RENDIR'  ,105, '1.1.05.01',1009);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('DEUDORES VARIOS' ,105, '1.1.05.02',1010);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('BIENES DE CAMBIO' ,11, '1.1.06',106);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('STOCK 1' ,106,'1.1.06.01',1011);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('STOCK 2' ,106, '1.1.06.02',1012);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('STOCK 3' ,106, '1.1.06.03',1013);
+
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('ACTIVO  NO CORRIENTE' ,NULL, '1.2',12);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('BIENES DE USO'  ,12, '1.2.01', 107);
+
+--INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('BIENES DE USO VALOR DE ORIGEN'  '')
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('MUEBLES Y UTILES'  ,107, '1.2.01.01',1014);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('RODADOS' ,107,  '1.2.01.02',1015);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('INMUEBLES' ,107, '1.2.01.03',1016);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('VALOR DE ORIGEN AXI' ,107, '1.2.01.99',1017);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('AMORTIZACION ACUMULADA VALOR DE ORIGEN'  ,12,  '1.2.02',108 );
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('A.ACUMULADA MUEBLES Y UTILES' ,108, '1.2.02.01',1018);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('A.ACUMULADA RODADOS'  ,108, '1.2.02.02',1019);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('A.ACUMULADA INMUEBLES' ,108, '1.2.02.03',1020);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('AMORTIZACION ACUMULADA AXI' ,108, '1.2.02.99',1021);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('INVERSIONES' ,13, '1.2.03' ,109);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('INVERSIONES' ,109,  '1.2.03.01',1022);
+
+
+
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('PASIVO',NULL,'2',2);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('PASIVO CORRIENTE' ,2, '2.1' ,14);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('DEUDAS OPERATIVAS' ,14, '2.1.01',110);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('PROVEEDORES (ALQUILER A PAGAR)' ,110,  '2.1.01.01', 1099);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('DEUDAS CON ORGANISMOS FINANCIEROS'  ,14, '2.1.02',111 );
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('AVINA' ,111, '2.1.02.01',1023);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('DEUDAS LEGALES' ,14, '2.1.03',112 );
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('DEUDAS LEGALES' ,112,  '2.1.03.01',1024);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('DEUDAS FINANCIERAS' ,14,  '2.1.04',113 );
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('DEUDAS BANCARIAS' ,113, '2.1.04.01',1025);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('PRESTAMOS' ,113, '2.1.04.02',1026);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('DEUDAS SOCIALES' ,14,  '2.1.05',114 );
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('HONORARIOS A PAGAR' ,114,  '2.1.05.01',1027);
+        
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('PATRIMONIO NETO' ,NULL, '3',3);
+ -- '1' '01' '3.1.01.01')
+        
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('RESULTADO DEL EJERCICIO' ,NULL, '4',4);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('INGRESOS'  ,4, '4.1' ,15);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('INGRESOS OPERATIVOS'  ,15,  '4.1.01',115);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('CURSOS'  ,115,    '4.1.01.01',1028);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('OTROS' ,115,  '4.1.01.02',1029);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('INGRESOS POR DONACIONES'  ,15,    '4.1.02',116 );
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('REMESAS FONCYT'   ,116,   '4.1.02.01',1030);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('DONACIONES PARTICULARES' ,116,      '4.1.02.02',1031);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('EGRESOS'    ,4,  '4.2' ,16);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('EGRESOS OPERATIVOS' ,16,     '4.2.01',117 );
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('HONORARIOS '  ,117,    '4.2.01.01',1032);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('CONEXION INTERNET'    ,117,   '4.2.01.02',1033);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('MOVILIDAD'   ,117,    '4.2.01.03',1034);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('GASTOS DE EVENTOS'  ,117,     '4.2.01.04',1035);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('GASTOS DE CAPACITACION'   ,117,    '4.2.01.05',1036);
+
+--INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('INSUMOS PARA PROYECTO'      )
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('GASTOS ADMINISTRATIVOS' ,16,   '4.2.02' ,118);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('HONORARIOS' ,118,     '4.2.02.01',1037);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('MOVILIDAD'   ,118,   '4.2.02.02',1038);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('PAPELERIA Y UTILES'  ,118,    '4.2.02.03',1039);
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('OTROS GASTOS' ,16, '4.2.03',119 );
+
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('ALQUILER '  ,119,    '4.2.03.01',1040);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('LUZ '   ,119,  '4.2.03.02',1041);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('AGUA'   ,119, '4.2.03.03',1042);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('TELEFONO'   ,119, '4.2.03.04',1043);
+INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('INSUMOS PC'  ,119, '4.2.03.05',1044);

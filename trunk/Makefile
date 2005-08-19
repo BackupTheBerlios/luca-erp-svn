@@ -63,7 +63,6 @@ LUCA_CACHE_TEST_DB = luca_cache.db
 EXOTIC_PYTHON_TEST_OPTS := $(EXOTIC_OPTS) -eMod -Odatabase:$(LUCA_TEST_DB),adaptorName:SQLite,modelName:$(LUCA_MODEL),packageName:$(LUCA_PACKAGE),moduleName:$(LUCA_MODULE)
 
 all: $(TARGETS)
-	echo $(EXOTIC_PYTHON_TEST_OPTS)
 
 %.xml: xins/%.xin $(XOT)
 	$(EXOTIC) -n -eCimarronXMLui -Oxin:$< $(XOT) > $@
@@ -73,10 +72,20 @@ test: $(LUCA_TEST_PYMODEL) $(TR_CACHE_TEST_DB) $(LUCA_CACHE_TEST_DB)
 		$(PYTHON) test/run.py $(TESTOPTS) $(COLORIZER)
 	$(RM) *_test.db
 
+feed_to_test: basic_movement_accounts.sql
+	sqlite luca_test.db < $<
+
 $(LUCA_TEST_PYMODEL): $(XOT)
 	$(EXOTIC) $(EXOTIC_PYTHON_TEST_OPTS) $< > $@
 
-%_cache.db: %_test.db
+# %_cache.db: %_test.db
+# 	mv $< $@
+
+luca_cache.db: luca_test.db basic_movement_accounts.sql
+	sqlite $< < basic_movement_accounts.sql
+	mv $< $@
+
+tr_cache.db: tr_test.db
 	mv $< $@
 
 %_test.db: test/%_pymodel_test.py
@@ -94,11 +103,12 @@ clean:
 	$(TR_TEST_DB) $(TR_CACHE_TEST_DB) \
 	$(LUCA_TEST_DB) $(LUCA_CACHE_TEST_DB) $(LUCA_TEST_PYMODEL)
 
+
 distclean: clean
 	find '(' -name '*.py[co]' -o -name '*~' ')' -print0 | xargs -0 -r $(RM)
 	$(RM) $(TR_CACHE_TEST_DB)
 
-.PHONY: test model all clean
+.PHONY: test model all clean feed_to_test
 
 .DELETE_ON_ERROR:
 
