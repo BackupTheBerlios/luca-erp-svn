@@ -113,3 +113,5 @@ INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('LUZ '  
 INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('AGUA'   ,119, '4.2.03.03',1042);
 INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('TELEFONO'   ,119, '4.2.03.04',1043);
 INSERT INTO movement_account (name,FK_MOVEMENT_ACCOUNT,code,id) VALUES ('INSUMOS PC'  ,119, '4.2.03.05',1044);
+
+INSERT INTO PK_SEQ_MOVEMENT_ACCOUNT (id) VALUES(3000);
