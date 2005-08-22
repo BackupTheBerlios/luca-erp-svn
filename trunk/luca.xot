@@ -267,8 +267,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
         <field name="name" type="varchar(20)" null="false"/>
-        <!-- until i remember why is this here, it's not
-         <field name="parent" references="movement_account"/> -->
+        <field name="parent" references="movement_account" inverse="children"/>
         <field name="code" type="varchar(20)" null="false"/>
       </fields>
       
