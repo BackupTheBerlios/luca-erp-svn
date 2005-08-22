@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Copyright 2005 Fundación Via Libre
 #
@@ -18,34 +17,23 @@
 # PAPO; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
 # Suite 330, Boston, MA 02111-1307 USA
 
-PYTHON		?= python
-PYTHON_BASE	?= $(shell $(PYTHON) -c 'import os; print os.path.dirname(os.__file__)')
-MKHOWTO		= $(PYTHON_BASE)/doc/tools/mkhowto
+ALL=api tutorial index.html
+RST2HTML ?= rst2html
+EPYDOC ?= epydoc
+EPYDOC_OPTS ?=
+EPYDOC_FILES=$(shell find ../fvl/ -type f -name \*.py)
 
-SOURCES		= tutorial.tex \
-		  helloworld.py \
-		  multiplexedaction.py \
-		  simpleaction.py \
-		  simplepersoneditor.py \
-		  simpleperson.py
-
-ALL		= tutorial tutorial.pdf tutorial.dvi
-
-all:	$(ALL)
+all: $(ALL)
 
 clean:
-	$(RM) -r $(ALL) tutorial.l2h
+	$(RM) -r $(ALL)
 
-distclean: clean
-	$(RM) *~
+index.html: ../README.txt
+	$(RST2HTML) < $< > $@
 
-tutorial: $(SOURCES)
-	$(MKHOWTO) --html $<
+tutorial: ../tutorial/tutorial
+	$(RM) -r $@
+	cp -a $< $@
 
-tutorial.dvi: $(SOURCES)
-	$(MKHOWTO) --dvi $<
-
-tutorial.pdf: $(SOURCES)
-	$(MKHOWTO) --pdf $<
-
-.PHONY: all clean distclean
+api: $(EPYDOC_FILES)
+	$(EPYDOC) --output $@ --html $(EPYDOC_OPTS) $(EPYDOC_FILES)
