@@ -116,10 +116,10 @@ class LoadPettyCashEntry(WindowController):
         self.docDate = Entry(parent=right2)
 
         self.thirdLabel = Label(parent=left2)
-        columns= (Column(name='Apellido', attribute='subject.surname'),)
+        columns= (Column(name='Apellido', attribute='person.surname'),)
         self.otherParty = SearchEntry(parent=right2, columns=columns,
                                       searcher=self.trans)
-        #right2.disable()
+        self.otherParty.disable()
 
 
         # f3 = Frame(parent=v, label='Montos')
@@ -146,7 +146,7 @@ class LoadPettyCashEntry(WindowController):
         if self.docType.value:
             self.thirdLabel.text = self.docType.value['other'].__name__
             self.otherParty.cls = self.docType.value['other']
-            #self.otherParty.enable()
+            self.otherParty.enable()
     
 
     def save(self, *ignore):
