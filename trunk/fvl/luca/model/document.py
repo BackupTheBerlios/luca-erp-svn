@@ -28,7 +28,7 @@ from Modeling.CustomObject import CustomObject
 from fvl.luca.model.base import LucaModel, LucaMeta
 from fvl.luca.model.money import Money
 from fvl.luca.model.accounting_entry import AccountingEntry
-from fvl.luca.transaction.qualifier import Qualifier
+from fvl.cimarron.model.qualifier import Qualifier
 
 logger = logging.getLogger('fvl.luca.model.point_of_sale')
 

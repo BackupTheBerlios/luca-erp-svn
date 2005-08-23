@@ -27,7 +27,7 @@ from zope import interface
 from Modeling.EditingContext import EditingContext
 
 from fvl.cimarron.interfaces import IStore
-from fvl.luca.transaction.qualifier import Qualifier, nullQualifier
+from fvl.cimarron.model.qualifier import Qualifier, nullQualifier
 
 logger = logging.getLogger('fvl.luca.transaction')
 # logger.setLevel(logging.DEBUG)
