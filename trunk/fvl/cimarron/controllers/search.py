@@ -29,7 +29,7 @@ import gtk
 from fvl.cimarron.controllers.base import Controller, WindowController
 from fvl.cimarron.controllers.column import ColumnAwareXmlMixin
 from fvl.cimarron.skins.common import No as DelegateNo
-from fvl.cimarron.model.qualifier import Qualifier
+from fvl.cimarron.model.qualifier import Qualifier, nullQualifier
 
 logger = logging.getLogger('fvl.cimarron.controllers.search')
 # logger.setLevel(logging.DEBUG)
@@ -113,8 +113,8 @@ class Search(ColumnAwareXmlMixin, Controller):
 
         super(Search, self).__init__(**kwargs)
         self.entries = []
-        # self.h = HBox(parent=self, expand=False)
-        self.h = HBox(expand=False)
+        self.h = HBox(parent=self, expand=False)
+        # self.h = HBox(expand=False)
         self._outerWidget = self.h._outerWidget
         self.columns = columns
         self.value = None
@@ -144,6 +144,7 @@ class Search(ColumnAwareXmlMixin, Controller):
             
             # the widget that fires the action.
             self.mainWidget = b
+            logger.debug('here')
         self.__columns = columns
     def _get_columns(self):
         return self.__columns
@@ -169,6 +170,8 @@ class Search(ColumnAwareXmlMixin, Controller):
                         qual = qual & (getattr(Qualifier(), c.attribute).equal(e.value))
 
             logger.debug ('searching %r, %r', self.searcher, `qual`)
+            if qual is None:
+                qual = nullQualifier
             self.value = self.searcher.search(self.cls, qual)
             # self.value = []
         finally:
@@ -182,6 +185,12 @@ class Search(ColumnAwareXmlMixin, Controller):
         self.onAction()
         return ans
 
+
+    def enable(self):
+        self.h.enable()
+
+    def disable(self):
+        self.h.disable()
     # def will_focus_out(self, *ignore):
     #     return DelegateNo
 
@@ -289,7 +298,7 @@ class SearchEntry(Search):
         else:
             logger.debug('here!')
             self.onAction()
-        # logger.debug(`self.value`)
+        logger.debug(`self.value`)
         return len(ans)
 
     def selected(self, *ignore):
