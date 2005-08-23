@@ -29,6 +29,7 @@ import gtk
 from fvl.cimarron.controllers.base import Controller, WindowController
 from fvl.cimarron.controllers.column import ColumnAwareXmlMixin
 from fvl.cimarron.skins.common import No as DelegateNo
+from fvl.cimarron.model.qualifier import Qualifier
 
 logger = logging.getLogger('fvl.cimarron.controllers.search')
 # logger.setLevel(logging.DEBUG)
@@ -155,18 +156,21 @@ class Search(ColumnAwareXmlMixin, Controller):
         """
         self.window.disable()
         try:
-            data = {}
+            # data = {}
+            # qual = Qualifier()
+            qual = None
             for i in xrange(len(self.columns)):
                 e = self.entries[i]
-                c = self.columns[i]
-                if e.value != '':
-                    # '' means `don't filter by me'
-                    data[c.attribute] = e.value
-                else:
-                    data[c.attribute] = None
+                if e.value != '' and e.value is not None:
+                    c = self.columns[i]
+                    if qual is None:
+                        qual = getattr(Qualifier(), c.attribute).equal(e.value)
+                    else:
+                        qual = qual & (getattr(Qualifier(), c.attribute).equal(e.value))
 
-            logger.debug ('searching %r, %r', self.searcher, data)
-            self.value = self.searcher.search(self.cls, **data)
+            logger.debug ('searching %r, %r', self.searcher, `qual`)
+            self.value = self.searcher.search(self.cls, qual)
+            # self.value = []
         finally:
             self.window.enable()
         return len(self.value)
