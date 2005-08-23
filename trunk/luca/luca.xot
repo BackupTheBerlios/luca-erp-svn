@@ -156,7 +156,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
         <field name="id" type="int" auto_increment="true" null="false"/>
         <!-- still no definitive attributes for a client -->
         <field name="credit" type="varchar(60)"  null="false"/>
-        <field name="subject" references="person" null="false" 
+        <field name="person" references="person" null="false" 
                inverse="asClient"/>
       </fields>
       
@@ -170,7 +170,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
     <table name="provider">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
-        <field name="subject" references="person" null="false" 
+        <field name="person" references="person" null="false" 
                inverse="as_provider"/>
       </fields>
       
