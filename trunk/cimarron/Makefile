@@ -23,7 +23,7 @@ EPYDOC ?= epydoc
 EPYDOC_OPTS ?=
 TESTOPTS ?=
 
-PYTHON_FILES=$(shell find fvl -type f -name \*.py)
+PYTHON_FILES=$(shell find fvl/ -type f -name \*.py)
 
 all: docs
 
