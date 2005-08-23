@@ -146,6 +146,10 @@ class abstractTestVisibility(unittest.TestCase):
 class abstractTestContainer(abstractTestBasic):
     def testChilding(self):
         self.assert_(self.widget in self.parent.children)
+    def testCanEnable(self):
+        self.widget.enable()
+    def testCanDisable(self):
+        self.widget.disable()
 
 class abstractTestControl(abstractTestWidget):
     def setUp(self):

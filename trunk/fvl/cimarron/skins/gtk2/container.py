@@ -31,7 +31,22 @@ import gtk
 
 from fvl.cimarron.skins.common import Container
 
-class VBox(Container):
+class Gtk2Container(Container):
+    """
+    stuff specific to all Gtk2 containers
+    """
+    def disable(self):
+        """
+        Visually and functionally disable the container, and all its contents.
+        """
+        self._concreteWidget.set_sensitive(False)
+    def enable(self):
+        """
+        Undo a disable()
+        """
+        self._concreteWidget.set_sensitive(True)
+
+class VBox(Gtk2Container):
     """
     A vertical container. The children of this object
     will be placed one on top of the other.
@@ -44,7 +59,7 @@ class VBox(Container):
         self._concreteWidget.set_spacing (5)
         super(VBox, self).__init__(**kwargs)
 
-class HBox(Container):
+class HBox(Gtk2Container):
     """
     A horizontal container. The children of this object
     will be placed from left to right.
@@ -56,7 +71,7 @@ class HBox(Container):
         self._concreteWidget.set_spacing(5)
         super(HBox, self).__init__(**kwargs)
 
-class Notebook (Container):
+class Notebook (Gtk2Container):
     """
     A container where all the children are put in `tabs´ and
     only one of them is shown at any given time.
@@ -101,7 +116,7 @@ class Notebook (Container):
         """
         return self.delegate('will_change_page')
 
-class Frame(Container):
+class Frame(Gtk2Container):
     def __init__(self, label='', **kwargs):
         if '_concreteWidget' not in self.__dict__:
             self._innerWidget = self._outerWidget = \
