@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="iso-8859-1"?><!-- -*- nxml -*- -->
+<class name="customer_account">
+    <import what="fvl.luca.model.CustomerAccount"/>
+
+    <finder attribute="name"/>
+
+</class>

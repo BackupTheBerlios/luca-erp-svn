@@ -23,7 +23,9 @@ SQL=luca.sql
 TARGETS=product.xml \
 	person.xml \
 	document_type.xml \
+	customer_account.xml \
 	$(SQL) $(PYMODEL)
+#	client.xml \
 
 PYTHON ?= python
 COLORIZER ?= 2>&1 | tools/ppython
@@ -97,6 +99,13 @@ $(PYMODEL): $(XOT)
 
 $(SQL): $(PYMODEL)
 	mdl_generate_DB_schema.py -c -A $< > $@
+
+LUCA_INI=luca.ini
+Luca.sqlt: $(LUCA_TEST_PYMODEL)
+	rm -f $@
+	MDL_DB_CONNECTIONS_CFG=$(LUCA_INI) \
+		mdl_generate_DB_schema.py -C --admin-dsn :$@:: $<
+	sqlite $@ < basic_movement_accounts.sql
 
 clean:
 	$(RM) $(TARGETS) \
