@@ -24,8 +24,8 @@ TARGETS=product.xml \
 	person.xml \
 	document_type.xml \
 	customer_account.xml \
+	client.xml \
 	$(SQL) $(PYMODEL)
-#	client.xml \
 
 PYTHON ?= python
 COLORIZER ?= 2>&1 | tools/ppython
