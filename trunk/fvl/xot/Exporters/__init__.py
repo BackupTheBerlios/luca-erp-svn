@@ -16,6 +16,9 @@
 # along with PAPO; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+import logging
+logger = logging.getLogger('fvl.xot.exporters')
+
 desc = {'Pg': 'produces SQL statements to create the database on postgres (>=7.2)',
         'My': 'produces SQL statements to create the database on MySQL',
         'GV': 'produces output in GraphViz\'s dot format',
