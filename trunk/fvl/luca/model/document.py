@@ -34,24 +34,16 @@ logger = logging.getLogger('fvl.luca.model.point_of_sale')
 
 class Document(LucaModel, CustomObject):
     __metaclass__ = LucaMeta
-
-    def cashAccount(cls, transaction):
-        q = Qualifier()
-        cash ,= transaction.search('MovementAccount', q.code == "1.1.01.01")
+    def cashAccount(self, accountCode):
+        cash ,= self.transaction().search('MovementAccount',
+                                          Qualifier().code == accountCode)
         return cash
 
-class Invoice(Document):
-    __metaclass__ = LucaMeta
-
-    def accounts(cls, movementAccount):
-        trn = movementAccount.transaction()
-        return cls.cashAccount(trn), movementAccount
-    accounts = classmethod(accounts)
-
-    def register(self, ourParty, otherParty, debitAccount, creditAccount, customerAccount=None):
+    def register(self, ourParty, otherParty, debitAccount, creditAccount,
+                 customerAccount=None):
         transaction = self.transaction()
         assert transaction is not None, "document must be tracked!"
-        self.client = otherParty
+        self.setOtherParty(otherParty)
         self.customerAccount = customerAccount
         entry = AccountingEntry(customerAccount=customerAccount)
         entry.pointOfSale = ourParty
@@ -60,3 +52,41 @@ class Invoice(Document):
         entry.debit(self.amount, debitAccount)
         entry.credit(self.amount, creditAccount)
 
+class Invoice(Document):
+    __metaclass__ = LucaMeta
+
+    
+
+    def pettyRegister(self, ourParty, otherParty, anAccount, customerAccount=None):
+        """
+        like register(), but for pettyCash
+
+        pettyCash only selects one of (debitAccount, creditAccount),
+        because the other account is always Cash, and each document
+        knows which one
+        """
+        cash = self.cashAccount('1.1.01.01')
+        
+        debitAccount, creditAccount = anAccount, cash
+        return self.register(ourParty, otherParty, debitAccount, creditAccount,
+                             customerAccount)
+
+class PointOfSaleOpening(Document):
+    __metaclass__ = LucaMeta
+
+    def pettyRegister(self):
+
+        cash = self.cashAccount('1.1.01.01')
+
+        return self.register(ourParty, otherParty, debitAccount, creditAccount,
+                             customerAccount)
+        
+
+class PointOfSaleOpening(Document):
+    __metaclass__ = LucaMeta
+
+    def pettyRegister(self):
+        cash = self.cashAccount('1.1.01.01')
+
+        return self.register(ourParty, otherParty, debitAccount, creditAccount,
+                             customerAccount)

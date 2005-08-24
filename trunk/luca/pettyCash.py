@@ -25,11 +25,14 @@ from fvl.cimarron.skin import WindowController, VBox, HBox, Label, \
      SearchEntry, Column, Frame, Button, Entry, Application
 from fvl.cimarron.model.qualifier import Qualifier
 
-from fvl.luca.model import Invoice, AlienInvoice, PettyCash, CustomerAccount, \
-     MovementAccount, Person, Client, Provider
+from fvl.luca.model import Invoice, AlienInvoice, CustomerAccount, \
+     MovementAccount, Person, Client, Provider, PointOfSaleOpening,\
+     PointOfSaleClosure
 from fvl.luca.transaction import Transaction
 
 import re
+
+from mx.DateTime import now
 
 class ModelDict(dict):
     def getattr(self, attr):
@@ -48,10 +51,15 @@ class DocumentType(object):
                   other=Provider),
         ModelDict(name='Factura Externa C', type='C', cls=AlienInvoice,
                   other=Provider),
-        ModelDict(name='Ticket Externo', type=None, cls=AlienInvoice,
-                  other=Provider),
-        ModelDict(name='Comprobante Externo', type=None, cls=AlienInvoice,
-                  other=Provider),
+        ModelDict(name='Apertura de Caja', type=None, cls=PointOfSaleOpening,
+                  other=None),
+        ModelDict(name='Apertura de Caja', type=None, cls=PointOfSaleClosure,
+                  other=None),
+# ASK MARIANA!!!
+#         ModelDict(name='Ticket Externo', type=None, cls=AlienInvoice,
+#                   other=Provider),
+#         ModelDict(name='Comprobante Externo', type=None, cls=AlienInvoice,
+#                   other=Provider),
         )
     def search(cls, ignoreClass, qualifier):
         # '' or 'name == "thing"'
@@ -61,14 +69,14 @@ class DocumentType(object):
             # *HACKY* *WHACKY*
             qual = re.compile('==.*\"([^\"]*)\"').search(qual).group(1)
         return [docType for docType in cls.__values__
-                if qual in docType['name']]
+                if qual.upper() in docType['name'].upper()]
     search = classmethod(search)
 
 class LoadPettyCashEntry(WindowController):
     def __init__(self, **kwargs):
         super(LoadPettyCashEntry, self).__init__(**kwargs)
         self.trans = Transaction()
-        self.pettyCash = PettyCash
+        self.pos ,= self.trans.search('PointOfSale')
         self.buildUI()
         
     def buildUI(self):
@@ -117,7 +125,8 @@ class LoadPettyCashEntry(WindowController):
         self.docNumber = Entry(parent=right2)
 
         Label(parent=left2, text='Fecha')
-        self.docDate = Entry(parent=right2)
+        self.docDate = Entry(parent=right2, emptyValue=now())
+        self.docDate.commitValue(self.docDate.value)
 
         self.thirdLabel = Label(parent=left2)
         columns= (Column(name='Apellido', attribute='person.surname',
@@ -161,13 +170,17 @@ class LoadPettyCashEntry(WindowController):
         #                type=self.docType.value['type'], )
         # set the other side
         # document.setattr(self.docType.value['attr'], self.provider.value)
-        self.pettyCash.registerDocument(self.docType.value['cls'],
-                                        self.docNumber.value,
-                                        self.docType.value['type'],
-                                        self.description.value,
-                                        self.amount.value, self.docDate.value,
-                                        self.otherParty.value,
-                                        self.category.value, self.account.value)
+        cls = self.docType.value['cls']
+        document = cls(number=self.docNumber.value,
+                       type=self.docType.value['type'],
+                       detail=self.description.value,
+                       amount=self.amount.value,
+                       actualDate=self.docDate.value)
+        self.trans.track(document)
+        document.pettyRegister(self.pos,
+                               self.otherParty.value,
+                               self.category.value,
+                               self.account.value)
         # register w/ the trans!
         # save it
         self.trans.save()

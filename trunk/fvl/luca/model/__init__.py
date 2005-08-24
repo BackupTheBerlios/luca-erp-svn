@@ -27,7 +27,7 @@ from Modeling.CustomObject import CustomObject
 from fvl.luca.transaction import Transaction
 from fvl.luca.model.base import LucaModel, LucaMeta, model
 from fvl.luca.model.printer import Printer
-from fvl.luca.model.point_of_sale import PointOfSale, PettyCash
+from fvl.luca.model.point_of_sale import PointOfSale
 from fvl.luca.model.money import Money
 from fvl.luca.model.accounting_entry import AccountingEntry
 from fvl.luca.model.document import Document, Invoice

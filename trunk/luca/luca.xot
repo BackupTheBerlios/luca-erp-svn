@@ -204,13 +204,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
         <!-- I guess in the future we will have a user table, but for the 
              moment... -->
         <!-- field name="user" type="varchar(30)" null="false"/ -->
-        <field name="point_of_sale" references="point_of_sale" null="false"
+        <field name="otherParty" references="point_of_sale" null="false"
                inverse="point_of_sale_openings" />
       </fields>
     </table>
     <table name="point_of_sale_closure" inherits="document">
       <fields>
-        <field name="date_time" type="date" null="false"/>
         <!-- I guess in the future we will have a user table, but for the 
              moment... -->
         <!-- field name="user" type="varchar(30)" null="false"/ -->
@@ -226,13 +225,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
     </table>
     <table name="invoice" inherits="document">
       <fields>
-        <field name="client" references="client" null="false" 
+        <field name="otherParty" references="client" null="false" 
                inverse="invoices"/>
       </fields>
     </table>
     <table name="alien_invoice" inherits="document">
       <fields>
-        <field name="issuer" references="provider" null="false" 
+        <field name="otherParty" references="provider" null="false" 
                inverse="invoices"/>
       </fields>
     </table>

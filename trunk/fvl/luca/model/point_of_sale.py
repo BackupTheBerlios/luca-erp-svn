@@ -36,20 +36,6 @@ class InvalidPettyCashEntryError(RuntimeError):
 
 class PointOfSale(LucaModel, CustomObject):
     __metaclass__ = LucaMeta
-    def registerDocument(self, documentClass, number, type, detail,
-                         amount, actualDate, otherParty,
-                         debitAccount=None, creditAccount=None,
-                         customerAccount=None):
-
-
-        doc = documentClass(number=number, type=type, detail=detail,
-                            amount=amount, actualDate=actualDate)
-        self.transaction().track(doc)
-        doc.register(ourParty=self,
-                     otherParty=otherParty,
-                     debitAccount=debitAccount,
-                     creditAccount=creditAccount,
-                     customerAccount=customerAccount)
 
     def total(self, date=None):
         if date is None:
@@ -87,16 +73,3 @@ class PointOfSale(LucaModel, CustomObject):
         print debit, credit
         print '*'*40
         return -1
-        
-
-class PettyCash(object):
-    def __init__(self, transaction):
-        self.pos ,= transaction.search('PointOfSale')
-
-    def registerDocument(self, documentClass, number, type, detail,
-                         amount, actualDate, otherParty, movementAccount,
-                         customerAccount=None):
-        debitAccount, creditAccount = documentClass.accounts(movementAccount)
-        self.pos.registerDocument(documentClass, number, type, detail, amount,
-                                  actualDate, otherParty, debitAccount, creditAccount,
-                                  customerAccount)
