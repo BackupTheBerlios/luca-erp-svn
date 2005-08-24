@@ -44,7 +44,7 @@ class SelectionWindow(WindowController):
         if columns is None:
             columns = []
         super(SelectionWindow, self).__init__(parent=self.parent,
-                                              title='Select', size=(30, 5),
+                                              title='Select', size=(40, 25),
                                               **kwargs)
         vbox = skin.VBox(parent=self.window)
         self.grid = skin.SelectionGrid(parent=vbox, columns=columns,
@@ -164,6 +164,7 @@ class Search(ColumnAwareXmlMixin, Controller):
                 e = self.entries[i]
                 if e.value != '' and e.value is not None:
                     c = self.columns[i]
+                    # FIXME: take the operator from the column
                     if qual is None:
                         qual = getattr(Qualifier(), c.attribute).equal(e.value)
                     else:
