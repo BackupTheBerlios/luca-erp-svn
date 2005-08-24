@@ -300,6 +300,7 @@ class SearchEntry(Search):
             logger.debug('here!')
             self.onAction()
         logger.debug(`self.value`)
+        self.entries[-1].focus()
         return len(ans)
 
     def selected(self, *ignore):
@@ -312,6 +313,7 @@ class SearchEntry(Search):
         self.selwin.hide()
         logger.debug('here!')
         self.onAction()
+        self.entries[-1].focus()
         # logger.debug(`self.value`)
 
     def refresh(self):
