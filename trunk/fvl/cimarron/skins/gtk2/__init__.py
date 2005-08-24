@@ -26,7 +26,7 @@ __revision__ = int('$Rev$'[5:-1])
 
 import logging
 logger = logging.getLogger('fvl.cimarron.skins.gtk2')
-logger.setLevel(logging.WARNING)
+# logger.setLevel(logging.DEBUG)
 
 import pygtk
 pygtk.require('2.0')
@@ -94,12 +94,12 @@ def _concreteParenter(parent, child):
     Do not call directly.
     """
     if '_outerWidget' in child.__dict__:
-        # print 'parenting', parent, child,
+        logger.debug('parenting %r <- %r' % (parent, child))
         if '_innerWidget' in parent.__dict__:
             if child._outerWidget.parent is not None:
                 raise ValueError, 'child %r is already parented to a %r' % \
                       (child, child._outerWidget.parent)
-            # print 'concreted'
+            logger.debug('concreted')
             try:
                 packer = parent._innerWidget.pack_start
             except AttributeError:
@@ -111,15 +111,13 @@ def _concreteParenter(parent, child):
                        child.border)
         else:
             if parent.parent is None:
-                # print 'postponed'
+                logger.debug('postponed')
                 try:
                     parent._childrenToParent.append (child)
                 except AttributeError:
                     parent._childrenToParent = [child]
             else:
-                # print 'forwarded to', parent.parent
-                # logger.warning('using old forwarding; please update %r or %r' \
-                #                % (parent, child))
+                logger.debug('forwarded to %r' % parent.parent)
                 parent.parent._concreteParenter (child)
 
 moduleProvides(ISkin)
