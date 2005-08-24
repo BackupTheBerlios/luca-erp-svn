@@ -23,6 +23,7 @@ __revision__ = int('$Rev$'[5:-1])
 from fvl import cimarron
 from fvl.cimarron.skin import WindowController, VBox, HBox, Label, \
      SearchEntry, Column, Frame, Button, Entry, Application
+from fvl.cimarron.model.qualifier import Qualifier
 
 from fvl.luca.model import Invoice, AlienInvoice, PettyCash, CustomerAccount, \
      MovementAccount, Person, Client, Provider
@@ -78,7 +79,8 @@ class LoadPettyCashEntry(WindowController):
         f0 = Frame(parent=v, label='Cuenta')
         h0 = HBox(parent=f0)
         right0 = VBox(parent=h0)
-        columns= (Column(name='Nombre', attribute='name'),)
+        columns= (Column(name='Nombre', attribute='name',
+                         operator=Qualifier.like),)
         self.account = SearchEntry(parent=right0, columns=columns,
                                    searcher=self.trans, cls=CustomerAccount)
 
@@ -93,9 +95,10 @@ class LoadPettyCashEntry(WindowController):
         
         Label(parent=left1, text='Categoria')
         columns= (Column(name='Cod', attribute='code'),
-                  Column(name='Nombre', attribute='name'),)
+                  Column(name='Nombre', attribute='name',
+                         operator=Qualifier.like),)
         self.category = SearchEntry(parent=right1, columns=columns,
-                                   searcher=self.trans, cls=MovementAccount)
+                                    searcher=self.trans, cls=MovementAccount)
 
 
         f2 = Frame(parent=v, label='Comprobante')
@@ -104,7 +107,8 @@ class LoadPettyCashEntry(WindowController):
         right2 = VBox(parent=h2)
 
         Label(parent=left2, text='Tipo')
-        columns= (Column(name='Nombre', attribute='name'),)
+        columns= (Column(name='Nombre', attribute='name',
+                         operator=Qualifier.like),)
         self.docType = SearchEntry(parent=right2, columns=columns,
                                    searcher=DocumentType,
                                    onAction=self.setThirdLabel)
@@ -116,7 +120,8 @@ class LoadPettyCashEntry(WindowController):
         self.docDate = Entry(parent=right2)
 
         self.thirdLabel = Label(parent=left2)
-        columns= (Column(name='Apellido', attribute='person.surname'),)
+        columns= (Column(name='Apellido', attribute='person.surname',
+                         operator=Qualifier.like),)
         self.otherParty = SearchEntry(parent=right2, columns=columns,
                                       searcher=self.trans)
         self.otherParty.disable()

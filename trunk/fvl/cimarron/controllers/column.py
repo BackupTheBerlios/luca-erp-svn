@@ -29,6 +29,7 @@ __revision__ = int('$Rev$'[5:-1])
 import logging
 
 from fvl.cimarron.skins.common import XmlMixin
+from fvl.cimarron.model.qualifier import Qualifier
 
 logger = logging.getLogger('fvl.cimarron.controllers.column')
 
@@ -71,7 +72,8 @@ class Column(XmlMixin):
     A Column describes a field. This field can be used for both
     B{SearchEntry}s and B{Grid}s.
     """
-    def __init__(self, name='', attribute='', readOnly=False, entry=None, **kwargs):
+    def __init__(self, name='', attribute='', readOnly=False, entry=None,
+                 operator=Qualifier.equal, **kwargs):
         """
         @param name: A text associated with the field.
             In the case of B{Grids}, it's the colunm header.
@@ -86,6 +88,8 @@ class Column(XmlMixin):
         # set any other attrs
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+        self.operator = operator
 
 #     def __repr__(self):
 #         return 'Column('+','.join(["%s: %s" % (key, getattr(self, key)) \

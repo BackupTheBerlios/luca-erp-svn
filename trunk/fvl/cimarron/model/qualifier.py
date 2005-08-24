@@ -23,7 +23,7 @@ __revision__ = int('$Rev$'[5:-1])
 import logging
 from mx.DateTime import DateTimeType
 
-logger = logging.getLogger('fvl.luca.transaction.qualifier')
+logger = logging.getLogger('fvl.cimarron.model.qualifier')
 
 class Qualified(object):
     def __init__(self, value=''):

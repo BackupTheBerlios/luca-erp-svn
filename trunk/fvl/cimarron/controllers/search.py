@@ -155,24 +155,26 @@ class Search(ColumnAwareXmlMixin, Controller):
         """
         self.window.disable()
         try:
-            # data = {}
-            # qual = Qualifier()
             qual = None
             for i in xrange(len(self.columns)):
                 e = self.entries[i]
                 if e.value != '' and e.value is not None:
+                    value = e.value
                     c = self.columns[i]
-                    # FIXME: take the operator from the column
+                    logger.debug ('%s op %r' % (c.attribute, c.operator))
+                    if c.operator == Qualifier.like:
+                        value += '*'
                     if qual is None:
-                        qual = getattr(Qualifier(), c.attribute).equal(e.value)
+                        qual = c.operator(getattr(Qualifier(),
+                                                  c.attribute), value)
                     else:
-                        qual = qual & (getattr(Qualifier(), c.attribute).equal(e.value))
+                        qual = qual & c.operator(getattr(Qualifier(),
+                                                         c.attribute), value)
 
-            logger.debug ('searching %r, %r', self.searcher, `qual`)
+            logger.debug ('searching %r, %r', self.searcher, qual)
             if qual is None:
                 qual = nullQualifier
             self.value = self.searcher.search(self.cls, qual)
-            # self.value = []
         finally:
             self.window.enable()
         return len(self.value)
