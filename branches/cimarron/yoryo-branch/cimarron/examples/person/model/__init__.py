@@ -33,10 +33,24 @@ class Store(object):
     def discard(self):
         self.discarded = True
 
-    def search(self, cls, **kwargs):
+
+    def values(self, cls, **kwargs):
         try:
             cls.values
         except AttributeError:
             cls = globals()[cls]
 
         return cls.values (cls, **kwargs)
+
+    def search(self, cls, qual):
+        q = [qual]
+        result = {}
+        while q: 
+            if hasattr(q[0], 'left'):
+                q.append(q[0].left)
+            if hasattr(q[0], 'right'):
+                q.append(q[0].right)
+            if hasattr(q[0], 'attr'):
+                result.update({q[0].attr: q[1]})
+            q.pop(0)
+        return self.values(cls, **result)

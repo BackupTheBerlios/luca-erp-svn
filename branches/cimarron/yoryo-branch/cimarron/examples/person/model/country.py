@@ -53,12 +53,19 @@ class Country (Model):
     def getUn (self):
         return self.un
 
-    def search (cls, values):
+    def values (cls, ignore, **values):
         # this is what I don't want: the search alg is tied
         # to what-the-screen needs. that sucks. may be, now
         # that we have (almost) fields in Entries and Searches,
         # we can just pass a dict around and figure it out here
-        iso2, name= values[:2]
+        try:
+            iso2 = values['iso2']
+        except KeyError:
+            iso2 = None
+        try:
+            name = values['name']
+        except KeyError:
+            name = None
         ans= []
 
         for i in cls.__values__:
@@ -79,7 +86,21 @@ class Country (Model):
                 ans.append (i)
 
         return ans
-    search= classmethod (search)
+    values= classmethod (values)
+
+    def search(cls, ignore, qual):
+        q = [qual]
+        result = {}
+        while q: 
+            if hasattr(q[0], 'left'):
+                q.append(q[0].left)
+            if hasattr(q[0], 'right'):
+                q.append(q[0].right)
+            if hasattr(q[0], 'attr'):
+                result.update({q[0].attr: q[1]})
+            q.pop(0)
+        return Country.values(None, **result)
+    search = classmethod(search)
 
     def __str__ (self):
         return 'Country name: %r' % (self.name, )
@@ -100,8 +121,11 @@ class State (Model):
     def getCountry (self):
         return self.country
 
-    def search (cls, values):
-        name= values[0]
+    def values (cls, ignore, **values):
+        try:
+            name = values['name']
+        except KeyError:
+            name = None        
         ans= []
 
         for i in cls.__values__:
@@ -111,9 +135,22 @@ class State (Model):
 
             if found:
                 ans.append (i)
-
         return ans
-    search= classmethod (search)
+    values= classmethod (values)
+
+    def search(cls, ignore, qual):
+        q = [qual]
+        result = {}
+        while q: 
+            if hasattr(q[0], 'left'):
+                q.append(q[0].left)
+            if hasattr(q[0], 'right'):
+                q.append(q[0].right)
+            if hasattr(q[0], 'attr'):
+                result.update({q[0].attr: q[1]})
+            q.pop(0)
+        return Country.values(None, **result)
+    search = classmethod(search)
 
     def __str__ (self):
         return 'State name: '+ self.name+', Country: '+str (self.country)
