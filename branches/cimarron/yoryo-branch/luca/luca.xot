@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?><!-- -*- nxml -*- -->
+<!--
+Copyright 2005 Fundacion Via Libre
+
+This file is part of PAPO.
+
+PAPO is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+PAPO is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with PAPO; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+<!DOCTYPE database SYSTEM "xot.dtd">
+<database>
+  <tables>
+    <table name="product">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="code" type="varchar(20)"/>
+        <field name="name" type="varchar(80)" null="false"/>
+      </fields>
+
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+
+    <table name="stock">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="product" references="product" null="false" 
+               inverse="stock"/>
+        <field name="level" type="int" null="false"/>
+      </fields>
+
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+
+
+    <table name="person">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="name" type="varchar(60)"  null="false"/>
+        <field name="surname" type="varchar(20)"  null="false"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="document_type">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="code" type="varchar(10)"/>
+        <field name="name" type="varchar(20)" null="false"/>
+        <!-- field name="" -->
+      </fields>
+
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="printer">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="name" type="varchar(20)" null="false"/>
+        <!-- field name="driver" type="varchar(10)" null="false"-->
+      </fields>
+
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="document_number">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="printer" references="printer" null="false" 
+               inverse="document_numbers"/>
+        <field name="document_type" references="document_type" null="false"/>
+        <!-- yes, it could be a number, 
+             but it could contain other symbols too-->
+        <field name="number" type="varchar(20)" null="false"/>
+      </fields>
+
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="currency">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="international_code" type="varchar(3)"  null="false"/>
+        <field name="symbol" type="varchar(5)"  null="false"/>
+        <field name="name" type="varchar(20)"  null="false"/>  
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+
+    <table name="exchange_rate">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="date" type="date" null="false"/>
+        <field name="rate" type="numeric(4,2)" null="false"/>
+        <!-- the rate can be used to make the calculation on both ways but the 
+             from,to value convention is used to know in wich conversion the 
+             rate mayor than 0 -->
+        <field name="from_currency" references="currency" null="false" 
+               inverse="minor_currency"/>
+        <field name="to_currency" references="currency" null="false" 
+               inverse="mayor_currency"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="client">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <!-- still no definitive attributes for a client -->
+        <field name="credit" type="varchar(60)"  null="false"/>
+        <field name="person" references="person" null="false" 
+               inverse="asClient"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="provider">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="person" references="person" null="false" 
+               inverse="as_provider"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+    
+
+    <table name="document">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="actual_date" type="date" null="false"/>
+        <field name="entry" references="accounting_entry" inverse="document"/>
+        <field name="amount" type="numeric(12,4)" null="false"/>
+        <field name="number" type="varchar(20)"  null="false"/>
+        <field name="type" type="varchar(1)"  null="false"/>
+        <field name="detail" type="varchar(1000)"  null="false"/>
+      </fields>
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="point_of_sale_opening" inherits="document">
+      <fields>
+        <!-- I guess in the future we will have a user table, but for the 
+             moment... -->
+        <!-- field name="user" type="varchar(30)" null="false"/ -->
+        <field name="otherParty" references="point_of_sale" null="false"
+               inverse="point_of_sale_openings" />
+      </fields>
+    </table>
+    <table name="point_of_sale_closure" inherits="document">
+      <fields>
+        <!-- I guess in the future we will have a user table, but for the 
+             moment... -->
+        <!-- field name="user" type="varchar(30)" null="false"/ -->
+        <field name="point_of_sale" references="point_of_sale" null="false"
+               inverse="point_of_sale_closures" />
+      </fields>
+    </table>
+    <table name="receipt" inherits="document">
+      <fields>
+        <field name="concept" type="varchar(80)" null="false"/>
+        <field name="person" references="person" null="false"/>
+      </fields>
+    </table>
+    <table name="invoice" inherits="document">
+      <fields>
+        <field name="otherParty" references="client" null="false" 
+               inverse="invoices"/>
+      </fields>
+    </table>
+    <table name="alien_invoice" inherits="document">
+      <fields>
+        <field name="otherParty" references="provider" null="false" 
+               inverse="invoices"/>
+      </fields>
+    </table>
+
+    <table name="point_of_sale">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="name" type="varchar(20)"  null="false"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="customer_account">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="name" type="varchar(20)" null="false"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="movement_account">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="name" type="varchar(20)" null="false"/>
+        <field name="parent" references="movement_account" inverse="children"/>
+        <field name="code" type="varchar(20)" null="false"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+
+    <table name="accounting_entry">
+
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="number" type="int"  null="false"/>
+        <field name="point_of_sale" references="point_of_sale" null="false"
+               inverse="accounting_entries"/>
+        <field name="record_date" type="date" null="false"/> 
+        <field name="customer_account" references="customer_account" null="false" 
+               inverse="entries"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+    <table name="movement">
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="account" references="movement_account" null="false"
+               inverse="movements"/>
+        <!-- Operation must be debit or credit 0=debit   1=credit -->
+        <field name="operation" type="int" null="false"/>
+        <field name="amount" type="numeric(12,4)" null="false"/>
+        <field name="entry" references="accounting_entry" null="false" 
+               inverse="movements"/>
+      </fields>
+      
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
+  </tables>
+</database>

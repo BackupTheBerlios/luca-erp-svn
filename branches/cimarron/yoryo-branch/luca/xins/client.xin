@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?><!-- -*- nxml -*- -->
+<class name="client">
+    <import what="fvl.luca.model.Client"/>
+    <import what="fvl.luca.model.Person"/>
+
+    <finder attribute="person.name"/>
+    <finder attribute="person.surname"/>
+
+    <attribute name="person">
+        <!--finder attribute="name"/-->
+        <finder attribute="surname"/>
+    </attribute>
+</class>
