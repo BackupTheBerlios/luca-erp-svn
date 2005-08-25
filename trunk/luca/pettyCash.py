@@ -53,7 +53,7 @@ class DocumentType(object):
                   other=Provider),
         ModelDict(name='Apertura de Caja', type=None, cls=PointOfSaleOpening,
                   other=None),
-        ModelDict(name='Apertura de Caja', type=None, cls=PointOfSaleClosure,
+        ModelDict(name='Cierre de Caja', type=None, cls=PointOfSaleClosure,
                   other=None),
 # ASK MARIANA!!!
 #         ModelDict(name='Ticket Externo', type=None, cls=AlienInvoice,

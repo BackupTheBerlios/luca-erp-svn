@@ -35,6 +35,11 @@ logger = logging.getLogger('fvl.luca.model.point_of_sale')
 class Document(LucaModel, CustomObject):
     __metaclass__ = LucaMeta
     def cashAccount(self, accountCode):
+        """
+        cash is the Account where we are going to make the movment, would
+        be the account for the other party intervening, for the moment you
+        must pass the MovementAccount ID
+        """
         cash ,= self.transaction().search('MovementAccount',
                                           Qualifier().code == accountCode)
         return cash
@@ -43,6 +48,9 @@ class Document(LucaModel, CustomObject):
                  customerAccount=None):
         transaction = self.transaction()
         assert transaction is not None, "document must be tracked!"
+        #The persons or subjects related with te document that are not self
+        #(such as client in invoice or provider in alienInvoice) must be
+        #called otherParty so their value can be assigned in register
         self.setOtherParty(otherParty)
         self.customerAccount = customerAccount
         entry = AccountingEntry(customerAccount=customerAccount)
@@ -54,8 +62,6 @@ class Document(LucaModel, CustomObject):
 
 class Invoice(Document):
     __metaclass__ = LucaMeta
-
-    
 
     def pettyRegister(self, ourParty, otherParty, anAccount, customerAccount=None):
         """
@@ -82,7 +88,7 @@ class PointOfSaleOpening(Document):
                              customerAccount)
         
 
-class PointOfSaleOpening(Document):
+class PointOfSaleClosure(Document):
     __metaclass__ = LucaMeta
 
     def pettyRegister(self):
