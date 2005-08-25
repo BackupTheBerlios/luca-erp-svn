@@ -67,7 +67,10 @@ class DocumentType(object):
         
         if qual!='':
             # *HACKY* *WHACKY*
-            qual = re.compile('==.*\"([^\"]*)\"').search(qual).group(1)
+            result = re.compile('==.*\"([^\"]*)\"').search(qual)
+            # +*HACKY* +*WHACKY*
+            if result:
+                qual = result.group(1)
         return [docType for docType in cls.__values__
                 if qual.upper() in docType['name'].upper()]
     search = classmethod(search)
@@ -158,9 +161,12 @@ class LoadPettyCashEntry(WindowController):
 
     def setThirdLabel(self, *ignore):
         if self.docType.value:
-            self.thirdLabel.text = self.docType.value['other'].__name__
-            self.otherParty.cls = self.docType.value['other']
-            self.otherParty.enable()
+            if self.docType.value['other']:
+                self.thirdLabel.text = self.docType.value['other'].__name__
+                self.otherParty.cls = self.docType.value['other']
+                self.otherParty.enable()
+            else:
+                self.thirdLabel.text = "Documento interno"
     
 
     def save(self, *ignore):
