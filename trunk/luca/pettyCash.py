@@ -51,9 +51,9 @@ class DocumentType(object):
                   other=Provider),
         ModelDict(name='Factura Externa C', type='C', cls=AlienInvoice,
                   other=Provider),
-        ModelDict(name='Apertura de Caja', type=None, cls=PointOfSaleOpening,
+        ModelDict(name='Apertura de Caja', type='X', cls=PointOfSaleOpening,
                   other=None),
-        ModelDict(name='Cierre de Caja', type=None, cls=PointOfSaleClosure,
+        ModelDict(name='Cierre de Caja', type='X', cls=PointOfSaleClosure,
                   other=None),
 # ASK MARIANA!!!
 #         ModelDict(name='Ticket Externo', type=None, cls=AlienInvoice,

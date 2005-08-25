@@ -51,12 +51,18 @@ class Document(LucaModel, CustomObject):
         #The persons or subjects related with te document that are not self
         #(such as client in invoice or provider in alienInvoice) must be
         #called otherParty so their value can be assigned in register
-        self.setOtherParty(otherParty)
+        try:
+            #yes it's ugly buts usefull while we decide if every document
+            #will have a pos reference or only posOpen/Close
+            self.setOtherParty(otherParty)
+        except:
+            self.setPointOfSale(ourParty)
         self.customerAccount = customerAccount
         entry = AccountingEntry(customerAccount=customerAccount)
         entry.pointOfSale = ourParty
         entry.recordDate = now()
         transaction.track(entry)
+        self.entry = entry
         entry.debit(self.amount, debitAccount)
         entry.credit(self.amount, creditAccount)
 
@@ -77,13 +83,23 @@ class Invoice(Document):
         return self.register(ourParty, otherParty, debitAccount, creditAccount,
                              customerAccount)
 
+class AlienInvoice(Document):
+    __metaclass__ = LucaMeta
+
+    def pettyRegister(self, ourParty, otherParty, anAccount, customerAccount=None):
+        cash = self.cashAccount('1.1.01.01')
+        
+        debitAccount, creditAccount = anAccount, cash
+        return self.register(ourParty, otherParty, debitAccount, creditAccount,
+                             customerAccount)
+
 class PointOfSaleOpening(Document):
     __metaclass__ = LucaMeta
 
-    def pettyRegister(self):
-
+    def pettyRegister(self, ourParty, otherParty, anAccount, customerAccount=None):
         cash = self.cashAccount('1.1.01.01')
-
+        debitAccount = creditAccount = cash
+        self.pointOfSale = ourParty
         return self.register(ourParty, otherParty, debitAccount, creditAccount,
                              customerAccount)
         
@@ -91,8 +107,8 @@ class PointOfSaleOpening(Document):
 class PointOfSaleClosure(Document):
     __metaclass__ = LucaMeta
 
-    def pettyRegister(self):
+    def pettyRegister(self, ourParty, otherParty, anAccount, customerAccount=None):
         cash = self.cashAccount('1.1.01.01')
-
+        self.pointOfSale = ourParty
         return self.register(ourParty, otherParty, debitAccount, creditAccount,
                              customerAccount)
