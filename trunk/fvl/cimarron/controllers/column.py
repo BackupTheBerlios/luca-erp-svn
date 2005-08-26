@@ -91,7 +91,8 @@ class Column(XmlMixin):
 
         self.operator = operator
 
-#     def __repr__(self):
-#         return 'Column('+','.join(["%s: %s" % (key, getattr(self, key)) \
-#                                    for key in dir(self) \
-#                                    if not key.startswith('_')])+')'
+    def attributesToConnect(cls):
+        attrs = super(Column, cls).attributesToConnect()
+        attrs.append('operator')
+        return attrs
+    attributesToConnect = classmethod(attributesToConnect)
