@@ -28,7 +28,7 @@ from fvl.cimarron.controllers.base import Controller, WindowController
 from fvl.cimarron.controllers.search import Search
 
 logger = logging.getLogger('fvl.cimarron.controllers.crud')
-# logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG)
 
 class CRUDController (WindowController):
     """
@@ -43,7 +43,7 @@ class CRUDController (WindowController):
         attrs = super(CRUDController, cls).attributesToConnect()
         return attrs+['cls']
     attributesToConnect = classmethod(attributesToConnect)
-    
+
     def __init__ (self, cls=None, searchColumns=None, editorClass=None,
                   filename=None, store=None, **kwargs):
         from fvl.cimarron.skin import Notebook, VBox, Button
@@ -112,7 +112,7 @@ class CRUDController (WindowController):
     def _get_store(self):
         return self.__store
     store = property(_get_store, _set_store, None, """""")
-        
+
     def newModel(self, control, cls, *ignore):
         """
         Create a new object and point the CRUD at it.
@@ -186,10 +186,10 @@ class CRUDController (WindowController):
         except AttributeError:
             # have no id, ignore
             pass
-        
+
         return (self, attrs, idDict)
     fromXmlObj = classmethod(fromXmlObj)
-        
+
 class Editor(Controller):
     def __init__(self, attributes=None, label='', store=None, **kwargs):
         from fvl.cimarron.skin import VBox, HBox, Button, Label, Entry
@@ -197,7 +197,6 @@ class Editor(Controller):
         super(Editor, self).__init__(**kwargs)
         if attributes is None:
             attributes = []
-        self.store = store
 
         # main containers
         # self.vbox = VBox(parent=self)
@@ -207,13 +206,14 @@ class Editor(Controller):
         hbox = HBox(parent=self.vbox)
         self.labels = VBox(parent=hbox)
         self.entries = VBox(parent=hbox)
+        self.store = store
 
         self.label = label
         for attr in attributes:
             Label(parent=self.labels, text=attr)
             # FIX: make if more flexible
             Entry(parent=self.entries, attribute=attr)
-    
+
         # save/discard buttons
         hbox = HBox(parent=self.vbox, expand=False)
         save = Button(parent=hbox, label='Save', onAction=self.save)
@@ -241,6 +241,17 @@ class Editor(Controller):
         return self.vbox.label
     label = property(_get_label, _set_label)
 
+    def _set_store(self, store):
+        self.__store = store
+        entries = [obj for obj in self.entries.children
+                   if isinstance(obj, Search)]
+        for entry in entries:
+            logger.debug('setting searcher %r for %r', store, entry)
+            entry.searcher = store
+    def _get_store(self):
+        return self.__store
+    store = property(_get_store, _set_store, None, """""")
+
     def modifyModel (self, control, *ignore):
         try:
             control.write (control.value)
@@ -261,7 +272,7 @@ class Editor(Controller):
 
     def fromXmlObj (cls, xmlObj):
         from fvl.cimarron.skin import HBox, VBox, Button
-        
+
         self = cls()
         self.fromXmlObjProps(xmlObj.properties)
         try:
@@ -273,8 +284,7 @@ class Editor(Controller):
         attrs = {self: cls.attributesToConnect()}
         xmlObj = xmlObj.children
         while xmlObj:
-            (obj, attrsInChild, idDictInChild) = \
-                  self.childFromXmlObj(xmlObj)
+            (obj, attrsInChild, idDictInChild) = self.childFromXmlObj(xmlObj)
             if obj is not None:
                 if xmlObj.name == "Label":
                     obj.parent = self.labels
@@ -284,11 +294,9 @@ class Editor(Controller):
                         self._concreteWidget = obj
                     obj.onAction = self.modifyModel
                     obj.delegates.append(self)
-                    if isinstance(obj, Search):
-                        obj.searcher = self.store
                 attrs.update(attrsInChild)
             idDict.update(idDictInChild)
-            
+
             xmlObj = xmlObj.next
 
         return (self, attrs, idDict)
