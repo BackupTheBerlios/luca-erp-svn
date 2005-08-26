@@ -32,7 +32,7 @@ from fvl.cimarron.skins.common import No as DelegateNo
 from fvl.cimarron.model.qualifier import Qualifier, nullQualifier
 
 logger = logging.getLogger('fvl.cimarron.controllers.search')
-logger.setLevel(logging.DEBUG)
+#logger.setLevel(logging.DEBUG)
 
 class SelectionWindow(WindowController):
     """

@@ -19,66 +19,96 @@
 # Suite 330, Boston, MA 02111-1307 USA
 
 __revision__ = int('$Rev$'[5:-1])
-
+#
 from fvl import cimarron
-from fvl.luca.model import Client
+from fvl.luca.model import Client, MovementAccount
 from fvl.luca.model.document import Receipt
 from fvl.luca.transaction import Transaction
 from fvl.cimarron.model.qualifier import Qualifier
-from mx.DateTime import today
+from mx.DateTime import today, now
 
-class ReceiptWindow(cimarron.skin.WindowController):
-    def __init__(self, **kw):
-        super(ReceiptWindow, self).__init__(**kw)
-        self.window.title = 'Receipt Generation'
+from fvl.cimarron.skin import WindowController, VBox, HBox, Label, \
+     SearchEntry, Column, Frame, Button, Entry, Application, MultiLine
+
+class ReceiptGui(WindowController):
+    def __init__(self, **kwargs):
+        super(ReceiptGui, self).__init__(**kwargs)
         self.trans = Transaction()
-        self.target=Receipt(actualDate=today())
-        self.trans.track(self.target)
+        self.pos ,= self.trans.search('PointOfSale')
+        self.buildUI()
 
-        v = cimarron.skin.VBox(parent=self.window, expand=True, fill=True)
-        h1 = cimarron.skin.HBox(parent=v, expand=False, fill=True)
-        h2 = cimarron.skin.HBox(parent=v, expand=False, fill=False)
-        v1 = cimarron.skin.VBox(parent=v)
-        actionContainer = cimarron.skin.HBox(parent=v, expand=False, fill=True)
-        #columns= (Column(name='Apellido', attribute='person.surname',
-        #                 operator=Qualifier.like),)
-        columns = (cimarron.skin.Column(name='Name', attribute='name', operator=Qualifier.like),
-                   cimarron.skin.Column(name='Surname', attribute='surname', operator=Qualifier.like),)
-        self.otherParty = cimarron.skin.SearchEntry(parent=h1, cls=Client,
-                                                searcher=self.trans, columns=columns
-                                                ,attribute='otherParty')
+    def buildUI(self):
+        self.window.title = 'Generacion de Recibo'
+
+        v1 = VBox(parent=self.window, expand=True, fill=True)
+        h0 = HBox(parent=v1, expand=False, fill=True)
+        v0left = VBox(parent=h0, expand=False, fill=True)
+        v0right = VBox(parent=h0, expand=False, fill=True)
+        v2 = VBox(parent=v1)
+        actionContainer = HBox(parent=v1, expand=False, fill=True)
+
+        Label(parent=v0left, text='Cuenta Contable:')
+        columns= (Column(name='Cod', attribute='code'),
+                  Column(name='Nombre', attribute='name',
+                         operator=Qualifier.like),)
+        self.category = SearchEntry(parent=v0right, columns=columns,
+                                    searcher=self.trans, cls=MovementAccount)
+
+        Label(parent=v0left, text='Cliente:')
+        columns = (Column(name='Nombre', attribute='person.name',
+                          operator=Qualifier.like),
+                   Column(name='Apellido', attribute='person.surname',
+                          operator=Qualifier.like),)
+        self.otherParty = SearchEntry(parent=v0right, cls=Client,
+                                      searcher=self.trans,
+                                      columns=columns)
 
 
-        cimarron.skin.Label(parent=h2, text='Date:')
-        self.actualDate = cimarron.skin.Entry(parent=h2, attribute='actualDate')
-        
-        cimarron.skin.Label(parent=h2, text='Amount:')
-        self.amount = cimarron.skin.Entry(parent=h2,  attribute='amount')
-        
-        cimarron.skin.Label(parent=v1, text='Concept:', expand=False, fill=False)
-        self.concept = cimarron.skin.MultiLine(parent=v1, attribute='detail')
-        
-        save = cimarron.skin.Button(parent=actionContainer, label='Save', onAction=self.save)
-        discard = cimarron.skin.Button(parent=actionContainer, label='Discard', onAction=self.discard)
-        self.refresh()
-        
+        Label(parent=v0left, text='Numero:')
+        self.docNumber = Entry(parent=v0right)
 
-    
-    def refresh(self):
-        super(ReceiptWindow, self).refresh()
-        for entry in self.otherParty, self.amount,self.concept,self.actualDate:
-            entry.newTarget(self.value)
+        Label(parent=v0left, text='Fecha:')
+        self.actualDate = Entry(parent=v0right,emptyValue=now())
+        self.actualDate.commitValue(self.actualDate.value)
+
+        Label(parent=v0left, text='Monto:')
+        self.amount = Entry(parent=v0right)
+        
+        Label(parent=v2, text='Concepto:', expand=False, fill=False)
+        self.concept = MultiLine(parent=v2)
+        
+        save = Button(parent=actionContainer, label='Guardar',
+                      onAction=self.save)
+
+        discard = Button(parent=actionContainer, label='Descartar',
+                         onAction=self.discard)
+
 
     def save(self, *ignore):
+        receipt = Receipt(number=self.docNumber.value,
+                          type='X',
+                          detail=self.concept.value,
+                          amount=self.amount.value,
+                          actualDate=self.actualDate.value)
+        self.trans.track(receipt)
+        #we use pettyRegister beacause we store the same data that pettyCash
+        #doing a receipt
+        receipt.pettyRegister(self.pos,
+                              self.otherParty.value,
+                              self.category.value, None)
+                             # self.account.value) this goes instead
+                             #of the above none, do we wand this data?
         self.trans.save()
 
     def discard(self, *ignore):
         self.trans.discard()
-        self.newTarget(Receipt(actualDate=today()))
-        self.trans.track(self.target)
+        
+
+        
 
 if __name__=='__main__':
     a = cimarron.skin.Application()
-    w = ReceiptWindow(parent=a)
+    #w = ReceiptWindow(parent=a)
+    w = ReceiptGui(parent=a)
     w.show()
     a.run()
