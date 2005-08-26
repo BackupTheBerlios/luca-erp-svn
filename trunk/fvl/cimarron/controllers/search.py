@@ -32,7 +32,7 @@ from fvl.cimarron.skins.common import No as DelegateNo
 from fvl.cimarron.model.qualifier import Qualifier, nullQualifier
 
 logger = logging.getLogger('fvl.cimarron.controllers.search')
-# logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG)
 
 class SelectionWindow(WindowController):
     """
@@ -40,7 +40,7 @@ class SelectionWindow(WindowController):
     """
     def __init__(self, columns=None, **kwargs):
         from fvl.cimarron import skin
-        
+
         if columns is None:
             columns = []
         super(SelectionWindow, self).__init__(parent=self.parent,
@@ -98,7 +98,7 @@ class Search(ColumnAwareXmlMixin, Controller):
         attrs = super (Search, cls).attributesToConnect()
         return attrs+['searcher']
     attributesToConnect = classmethod(attributesToConnect)
-    
+
     def __init__(self, columns=None, cls=None, searcher=None, **kwargs):
         """
         @param columns: A list of Columns. Only the C{read} attribute
@@ -139,7 +139,7 @@ class Search(ColumnAwareXmlMixin, Controller):
             b = Button(parent=self.h, label='Search!', onAction=self.search)
             if '_concreteWidget' not in self.__dict__:
                 self._concreteWidget = b
-            
+
             # the widget that fires the action.
             self.mainWidget = b
             logger.debug('here')
@@ -162,6 +162,8 @@ class Search(ColumnAwareXmlMixin, Controller):
                     value = e.value
                     c = self.columns[i]
                     logger.debug ('%s op %r' % (c.attribute, c.operator))
+                    # this wil be gone when operator `startswith´
+                    # gets into trunk.
                     if c.operator == Qualifier.like:
                         value += '*'
                     if qual is None:
@@ -171,7 +173,7 @@ class Search(ColumnAwareXmlMixin, Controller):
                         qual = qual & c.operator(getattr(Qualifier(),
                                                          c.attribute), value)
 
-            logger.debug ('searching %r, %r', self.searcher, qual)
+            logger.debug ('searching %r, %r', self.cls, qual)
             if qual is None:
                 qual = nullQualifier
             self.value = self.searcher.search(self.cls, qual)
@@ -245,7 +247,7 @@ class SearchEntry(Search):
             logger.debug(self.value)
             # update the grid
             grid._cell_edited(cell, path, self.value, colNo)
-            
+
         self.entries = []
         for c in self.columns:
             # c.entry._setupCell()
@@ -277,7 +279,7 @@ class SearchEntry(Search):
     def _get_columns(self):
         return super(SearchEntry, self)._get_columns()
     columns= property (_get_columns, _set_columns)
-        
+
     def search (self, *ignore):
         """
         Performs the search, and handles the case
@@ -331,4 +333,4 @@ class SearchEntry(Search):
                 entry.value = None
         else:
             for index, entry in enumerate(self.entries):
-                entry.value = self.target.getattr(self.columns[index].attribute)
+                entry.value = self.value.getattr(self.columns[index].attribute)
