@@ -217,12 +217,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
                inverse="point_of_sale_closures" />
       </fields>
     </table>
+   
     <table name="receipt" inherits="document">
       <fields>
-        <field name="concept" type="varchar(80)" null="false"/>
-        <field name="person" references="person" null="false"/>
+        <!-- <field name="concept" type="varchar(80)" null="false"/> -->
+        <field name="otherParty" references="client" null="false"/>
       </fields>
     </table>
+    
     <table name="invoice" inherits="document">
       <fields>
         <field name="otherParty" references="client" null="false" 

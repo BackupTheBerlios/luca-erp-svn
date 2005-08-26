@@ -23,7 +23,8 @@ __revision__ = int('$Rev$'[5:-1])
 import unittest
 
 from receipt import ReceiptWindow
-from fvl.luca.model import Receipt, Person
+from fvl.luca.model import Person
+from fvl.luca.model.document import Receipt
 from mx.DateTime import DateTimeFrom
 
 class TestReceipt(unittest.TestCase):
@@ -34,8 +35,8 @@ class TestReceipt(unittest.TestCase):
         self.assert_(isinstance(self.widget.value, Receipt))
 
     def testRefresh(self):
-        for entry, value in (("person", Person(name="Jose", surname="Perez")),
-                             ("amount", 123.98), ("concept", "whatever"),
+        for entry, value in (("otherParty", Person(name="Jose", surname="Perez")),
+                             ("amount", 123.98), ("detail", "whatever"),
                              ("actualDate", "12/03/2005")):
             getattr(self.widget, entry).commitValue(value)
             if entry == "actualDate":

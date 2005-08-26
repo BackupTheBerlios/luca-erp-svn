@@ -52,8 +52,6 @@ class Document(LucaModel, CustomObject):
         #(such as client in invoice or provider in alienInvoice) must be
         #called otherParty so their value can be assigned in register
         try:
-            #yes it's ugly buts usefull while we decide if every document
-            #will have a pos reference or only posOpen/Close
             self.setOtherParty(otherParty)
         except:
             self.setPointOfSale(ourParty)
@@ -109,6 +107,17 @@ class PointOfSaleClosure(Document):
 
     def pettyRegister(self, ourParty, otherParty, anAccount, customerAccount=None):
         cash = self.cashAccount('1.1.01.01')
+        debitAccount = creditAccount = cash
         self.pointOfSale = ourParty
+        return self.register(ourParty, otherParty, debitAccount, creditAccount,
+                             customerAccount)
+
+class Receipt(Document):
+    __metaclass__ = LucaMeta
+
+    def pettyRegister(self, ourParty, otherParty, anAccount, customerAccount=None):
+        cash = self.cashAccount('1.1.01.01')
+        
+        debitAccount, creditAccount = anAccount, cash
         return self.register(ourParty, otherParty, debitAccount, creditAccount,
                              customerAccount)
