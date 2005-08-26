@@ -90,8 +90,8 @@ class exporter(object):
                 logger.debug('imports: %s', imports)
 
             elif child.name=='finder':
-                finders.append (child.prop ('attribute'))
-                logger.debug('finders: %s', imports)
+                finders.append((child.prop ('attribute'), child.prop ('operator')))
+                logger.debug('finders: %s', finders)
 
             elif child.name=='class':
                 # check for `class has that attr`?
@@ -126,10 +126,12 @@ class exporter(object):
         search.setProp ('onAction', 'Crud.changeModel')
         search.setProp ('cls', KindName)
         logger.debug(search.serialize(encoding="utf-8"))
-        for i in finders:
+        for i, j in finders:
             column= search.newChild (None, 'Column', None)
-            column.setProp ('name', MakeFieldName(i))
+            column.setProp('name', MakeFieldName(i))
             column.setProp('attribute', makeFieldName(i))
+            if j is not None:
+                column.setProp('operator', j)
             logger.debug(column.serialize(encoding="utf-8"))
 
         # tabs
@@ -153,8 +155,9 @@ class exporter(object):
                 column= child.children
                 while column:
                     if column.name=='finder':
-                        kind.searchers[child.prop ('name')].append \
-                                                  (column.prop ('attribute'))
+                        kind.searchers[child.prop ('name')].\
+                            append((column.prop ('attribute'),
+                                    column.prop ('operator')))
 
                     column= column.next
 
@@ -211,7 +214,6 @@ class exporter(object):
                     logger.debug("class %s skipped; there's a tab for it!", search_field_name)
                     continue
 
-                # warning: this part does not work
                 SearchFieldName= MakeFieldName (search_field_name)
                 entry= libxml2.newNode ('SearchEntry')
                 entry.setProp ('cls', MakeFieldName (field_name))
@@ -222,10 +224,12 @@ class exporter(object):
                     logger.debug("%s not in %s", search_field_name, kind.searchers)
                     raise BuildError, "attribute %s is foreign key, but no finders defined" % search_field_name
                 else:
-                    for i in kind.searchers[search_field_name]:
+                    for k, v in kind.searchers[search_field_name]:
                         column= entry.newChild (None, 'Column', None)
-                        column.setProp ('name', i)
-                        column.setProp ('attribute', makeFieldName (i))
+                        column.setProp ('name', k)
+                        column.setProp ('attribute', makeFieldName (k))
+                        if v is not None:
+                            column.setProp('operator', v)
                         logger.debug(column.serialize(encoding="utf-8"))
 
             entry.setProp ('attribute', makeFieldName (field_name))
