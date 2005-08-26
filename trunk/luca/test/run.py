@@ -29,7 +29,7 @@ libxml2.debugMemory(1)
 moduleNames= ['testTransaction',
               'testQualifier',
 #              'testStockAdjustment', (broken)
-              'testReceipt', 
+#              'testReceipt', (is a screen)
               'testCurrency',
               'testPrinter',
               'testPointOfSale',
