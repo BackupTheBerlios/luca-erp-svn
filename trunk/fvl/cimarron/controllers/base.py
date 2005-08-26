@@ -35,6 +35,7 @@ from fvl.cimarron.tools import traverse
 from fvl.cimarron.skins.common import Control, Container
 
 logger = logging.getLogger('fvl.cimarron.controllers.base')
+# logger.setLevel(logging.DEBUG)
 
 class Controller(Control, Container):
     """
@@ -90,7 +91,7 @@ class Controller(Control, Container):
         if hasId:
             idDict[hasId] = obj
         return (None, None, idDict)
-        
+
     def _connect (self, attrs):
         for obj, attrs in attrs.items():
             for attr in attrs:
@@ -113,7 +114,7 @@ class Controller(Control, Container):
                         # print 'connected to', `self.idDict[path]`,
                     setattr(obj, attr, other)
                 # else:
-                    # print 'connect impossible', 
+                    # print 'connect impossible',
                 # print
 
 class DelayedTraversal(object):
@@ -124,9 +125,18 @@ class DelayedTraversal(object):
     def __init__(self, other, path):
         self.path = path
         self.other = other
- 
+
+    def proxied(self):
+        return traverse (self.other, self.path)
+
+    def __eq__(self, other):
+        return self.proxied() == other
+
+    def __ne__(self, other):
+        return self.proxied() != other
+
     def __call__(self, *args, **kwargs):
-        return traverse (self.other, self.path)(*args, **kwargs)
+        return self.proxied()(*args, **kwargs)
 
 
 class WindowController (Controller):
@@ -139,6 +149,7 @@ class WindowController (Controller):
     def __init__ (self, title='', size=(80, 25), **kwargs):
         super(WindowController, self).__init__(**kwargs)
         from fvl.cimarron.skin import Window
+        logger.debug (size)
         self._outerWidget = self.window = Window(parent=self, title=title, size=size)
         self.window.delegates.insert(0, self)
 
