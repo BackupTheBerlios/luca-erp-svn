@@ -157,7 +157,7 @@ class LoadPettyCashEntry(WindowController):
 
         h4 = HBox(parent=v)
         Button(parent=h4, label='Guardar', onAction=self.save)
-        Button(parent=h4, label='Descartar')
+        Button(parent=h4, label='Descartar', onAction=self.discard)
 
     def setThirdLabel(self, *ignore):
         if self.docType.value:
@@ -190,6 +190,21 @@ class LoadPettyCashEntry(WindowController):
         # register w/ the trans!
         # save it
         self.trans.save()
+
+    def discard(self, *ignore):
+        self.trans.discard()
+        for i in self.__dict__:
+            if isinstance(self.__dict__[i],Entry) or isinstance(self.__dict__[i],SearchEntry):
+                if hasattr(self.__dict__[i],'emptyValue'):
+                    self.__dict__[i].commitValue(self.__dict__[i].emptyValue)
+                else:
+                    self.__dict__[i].commitValue(None)
+                    self.__dict__[i].refresh()
+
+        #this is made apart beacause is not generic, thirdLabel is the only
+        #label in self that changes and otherParty is the only widget Disabled
+        self.thirdLabel.text = ''
+        self.otherParty.disable()
         
 
 if __name__=='__main__':

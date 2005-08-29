@@ -95,15 +95,24 @@ class ReceiptGui(WindowController):
         #doing a receipt
         receipt.pettyRegister(self.pos,
                               self.otherParty.value,
-                              self.category.value, None)
+                              self.category.value,
+                              None)
                              # self.account.value) this goes instead
-                             #of the above none, do we wand this data?
+                             #of the above none, do we want this data?
         self.trans.save()
 
     def discard(self, *ignore):
         self.trans.discard()
-        
-
+        for i in self.__dict__:
+            if isinstance(self.__dict__[i],Entry) or isinstance(self.__dict__[i],SearchEntry) or isinstance(self.__dict__[i],MultiLine):
+                if hasattr(self.__dict__[i],'emptyValue'):
+                    self.__dict__[i].commitValue(self.__dict__[i].emptyValue)
+                    #self.__dict__[i].refresh()
+                    print "--+>",i
+                else:
+                    self.__dict__[i].commitValue(None)
+                    self.__dict__[i].refresh()
+                    print "--->",i
         
 
 if __name__=='__main__':
