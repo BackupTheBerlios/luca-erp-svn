@@ -30,7 +30,7 @@ from fvl.luca.model.money import Money
 from fvl.luca.model.accounting_entry import AccountingEntry
 from fvl.cimarron.model.qualifier import Qualifier
 
-logger = logging.getLogger('fvl.luca.model.point_of_sale')
+logger = logging.getLogger('fvl.luca.model.document')
 
 class Document(LucaModel, CustomObject):
     __metaclass__ = LucaMeta
@@ -83,14 +83,14 @@ class Invoice(Document):
 
     def addToDetails(self, detail):
         self.amount += detail.amount
-        print 'total amount ', self.amount
-        super(Invoice, self).addToDetails(detail)
-    print 'here', addToDetails
+        # print 'total amount ', self.amount
+        # super(Invoice, self).addToDetails(detail)
+    # print 'here', addToDetails
 
     def removeFromDetails(self, detail):
         self.amount -= detail.amount
-        print 'total amount ', self.amount
-        super(Invoice, self).removeFromDetails(detail)
+        # print 'total amount ', self.amount
+        # super(Invoice, self).removeFromDetails(detail)
     
 
 class AlienInvoice(Document):
