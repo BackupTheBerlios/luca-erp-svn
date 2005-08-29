@@ -81,6 +81,18 @@ class Invoice(Document):
         return self.register(ourParty, otherParty, debitAccount, creditAccount,
                              customerAccount)
 
+    def addToDetails(self, detail):
+        self.amount += detail.amount
+        print 'total amount ', self.amount
+        super(Invoice, self).addToDetails(detail)
+    print 'here', addToDetails
+
+    def removeFromDetails(self, detail):
+        self.amount -= detail.amount
+        print 'total amount ', self.amount
+        super(Invoice, self).removeFromDetails(detail)
+    
+
 class AlienInvoice(Document):
     __metaclass__ = LucaMeta
 
@@ -90,6 +102,7 @@ class AlienInvoice(Document):
         debitAccount, creditAccount = anAccount, cash
         return self.register(ourParty, otherParty, debitAccount, creditAccount,
                              customerAccount)
+
 
 class PointOfSaleOpening(Document):
     __metaclass__ = LucaMeta

@@ -33,6 +33,7 @@ from Modeling.utils import capitalizeFirstLetter
 from fvl.cimarron.model import Model as CimarronModel
 
 logger = logging.getLogger('fvl.luca.model.base')
+logger.setLevel(logging.DEBUG)
 
 model_name = os.getenv('LUCA_PYMODEL',
                        os.path.join(os.path.dirname(__file__),
@@ -56,12 +57,16 @@ class ModelingList(object):
         self.removeMethod = remove
         self.relatesTo = relatesTo
         self.inverse = inverse
+        print "%r %r %r" % (relatesTo, getattr(self.relatesTo, self.appendMethod),
+                            getattr(self.relatesTo, self.removeMethod))
 
     def append(self, other):
         getattr(self.relatesTo, self.appendMethod)(other)
+        logger.debug('append %r' % getattr(self.relatesTo, self.appendMethod))
         setattr(other, self.inverse, self.relatesTo)
     def remove(self, other):
         getattr(self.relatesTo, self.removeMethod)(other)
+        logger.debug('remove %r' % getattr(self.relatesTo, self.removeMethod))
         setattr(other, self.inverse, None)
 
     def __len__(self):

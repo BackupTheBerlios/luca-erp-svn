@@ -238,6 +238,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
       </fields>
     </table>
 
+    <table name="invoice_detail" >
+      <fields>
+        <field name="id" type="int" auto_increment="true" null="false"/>
+        <field name="invoice" references="invoice" inverse="details" null="false"/>
+        <field name="description" type="varchar(100)" null="false" />
+        <field name="amount" type="numeric(12,4)" null="false" />
+      </fields>
+      <indexes>
+        <index type="primary_key">
+          <index_field name="id"/>
+        </index>
+      </indexes>
+    </table>
+
     <table name="point_of_sale">
       <fields>
         <field name="id" type="int" auto_increment="true" null="false"/>
