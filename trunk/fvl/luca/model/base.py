@@ -33,7 +33,7 @@ from Modeling.utils import capitalizeFirstLetter
 from fvl.cimarron.model import Model as CimarronModel
 
 logger = logging.getLogger('fvl.luca.model.base')
-logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.DEBUG)
 
 model_name = os.getenv('LUCA_PYMODEL',
                        os.path.join(os.path.dirname(__file__),
@@ -57,8 +57,10 @@ class ModelingList(object):
         self.removeMethod = remove
         self.relatesTo = relatesTo
         self.inverse = inverse
-        print "%r %r %r" % (relatesTo, getattr(self.relatesTo, self.appendMethod),
-                            getattr(self.relatesTo, self.removeMethod))
+        # logger.debug("%r<%x> %r %r" % (relatesTo.__class__,
+        #                                id(relatesTo.__class__),
+        #                                getattr(self.relatesTo,self.appendMethod),
+        #                                getattr(self.relatesTo, self.removeMethod)))
 
     def append(self, other):
         getattr(self.relatesTo, self.appendMethod)(other)
@@ -81,8 +83,9 @@ class ModelingList(object):
 # HACK!!
 # we mess around with the internals of Modeling.dynamic here.
 orig_setters_code = dynamic.setters_code
-def setters_code(prop):
-    rv = orig_setters_code(prop)
+def setters_code(prop, classdict={}):
+    rv = orig_setters_code(prop, classdict)
+    logger.debug(rv)
     if 'type' in prop.__class__.__dict__:
         # if it has a type, rv is a list of a single 2-uple
         (fname, code), = rv
@@ -99,8 +102,8 @@ del DateTimeFrom
 dynamic.ModelingList = ModelingList
 
 orig_getter_code = dynamic.getter_code
-def getter_code(prop):
-    rv = orig_getter_code(prop)
+def getter_code(prop, classdict={}):
+    rv = orig_getter_code(prop, classdict)
     fname, code = rv
     if hasattr(prop, 'isToMany') and prop.isToMany():
         # we wrap it up in a ModelingList
@@ -122,6 +125,13 @@ def getter_code(prop):
     return fname, code
 dynamic.getter_code = getter_code
 # end HACK
+
+def lucaMeta(className, bases=None, namespace=None):
+    if bases is None:
+        bases = ()
+    if namespace is None:
+        namespace = {}
+    return LucaMeta(className, bases, namespace)
 
 class LucaMeta(type):
     def __new__(cls, className, bases, namespace):
