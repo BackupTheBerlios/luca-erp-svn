@@ -30,21 +30,13 @@ logger = logging.getLogger('fvl.cimarron.skins.gtk2.container')
 import gtk
 
 from fvl.cimarron.skins.common import Container
+from fvl.cimarron.skins.gtk2.mixin import GtkDisableMixin
 
-class Gtk2Container(Container):
+class Gtk2Container(Container, GtkDisableMixin):
     """
     stuff specific to all Gtk2 containers
     """
-    def disable(self):
-        """
-        Visually and functionally disable the container, and all its contents.
-        """
-        self._concreteWidget.set_sensitive(False)
-    def enable(self):
-        """
-        Undo a disable()
-        """
-        self._concreteWidget.set_sensitive(True)
+    pass
 
 class VBox(Gtk2Container):
     """

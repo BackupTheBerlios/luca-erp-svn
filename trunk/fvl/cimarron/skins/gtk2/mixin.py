@@ -93,3 +93,19 @@ class GtkFocusableMixin(object):
         Set the focus on this object.
         """
         self._focusWidget.grab_focus ()
+
+class GtkDisableMixin(object):
+    """
+    Mixin that allow widget to disable and enable
+    """
+    def disable(self):
+        """
+        Visually and functionally disable the container, and all its contents.
+        """
+        self._concreteWidget.set_sensitive(False)
+    def enable(self):
+        """
+        Undo a disable()
+        """
+        self._concreteWidget.set_sensitive(True) 
+    
