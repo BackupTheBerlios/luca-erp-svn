@@ -40,6 +40,9 @@ class Qualified(object):
     def or_(self, other):
         return self.binop(other, 'or')
     __or__ = or_
+    def startswith(self, other):
+        return self.like(other + "*")
+    __mod__ = startswith
     def like(self, other):
         return self.binop(other, "ilike")
     __xor__ = like
@@ -99,7 +102,7 @@ class Qualifier(Qualified):
         if self.attr:
             attr = "%s.%s" % (self.attr, attr)
         return Qualifier(attr)
-    value = property(__repr__)
+
 
 class _NullQualifier(Qualified):
     def __init__(self):

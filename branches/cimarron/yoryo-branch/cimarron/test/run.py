@@ -71,7 +71,7 @@ for i in moduleNames:
 if __name__ == '__main__':
     print >> sys.stderr, "All tests loaded Ok."
     unittest.main(argv=argv)
-
+    
     #libxml2.cleanupParser()
     if libxml2.debugMemory(1) == 0:
         print "OK"

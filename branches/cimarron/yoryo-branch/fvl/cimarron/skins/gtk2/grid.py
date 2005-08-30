@@ -375,6 +375,14 @@ class EditableGrid(Grid):
 
         #edit modo off
         self._handlers_id = []
+        #add column to delete row
+        delColumn = gtk.TreeViewColumn("del")
+        self._tv.append_column(delColumn)
+        renderer = gtk.CellRendererToggle()
+        renderer.set_property('activatable', True)        
+        renderer.connect('toggled', self._delRow)
+        delColumn.pack_start(renderer, True)
+
 
     def _setModoEdit(self, modeEdit):
         """
@@ -414,7 +422,8 @@ class EditableGrid(Grid):
         else:
             return True
 
-    def _delRow(self, row):
+    def _delRow(self, cell, path, *ignore):
+        row = int(path)
         if self.delegate('will_delete_row', row):
             index = self.index
             if row == index:

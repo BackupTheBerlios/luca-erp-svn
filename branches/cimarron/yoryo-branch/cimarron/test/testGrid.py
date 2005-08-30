@@ -208,7 +208,7 @@ class TestEditableGrid(TestGrid):
             self.assertEqual(self.widget._newRow(), False)
 
     def testDelRow(self):
-        self.widget._delRow(0)
+        self.widget._delRow(None, 0)
         try:
             self.assertEqual(self.widget.value[0].name, 'marcos')
         except(TypeError, IndexError):
@@ -216,7 +216,7 @@ class TestEditableGrid(TestGrid):
 
     def testDelRowCheckIndex(self):
         self.widget.index = 2
-        self.widget._delRow(1)
+        self.widget._delRow(None, 1)
         self.assertEqual(1, self.widget.index)
         try:
             self.assertEqual(self.widget.value[1].name, 'john')
@@ -225,7 +225,7 @@ class TestEditableGrid(TestGrid):
 
     def testDelRowCheckIndex(self):
         self.widget.index = 2
-        self.widget._delRow(2)
+        self.widget._delRow(None, 2)
         self.assertEqual(None, self.widget.index)
         try:
             self.assertEqual(self.widget.value[1].name, 'marcos')
@@ -236,7 +236,7 @@ class TestEditableGrid(TestGrid):
 
     def testDelAllRowAndAddRow(self):
         for i in ['jose', 'marcos', 'john']:
-            self.widget._delRow(0)
+            self.widget._delRow(None, 0)
         self.widget.index = 0
         self.assertEqual(None, self.widget.index)
         self.assertEqual(self.widget._newRow(), True)
@@ -256,12 +256,12 @@ class TestEditableGrid(TestGrid):
         self.widget.delegates = [self]
         #set index at last.
         self.widget.index = 2
-        self.widget._delRow(2)
+        self.widget._delRow(None, 2)
         #no did was call
         self.assertEqual([], [x for x in dir(self) if x == '_did_delete_row'])
         #no row was del
         self.assertEqual(2, self.widget.index)
-        self.widget._delRow(2)
+        self.widget._delRow(None, 2)
         self.assertEqual(2, self.will_row)
         self.assertEqual(None, self.widget.index)
         self.assertEqual(['_did_delete_row'], \

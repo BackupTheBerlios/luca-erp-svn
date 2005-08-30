@@ -122,6 +122,15 @@ class Entry(GtkFocusableMixin, Control):
         super(Entry, self).__init__(**kwargs)
         self.refresh ()
 
+
+
+    def _set_readOnly(self, edit):
+        self._concreteWidget.set_property('editable', not edit)
+        self._concreteWidget.set_property("can-focus", not edit)
+    def _get_readOnly(self):
+        return not self._concreteWidget.get_property('editable')
+    readOnly = property(_get_readOnly, _set_readOnly)
+
     _cellDataType = gobject.TYPE_STRING
     def _setupCell(cls, grid, dataColumn, viewColumn, index, readOnly=False):
         renderer = gtk.CellRendererText()
