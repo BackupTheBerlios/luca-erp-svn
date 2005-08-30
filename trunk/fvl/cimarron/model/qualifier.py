@@ -102,7 +102,7 @@ class Qualifier(Qualified):
         if self.attr:
             attr = "%s.%s" % (self.attr, attr)
         return Qualifier(attr)
-
+    value = property(__repr__)
 
 class _NullQualifier(Qualified):
     def __init__(self):
