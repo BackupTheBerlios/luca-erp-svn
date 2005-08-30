@@ -73,7 +73,7 @@ class TestSkeleton(unittest.TestCase):
 
     def testRoundTrip(self):
         sk = self.app.skeleton()
-        app = skin.Application.fromXmlObj(sk.doc.children, skin)[0]
+        app = skin.Application.fromXmlObj(sk.doc.children)[0]
         self.assertEqual(app.skeleton().serialize(), sk.serialize())
 
     def testSkipSpaces (self):
@@ -85,4 +85,5 @@ class TestSkeleton(unittest.TestCase):
   </Window>
 </Application>"""
         xmlObj= libxml2.parseMemory (xmlRaw, len (xmlRaw))
-        app = skin.Application.fromXmlObj(xmlObj.children, skin)
+        app = skin.Application.fromXmlObj(xmlObj.children)
+
