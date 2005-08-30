@@ -23,19 +23,26 @@ __revision__ = int('$Rev$'[5:-1])
 import logging
 from mx.DateTime import DateTimeType
 
-logger = logging.getLogger('fvl.cimarron.model.qualifier')
+logger = logging.getLogger('fvl.luca.transaction.qualifier')
 
 class Qualified(object):
-    def __init__(self, value=''):
-        self.value = value
+    def __init__(self, qualLeft, op, qualRight):
+        self.left = qualLeft
+        self.op = op
+        self.right = qualRight
     def __repr__(self):
-        return str(self.value)
+        return "%s %s %s" % (self.quote(self.left),
+                             self.op,
+                             self.quote(self.right))  
     def and_(self, other):
         return self.binop(other, 'and')
     __and__ = and_
     def or_(self, other):
         return self.binop(other, 'or')
     __or__ = or_
+    def startswith(self, other):
+        return self.like(other + "*")
+    __mod__ = startswith
     def like(self, other):
         return self.binop(other, "ilike")
     __xor__ = like
@@ -58,7 +65,7 @@ class Qualified(object):
         return self.binop(other, '!=')
     __ne__ = notEqual
     def binop(self, other, op):
-        return Qualified("(%r) %s (%s)" % (self, op, self.quote(other)))
+        return Qualified(self, op, other)
     def quote_string(cls, string):
         assert '"' not in string, \
                "Qualified.quote can't quote strings with quotes (fix it!)"
@@ -66,23 +73,42 @@ class Qualified(object):
     quote_string = classmethod(quote_string)
     def quote_mxdatetime(cls, mxdatetime):
         return cls.quote_string(str(mxdatetime))
-    quote_mxdatetime = classmethod(quote_mxdatetime)
+    quote_mxdatetime = classmethod(quote_mxdatetime) 
+    def quote_qualified(cls, qual):
+        return "(" + repr(qual) + ")"
+    quote_qualified = classmethod(quote_qualified)
     def quote(cls, other):
         for cls, qtr in ((basestring, cls.quote_string),
-                         (DateTimeType, cls.quote_mxdatetime)):
+                         (DateTimeType, cls.quote_mxdatetime),
+                         (Qualifier, repr),
+                         (Qualified, cls.quote_qualified)
+                         ):
             if isinstance(other, cls):
                 break
         else:
             qtr = repr
         return qtr(other)
     quote = classmethod(quote)
-
+    value = property(__repr__)
+    
 class Qualifier(Qualified):
-    def binop(self, other, op):
-        return Qualified("%r %s %s" % (self, op, self.quote(other)))
+    def __init__(self, attr=''):
+        self.attr = attr
+    def __repr__(self):
+        return str(self.attr)    
     def __getattr__(self, attr):
-        if self.value:
-            attr = "%s.%s" % (self.value, attr)
+        if attr == 'left' or attr == 'right':
+            return None
+        if self.attr:
+            attr = "%s.%s" % (self.attr, attr)
         return Qualifier(attr)
 
-nullQualifier = Qualified()
+
+class _NullQualifier(Qualified):
+    def __init__(self):
+        pass
+    def __repr__(self):
+        return ''
+    value = property(__repr__)
+    
+nullQualifier = _NullQualifier()
