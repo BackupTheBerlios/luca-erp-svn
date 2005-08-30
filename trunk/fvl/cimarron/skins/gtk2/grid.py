@@ -365,3 +365,199 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
     value = property(_get_value, _set_value,
                      doc="The selected object."
                      " If no object is selected, it is None.")
+
+class EditableGrid(Grid):
+    def __init__(self, **kw):
+        super(EditableGrid, self).__init__(**kw)
+        self._concreteWidget.connect ('focus-in-event', self._focusInMove)
+        self._concreteWidget.connect ('focus-out-event',
+                                      self._focusOutNoMoreEditable)
+
+        #edit modo off
+        self._handlers_id = []
+        #add column to delete row
+        delColumn = gtk.TreeViewColumn("del")
+        self._tv.append_column(delColumn)
+        renderer = gtk.CellRendererToggle()
+        renderer.set_property('activatable', True)        
+        renderer.connect('toggled', self._delRow)
+        delColumn.pack_start(renderer, True)
+
+
+    def _setModoEdit(self, modeEdit):
+        """
+        Turn on or off the edit modo.
+        'modeEdit' atributte is a boolean expresion
+        """
+        if modeEdit and not self._handlers_id:
+            self._handlers_id.append( \
+                self._tv.connect_after('key-release-event', self._tabmove))
+            self._handlers_id.append( \
+                self._tv.connect('key-release-event', self._enter))
+        elif not modeEdit:
+            for handler_id  in self._handlers_id:
+                self._tv.disconnect(handler_id)
+            self._handlers_id = []
+
+    def _isModoEdit(self):
+        """
+        Return True if edit modo is on, and False if off.
+        """
+        return not not self._handlers_id
+    modoEdit = property(_isModoEdit, _setModoEdit)
+
+    def _cell_edited(self, cell, path, newVal, colNo, *ignore):
+        """
+        Make and Check delegation of cell edited.
+        Grid class, make the edition.
+        """
+        # old val: self._tvdata[path][colNo]
+        # new val: newVal
+        if self.delegate('will_edit_row_col', path, colNo):
+            super(EditableGrid, self)._cell_edited(cell, path, newVal,
+                                               colNo, *ignore)
+            self.modoEdit = True
+            self.delegate('did_edit_row_col', path, colNo)
+            return False
+        else:
+            return True
+
+    def _delRow(self, cell, path, *ignore):
+        row = int(path)
+        if self.delegate('will_delete_row', row):
+            index = self.index
+            if row == index:
+                self.index = index +1
+            self._tvdata.remove(self._tv.get_model().get_iter(row))
+            self._tvdatalen -= 1
+            self.value.pop(row)
+            self.delegate('did_delete_row')
+
+    def _newRow(self):
+        """
+        Add a row, set index in that row and return True,
+        or do not any thing and return False.
+        To add a row it see if exits 'cls' and if date at end is not empty.
+        """
+        if self.cls is not None and ( not list(self._tvdata) or \
+                                      [x for x in self._tvdata[-1] \
+                                       if x and type(x) == str and x.strip() \
+                                    ]) and self.delegate('will_add_row'):
+
+            self._tvdata.append(['' for j in self.columns])
+            self._tvdatalen += 1
+            self.index = len(self.value)
+            value = self.cls()
+            self.value.append(value)
+            self.delegate('did_add_row', self._tvdatalen-1)
+            return True
+        return False
+
+    def _set_indexColumn(self, indexColumn):
+        """
+        Set move focus to index column. The index column is numbre.
+        """
+        path = self.index or 0
+        self._tv.set_cursor((path,), self._tvcolumns[indexColumn])
+
+    def _get_indexColumn(self):
+        """
+        Return the number of focus column
+        """
+        try:
+            return list(self._tvcolumns).index(self._tv.get_cursor()[1])
+        except ValueError:
+            return None
+    indexColumn = property(_get_indexColumn, _set_indexColumn)
+
+    def _move(self):
+        """
+        Move focus to the next cell of the grid.
+        If no column isn't next to focus one,
+        move to next row first column.
+        It can make a new row.
+        All move focus in edit modo.
+        If no move done, edit modo turn off.
+        """
+        if self.index is None:
+            #no index, start at begining.
+            self._tv.set_cursor((0,),  self._tvcolumns[0], True)
+        else:
+            try:
+                #next column
+                self._tv.set_cursor((self.index,),
+                                    self._tvcolumns[self.indexColumn +1], True)
+            except IndexError:
+                #next row.
+                self._tv.set_cursor((self.index +1,),
+                                    self._tvcolumns[0], True)
+        if self.index is None:
+            if self._newRow():
+                #new row, only make start edition.
+                #_newRow make the move.
+                self._tv.set_cursor((self.index,),
+                                    self._tvcolumns[0], True)
+            else:
+                self.modoEdit = False
+
+    def _moveBack(self):
+        """
+        Move focus to previous cell of the grid.
+        If focus columns is first, move focus to previous row last columns.
+        All move focus in edit modo.
+        If no move done, edit modo turn off.
+        """
+        if self.indexColumn:
+            self._tv.set_cursor((self.index,),
+                                self._tvcolumns[self.indexColumn-1], True)
+        elif self.index:
+            self._tv.set_cursor((self.index-1,),  self._tvcolumns[-1], True)
+        else:
+            self.modoEdit = False
+
+    def _enter(self, who, event, *ignore):
+        """
+        It connect to 'key-release-event'.
+        When the key release is Return, move focus to next row first columns.
+        It can make a new row.
+        All move focus in edit modo.
+        If no move done, edit modo turn off and return False.
+        """
+        if event.keyval == gtk.keysyms.Return and self.index is not None:
+            self._indexColumn = 0
+            self._tv.set_cursor((self.index +1,),
+                                self._tvcolumns[self._indexColumn], True)
+            if self.index is None:
+                if self._newRow():
+                    self._tv.set_cursor((self.index,),
+                                        self._tvcolumns[self._indexColumn],
+                                        True)
+
+
+    def _tabmove(self, who, event, *ignore):
+        """
+        It connect to 'key-release-event'.
+        When the key release is Tab or left Tab (shif+tab),
+        it make a _move or _moveBack.
+        No move done, mode edit turn off.
+        """
+        if event.keyval == gtk.keysyms.Tab:
+            self._move()
+        elif event.keyval == gtk.keysyms.ISO_Left_Tab:
+            self._moveBack()
+
+    def _focusInMove(self, *ignore):
+        """
+        If no cell been focus, the first is focus now.
+        """
+        if self.index is None:
+            try:
+                self._tv.set_cursor((0,),  self._tvcolumns[0])
+            except IndexError:
+                if self._newRow():
+                    self._tv.set_cursor((0,),  self._tvcolumns[0], True)
+        return True
+
+    def _focusOutNoMoreEditable(self, *ignore):
+        self.modoEdit = False
+
