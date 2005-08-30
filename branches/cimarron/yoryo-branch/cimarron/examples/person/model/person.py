@@ -75,6 +75,7 @@ class Person(Model):
 
         return ans
     values = classmethod(values)
+
     # this class acts as a store for searching.
     def search(cls, ignore, qual):
         q = [qual]
