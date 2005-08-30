@@ -46,7 +46,10 @@ class Person(Model):
                % (self.name, self.surname, self.addresses)
 
     def values(cls, ignore, **values):
-        name = values['name']
+        try:
+            name = values['name']
+        except KeyError:
+            name = None
         try:
             surname = values['surname']
         except KeyError:
@@ -72,10 +75,22 @@ class Person(Model):
 
         return ans
     values = classmethod(values)
+
     # this class acts as a store for searching.
-    search = values
-
-
+    def search(cls, ignore, qual):
+        q = [qual]
+        result = {}
+        while q: 
+            if hasattr(q[0], 'left'):
+                q.append(q[0].left)
+            if hasattr(q[0], 'right'):
+                q.append(q[0].right)
+            if hasattr(q[0], 'attr'):
+                result.update({q[0].attr: q[1]})
+            q.pop(0)
+        return Person.values(None, **result)
+    search = classmethod(search)
+    
 class Address(Model):
     def __init__(self, text=''):
         self.text = text
