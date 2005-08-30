@@ -24,8 +24,8 @@ from optparse import OptionParser
 import libxml2
 libxml2.debugMemory(1)
 
-moduleNames = ['testSkin', 'hello', 'testModel',
-               'testSearch', 'testCrud'] #, 'testSkeleton']
+moduleNames = ['testSkin', 'hello', 'testModel', 'testGrid', 
+               'testSearch', 'testCrud', 'testSkeleton']
 
 testnames = ('focus-events', 'delegations')
 
@@ -71,7 +71,7 @@ for i in moduleNames:
 if __name__ == '__main__':
     print >> sys.stderr, "All tests loaded Ok."
     unittest.main(argv=argv)
-
+    
     #libxml2.cleanupParser()
     if libxml2.debugMemory(1) == 0:
         print "OK"
