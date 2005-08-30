@@ -51,16 +51,11 @@ ModelSet.defaultModelSet().addModel(model)
 class ModelingList(object):
     def __init__(self, value=None, relatesTo=None,
                  append=None, remove=None, inverse=None):
-        # print 'one of these', append, remove, inverse
         self.value = value
         self.appendMethod = append
         self.removeMethod = remove
         self.relatesTo = relatesTo
         self.inverse = inverse
-        # logger.debug("%r<%x> %r %r" % (relatesTo.__class__,
-        #                                id(relatesTo.__class__),
-        #                                getattr(self.relatesTo,self.appendMethod),
-        #                                getattr(self.relatesTo, self.removeMethod)))
 
     def append(self, other):
         getattr(self.relatesTo, self.appendMethod)(other)
@@ -72,12 +67,17 @@ class ModelingList(object):
         setattr(other, self.inverse, None)
 
     def __len__(self):
-        return len(self.value)
+        value = getattr(self.relatesTo, self.value)
+        logger.debug(value)
+        return len(value)
 
     def __getitem__(self, index):
-        return self.value[index]
+        value = getattr(self.relatesTo, self.value)
+        return value[index]
     def __setitem__(self, index, item):
-        self.value[index] = item
+        logger.debug('this is supposed to be inmutable!')
+        value = getattr(self.relatesTo, self.value)
+        value[index] = item
 
 
 # HACK!!
@@ -85,7 +85,7 @@ class ModelingList(object):
 orig_setters_code = dynamic.setters_code
 def setters_code(prop, classdict={}):
     rv = orig_setters_code(prop, classdict)
-    logger.debug(rv)
+    # logger.debug(rv)
     if 'type' in prop.__class__.__dict__:
         # if it has a type, rv is a list of a single 2-uple
         (fname, code), = rv
@@ -114,8 +114,8 @@ def getter_code(prop, classdict={}):
         inv = prop.inverseRelationship()
         inverseName = inv._name
         
-        code = "%sModelingList(%s, self, '%s', '%s', '%s')" % \
-               (code[:pos], code[pos:], addFname, remFname, inverseName)
+        code = "%sModelingList('%s', self, '%s', '%s', '%s')" % \
+               (code[:pos], '_'+prop.name(), addFname, remFname, inverseName)
         logger.debug(code)
     if 'type' in prop.__class__.__dict__:
         pos = code.find('return ') + len('return ')
