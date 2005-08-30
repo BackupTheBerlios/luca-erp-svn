@@ -27,20 +27,22 @@ is the selected item from a list of possibilities.
 __revision__ = int('$Rev$'[5:-1])
 
 import logging
-logger = logging.getLogger('fvl.cimarron.skins.gtk2.grid')
-# logger.setLevel(logging.DEBUG)
-
 from zope import interface
+from new import instancemethod
 import gtk
 
 from fvl.cimarron.controllers.column import ColumnAwareXmlMixin
 from fvl.cimarron.controllers.base import Controller
+from fvl.cimarron.skins.common import nullAction
+
+logger = logging.getLogger('fvl.cimarron.skins.gtk2.grid')
+# logger.setLevel(logging.DEBUG)
 
 class Grid(ColumnAwareXmlMixin, Controller):
     """
     Grids are used for editing a list of objects.
     """
-    def __init__(self, columns=None, cls=None, **kwargs):
+    def __init__(self, columns=None, cls=None, onAppend=None, **kwargs):
         """
         @param columns: a list of B{Column}s that describe
             what to show in the grid, how obtain it from the
@@ -56,6 +58,7 @@ class Grid(ColumnAwareXmlMixin, Controller):
         self._tv.set_rules_hint(True)
         self.columns = columns
         self.cls = cls
+        self.onAppend = onAppend
 
         # put the TreeView in a scrolled window
         if '_outerWidget' not in self.__dict__:
@@ -166,6 +169,29 @@ class Grid(ColumnAwareXmlMixin, Controller):
                      """The index of the object currently selected.
                      If no object is selected, it is None.""")
 
+    def _get_on_append (self):
+        """
+        Get the onAction callback.
+        """
+        return self.__on_append
+    def _set_on_append (self, onAppend):
+        """
+        Set the onAppend callback.
+
+        FIXME: explain the corner cases.
+        """
+        if onAppend is None:
+            onAppend = nullAction
+        if type (onAppend)==str:
+            # let the xml loader set str onAppend's
+            self.__on_append = onAppend
+        else:
+            # default behaviour
+            self.__on_append = instancemethod(onAppend, self, Grid)
+    onAppend = property(_get_on_append, _set_on_append, doc=\
+                        "A callable that is called when a new row in "
+                        "inserted.")
+
     def _cell_toggled(self, cell, path, colNo, *ignore):
         newVal = not self._tvdata[path][colNo]
         return self._cell_edited(cell, path, newVal, colNo)
@@ -174,22 +200,30 @@ class Grid(ColumnAwareXmlMixin, Controller):
         """
         A cell has been edited: keep the models in sync.
         """
+        logger.debug("%r, %s: %r", self.target, self.attribute, self.value)
         logger.debug(`cell`+','+`path`+','+`newVal`)
         attribute = self.columns[colNo].attribute
         # modify the ListStore model...
         self._tvdata[path][colNo] = newVal
         # ... and our model
-        value = self.value
-        if value is not None and int(path)<len(value):
-            value = value[int(path)]
+        if self.value is not None and int(path)<len(self.value):
+            value = self.value[int(path)]
+            # self.onEdited(int(path))
         else:
             # we're editing the empty row, so go build an object
             # to give back up that row.
-            value = self.cls()
+            kwargs = dict([(column.attribute, self._tvdata[path][index])
+                           for index, column in enumerate(self.columns)])
+            logger.debug(kwargs)
+            value = self.cls(**kwargs)
             if self.value is not None:
+                logger.debug('appending')
                 self.value.append(value)
             else:
+                logger.debug('creating')
                 self.value = [value]
+            logger.debug(len(self.value))
+            self.onAppend()
         value.setattr(attribute, newVal)
             
         return False
@@ -209,6 +243,7 @@ class Grid(ColumnAwareXmlMixin, Controller):
             # the index points to the last row.
             last = valueLen == 0 or self.index == valueLen-1
             logger.debug("%r %r %r", self.index, self.value, last)
+            logger.debug("%d %d", self._tvdatalen, valueLen)
 
             if last and self.cls is not None and self._tvdatalen == valueLen:
                 # right conditions; insert a new row in the TreeView
