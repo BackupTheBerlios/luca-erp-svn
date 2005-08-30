@@ -92,7 +92,7 @@ class TestAccountingEntry(testWithDatabase):
 
         balance = self.acEntry.balance()
 
-        self.assertTrue(balance < 0)
+        self.assert_(balance < 0)
 
     def testBalanceIsWrongPositive(self):
         self.acEntry.debit(amount=self.otherAmount, account=self.debit)
@@ -100,7 +100,7 @@ class TestAccountingEntry(testWithDatabase):
 
         balance = self.acEntry.balance()
 
-        self.assertTrue(balance > 0)
+        self.assert_(balance > 0)
 
     def testDebitSum(self):
         self.acEntry.debit(amount=self.otherAmount, account=self.debit)
