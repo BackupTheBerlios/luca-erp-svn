@@ -24,14 +24,11 @@ The default (and currently only) skin, based on Gtk version 2.4 or above.
 
 __revision__ = int('$Rev$'[5:-1])
 
-import logging
-logger = logging.getLogger('fvl.cimarron.skins.gtk2')
-# logger.setLevel(logging.DEBUG)
-
 import pygtk
 pygtk.require('2.0')
 import gtk, gobject
 from zope.interface import moduleProvides
+import logging
 
 from fvl.cimarron.interfaces import ISkin, IWindow
 from fvl.cimarron.skins.common import *
@@ -43,6 +40,9 @@ from container import *
 from control import *
 from window import *
 from grid import *
+
+logger = logging.getLogger('fvl.cimarron.skins.gtk2')
+# logger.setLevel(logging.DEBUG)
 
 def _splash():
     _splash_win = win = gtk.Window()
