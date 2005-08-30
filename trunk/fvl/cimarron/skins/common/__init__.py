@@ -34,7 +34,7 @@ import logging
 import libxml2
 from zope import interface
 
-from fvl.cimarron.tools import traverse, Null
+from fvl.cimarron.tools import traverse, Null, is_simple
 from fvl.cimarron.interfaces import IModel
 
 __all__ = ('XmlMixin', 'Widget', 'Container', 'Control',
@@ -148,7 +148,10 @@ class XmlMixin (object):
         """
         Set an attribute from an xml2 property object.
         """
-        setattr(self, prop.name, prop.content)
+        try:
+            setattr(self, prop.name, eval(prop.content))
+        except NameError:
+            setattr(self, prop.name, prop.content)
 
     def fromXmlObjProps(self, prop):
         """
