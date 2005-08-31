@@ -20,7 +20,7 @@ XOT=luca.xot
 
 PYMODEL=fvl/luca/model/pymodel_luca.py
 SQL=luca.sql
-SQLSCRIPTS=$(dir sql/*.sql)
+SQLSCRIPTS=$(wildcard sql/*.sql)
 TARGETS=product.xml \
 	person.xml \
 	document_type.xml \
@@ -77,14 +77,11 @@ test: $(LUCA_TEST_PYMODEL) $(TR_CACHE_TEST_DB) $(LUCA_CACHE_TEST_DB)
 		$(PYTHON) test/run.py $(TESTOPTS) $(COLORIZER)
 	$(RM) *_test.db
 
-feed_to_test: ${SQLSCRIPTS}
-	cat ${SQLSCRIPTS} | sqlite luca_test.db
+# feed_to_test: ${SQLSCRIPTS}
+# 	cat ${SQLSCRIPTS} | sqlite luca_test.db
 
 $(LUCA_TEST_PYMODEL): $(XOT)
 	$(EXOTIC) $(EXOTIC_PYTHON_TEST_OPTS) $< > $@
-
-# %_cache.db: %_test.db
-# 	mv $< $@
 
 luca_cache.db: luca_test.db ${SQLSCRIPTS}
 	cat ${SQLSCRIPTS} | sqlite $<
@@ -108,7 +105,7 @@ Luca.sqlt: $(LUCA_TEST_PYMODEL)
 	rm -f $@
 	MDL_DB_CONNECTIONS_CFG=$(LUCA_INI) \
 		mdl_generate_DB_schema.py -C --admin-dsn :$@:: $<
-	sqlite $@ < basic_movement_accounts.sql
+	cat ${SQLSCRIPTS} | sqlite $@ 
 
 clean:
 	$(RM) $(TARGETS) \
