@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="iso-8859-1"?><!-- -*- nxml -*- -->
+<class name="client">
+    <import what="fvl.luca.model.Client"/>
+    <import what="fvl.luca.model.Person"/>
+    <import what="fvl.cimarron.model.qualifier.Qualifier"/>
+
+    <!--finder attribute="person.name" operator="Qualifier.like"/-->
+    <finder attribute="person.surname" operator="Qualifier.like"/>
+    <!--finder attribute="person.surname" operator="Qualifier.startswith"/-->
+
+    <attribute name="person">
+        <!--finder attribute="name" operator="Qualifier.like"/-->
+        <finder attribute="surname" operator="Qualifier.like"/>
+        <!--finder attribute="surname" operator="Qualifier.startswith"/-->
+    </attribute>
+</class>
