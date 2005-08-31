@@ -25,6 +25,8 @@ TARGETS=product.xml \
 	document_type.xml \
 	customer_account.xml \
 	client.xml \
+	provider.xml \
+	point_of_sale.xml \
 	$(SQL) $(PYMODEL)
 
 PYTHON ?= python

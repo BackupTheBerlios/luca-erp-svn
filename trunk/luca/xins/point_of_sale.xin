@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="iso-8859-1"?><!-- -*- nxml -*- -->
+<class name="point_of_sale">
+    <import what="fvl.luca.model.PointOfSale"/>
+
+    <finder attribute="name"/>
+</class>
