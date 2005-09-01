@@ -86,6 +86,7 @@ class Invoice(Document):
 
     def __init__(self, *ar, **kw):
         super(Invoice, self).__init__(*ar, **kw)
+        self.details = [self._adapt_detail(x) for x in self.details]
         
     def pettyRegister(self, ourParty, otherParty, anAccount, customerAccount=None):
         """
