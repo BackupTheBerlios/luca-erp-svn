@@ -121,3 +121,59 @@ class Frame(Gtk2Container):
     def _get_label(self):
         return self._concreteWidget.get_label()
     label = property(_get_label, _set_label)
+
+class Table(Gtk2Container):
+    def __init__(self, rows=1,columns=1, homogeneous=False,**kwargs):
+
+        self.rows = rows 
+        self.columns = columns 
+
+        if '_concreteWidget' not in self.__dict__:
+            self._innerWidget = \
+            self._outerWidget = \
+            self._concreteWidget = gtk.Table(rows=self.rows,
+                                             columns=self.columns,
+                                             homogeneous=homogeneous)
+        super(Table,self).__init__(**kwargs)
+
+    def addItem(self, child, column=0, row=0, horLenght=1, verLenght=1, xpadding=0, ypadding=0):
+        """
+        The gtk Table requires as parameters to add widgets the 'borders'
+        of the table that will be his limits, as an example to add an
+        Entry in the first cell of a 2x2 table we must give to the table
+        as parameters left and top limits as 0, and, bottom and right as 1.
+        We ask here instead the lenght and then calculte the left and bottom
+        limits
+        """
+
+        rightLimit = column + horLenght
+        #this checks if the lenght of the cells isn't outside the table
+        if rightLimit > self.columns:
+            rightLimit = self.columns
+
+        bottomLimit = row + verLenght
+        if bottomLimit > self.rows:
+            bottomLimit = self.rows
+        
+        self._innerWidget.attach(child=child._outerWidget, 
+                                 left_attach=column,
+                                 right_attach=rightLimit,
+                                 top_attach=row,
+                                 bottom_attach=bottomLimit,
+                                 xpadding=xpadding,
+                                 ypadding=ypadding) 
+
+
+    def resize(self, rows=None, columns=None):
+        """
+        Once shown the widget the resize won't be noticeable neither the newly
+        added widgets but, anyway, this may be useful to someone so it stays
+        """
+        if not rows:
+            rows = self.rows
+        if not columns:
+            columns = self.columns
+        self.rows = rows
+        self.columns = columns
+        self._concreteWidget.resize(rows=rows,columns=columns)
+        
