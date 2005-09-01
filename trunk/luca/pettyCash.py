@@ -79,14 +79,23 @@ class LoadPettyCashEntry(WindowController):
     def __init__(self, **kwargs):
         super(LoadPettyCashEntry, self).__init__(**kwargs)
         self.trans = Transaction()
-        self.pos ,= self.trans.search('PointOfSale')
+
+        # it assured existence point of sale
+        pointOfSale = self.trans.search('PointOfSale')
+        if not pointOfSale:
+            from pointOfSale import main as pofMain
+            pofMain()
+            pointOfSale = self.trans.search('PointOfSale')        
+            if pointOfSale:
+                #mensaje error, que estas haciendo
+                pass
+        
+        self.pos = pointOfSale[0]
         self.buildUI()
         
     def buildUI(self):
-        self.window.title = 'Caja chica - Carga'
+        self.window.title = 'Caja chica - Carga: "' + self.pos.name +'"'
         v = VBox(parent=self.window)
-
-
         f0 = Frame(parent=v, label='Cuenta')
         h0 = HBox(parent=f0)
         right0 = VBox(parent=h0)
@@ -208,6 +217,7 @@ class LoadPettyCashEntry(WindowController):
         
 
 if __name__=='__main__':
+    print 'Running ', __file__
     a = Application()
     w = LoadPettyCashEntry(parent=a)
     w.show()

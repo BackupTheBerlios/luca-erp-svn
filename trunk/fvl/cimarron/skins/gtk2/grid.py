@@ -42,7 +42,7 @@ class Grid(ColumnAwareXmlMixin, Controller):
     """
     Grids are used for editing a list of objects.
     """
-    def __init__(self, columns=None, cls=None, onAppend=None, **kwargs):
+    def __init__(self, columns=None, cls=None, onAppend=None, onEdit=None, **kwargs):
         """
         @param columns: a list of B{Column}s that describe
             what to show in the grid, how obtain it from the
@@ -59,6 +59,7 @@ class Grid(ColumnAwareXmlMixin, Controller):
         self.columns = columns
         self.cls = cls
         self.onAppend = onAppend
+        self.onEdit = onEdit
 
         # put the TreeView in a scrolled window
         if '_outerWidget' not in self.__dict__:
@@ -192,6 +193,29 @@ class Grid(ColumnAwareXmlMixin, Controller):
                         "A callable that is called when a new row in "
                         "inserted.")
 
+    def _get_on_edit (self):
+        """
+        Get the onEdit callback.
+        """
+        return self.__on_edit
+    def _set_on_edit (self, onEdit):
+        """
+        Set the onEdit callback.
+
+        FIXME: explain the corner cases.
+        """
+        if onEdit is None:
+            onEdit = nullAction
+        if type (onEdit)==str:
+            # let the xml loader set str onAppend's
+            self.__on_edit = onEdit
+        else:
+            # default behaviour
+            self.__on_edit = instancemethod(onEdit, self, Grid)
+    onEdit = property(_get_on_edit, _set_on_edit, doc=\
+                        "A callable that is called when a row is "
+                        "edit.")
+
     def _cell_toggled(self, cell, path, colNo, *ignore):
         newVal = not self._tvdata[path][colNo]
         return self._cell_edited(cell, path, newVal, colNo)
@@ -223,9 +247,10 @@ class Grid(ColumnAwareXmlMixin, Controller):
                 logger.debug('creating')
                 self.value = [value]
             logger.debug(len(self.value))
+                         
             self.onAppend()
         value.setattr(attribute, newVal)
-            
+        self.onEdit()
         return False
     def _keyreleased(self, widget, key_event, *ignore):
         """
@@ -274,6 +299,7 @@ class SelectionGrid(ColumnAwareXmlMixin, Controller):
             self._concreteWidget = gtk.TreeView()  
         self._tv = self._concreteWidget
         self._tv.set_rules_hint(True)
+        
 
         if columns is None:
             columns = []

@@ -84,6 +84,7 @@ class Transaction(object):
         result = self.editingContext.fetch(name, qual.value)
         for i in result:
             self.track(i)
+        print 'ok', result
         return result
 
     def discard(self):

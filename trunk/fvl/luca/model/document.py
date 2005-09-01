@@ -67,6 +67,26 @@ class Document(LucaModel, CustomObject):
 class Invoice(Document):
     __metaclass__ = LucaMeta
 
+    def _adapt_detail(self, detail):
+        def _set_amount(self, amount):
+            #funcion to be native of invoiceDetail
+            #print '_set_amount old: %r new: %r totalAmuout: %r' \
+            #      % (self._amount, amount, self.invoice.amount)
+            self.invoice.amount -= float(self._amount)           
+            self.invoice.amount += float(amount)
+            self._amount = amount
+
+        def _get_amount(self):
+            #funcion to be native of invoiceDetail
+            #print '_get_amount'
+            return self._amount
+
+        detail._amount = detail.amount
+        detail.__class__.amount = property(_get_amount,_set_amount)
+
+    def __init__(self, *ar, **kw):
+        super(Invoice, self).__init__(*ar, **kw)
+        
     def pettyRegister(self, ourParty, otherParty, anAccount, customerAccount=None):
         """
         like register(), but for pettyCash
@@ -82,6 +102,7 @@ class Invoice(Document):
                              customerAccount)
 
     def addToDetails(self, detail):
+        self._adapt_detail(detail)
         self.amount += detail.amount
         # print 'total amount ', self.amount
         # super(Invoice, self).addToDetails(detail)
